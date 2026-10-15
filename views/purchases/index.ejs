@@ -1,0 +1,73 @@
+<div class="page-header">
+  <h1>🛍️ Pembelian</h1>
+  <a href="/purchases/create" class="btn btn-primary">+ Buat Pembelian</a>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-body">
+    <form action="/purchases" method="GET" class="filter-form">
+      <div class="filter-row">
+        <div class="form-group" style="flex:1;margin-bottom:0">
+          <input type="text" name="search" placeholder="Cari nomor pembelian / faktur..." value="<%= filters.search || '' %>" class="form-control">
+        </div>
+        <div class="form-group" style="width:160px;margin-bottom:0">
+          <select name="status" class="form-control">
+            <option value="">Semua Status</option>
+            <option value="draft" <%= filters.status === 'draft' ? 'selected' : '' %>>Draft</option>
+            <option value="received" <%= filters.status === 'received' ? 'selected' : '' %>>Diterima</option>
+            <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>Dibatalkan</option>
+          </select>
+        </div>
+        <div class="form-group" style="width:180px;margin-bottom:0">
+          <select name="supplier_id" class="form-control">
+            <option value="">Semua Supplier</option>
+            <% suppliers.forEach(s => { %>
+              <option value="<%= s.id %>" <%= filters.supplier_id == s.id ? 'selected' : '' %>><%= s.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Cari</button>
+        <a href="/purchases" class="btn btn-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (purchases.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead><tr><th>#</th><th>No. Pembelian</th><th>Supplier</th><th style="text-align:right">Total</th><th>Status</th><th>Tanggal</th><th style="width:100px">Aksi</th></tr></thead>
+        <tbody>
+          <% purchases.forEach((p, i) => { %>
+          <tr>
+            <td><%= (pagination.page - 1) * 20 + i + 1 %></td>
+            <td><a href="/purchases/<%= p.id %>"><strong><%= p.purchase_number %></strong></a></td>
+            <td><%= p.supplier_name %></td>
+            <td style="text-align:right">Rp <%= new Intl.NumberFormat('id-ID').format(p.total) %></td>
+            <td>
+              <% if (p.status === 'draft') { %><span class="badge" style="background:#f59e0b;color:#fff;padding:0.25rem 0.625rem;border-radius:9999px;font-size:0.75rem">Draft</span>
+              <% } else if (p.status === 'received') { %><span class="badge badge-success">Diterima</span>
+              <% } else { %><span class="badge badge-danger">Dibatalkan</span><% } %>
+            </td>
+            <td><%= p.created_at %></td>
+            <td><a href="/purchases/<%= p.id %>" class="btn btn-sm btn-secondary">Detail</a></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% if (pagination.totalPages > 1) { %>
+    <div class="pagination">
+      <% for (let p = Math.max(1, pagination.page - 2); p <= Math.min(pagination.totalPages, pagination.page + 2); p++) { %>
+        <a href="/purchases?page=<%= p %>&search=<%= filters.search || '' %>&status=<%= filters.status || '' %>&supplier_id=<%= filters.supplier_id || '' %>" class="pagination-link <%= p === pagination.page ? 'active' : '' %>"><%= p %></a>
+      <% } %>
+    </div>
+    <% } %>
+    <p class="text-muted">Menampilkan <%= purchases.length %> dari <%= pagination.total %> pembelian</p>
+    <% } else { %>
+    <p class="text-muted">Belum ada pembelian. <a href="/purchases/create">Buat pembelian pertama</a></p>
+    <% } %>
+  </div>
+</div>

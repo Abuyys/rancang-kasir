@@ -1,0 +1,130 @@
+<div class="page-header">
+  <div>
+    <h1>👥 Manajemen Pengguna & Kasir</h1>
+    <p>Kelola akun staf kasir dan administrator minimarket.</p>
+  </div>
+  <div>
+    <a href="/users/new" class="btn btn-primary">+ Tambah Pengguna Baru</a>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-body">
+    <form action="/users" method="GET" class="filter-form">
+      <div class="filter-row" style="display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap">
+        <div class="form-group" style="margin-bottom:0;flex:1;min-width:200px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Cari Nama / Username</label>
+          <input type="text" name="search" class="form-control" placeholder="Contoh: Budi atau cashier1" value="<%= filters.search || '' %>">
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;width:150px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Role</label>
+          <select name="role" class="form-control">
+            <option value="">Semua Role</option>
+            <option value="admin" <%= filters.role === 'admin' ? 'selected' : '' %>>Admin</option>
+            <option value="cashier" <%= filters.role === 'cashier' ? 'selected' : '' %>>Kasir</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;width:150px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Status Akun</label>
+          <select name="status" class="form-control">
+            <option value="">Semua Status</option>
+            <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Aktif</option>
+            <option value="0" <%= filters.status === '0' ? 'selected' : '' %>>Nonaktif</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:0.5rem">
+          <button type="submit" class="btn btn-primary">Filter</button>
+          <a href="/users" class="btn btn-secondary">Reset</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- User Table -->
+<div class="card">
+  <div class="card-body">
+    <% if (users && users.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nama Lengkap</th>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Status</th>
+            <th>Terakhir Login</th>
+            <th style="text-align:center">Penjualan</th>
+            <th style="text-align:center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach((u, idx) => { %>
+          <tr>
+            <td><%= (pagination.page - 1) * 20 + idx + 1 %></td>
+            <td>
+              <strong><%= u.name %></strong>
+              <% if (u.id === currentUser.id) { %>
+                <small style="color:#2563eb;font-weight:600">(Akun Anda)</small>
+              <% } %>
+            </td>
+            <td><code><%= u.username %></code></td>
+            <td>
+              <span class="user-role-badge badge-<%= u.role %>">
+                <%= u.role === 'admin' ? 'Admin' : 'Kasir' %>
+              </span>
+            </td>
+            <td>
+              <% if (u.is_active) { %>
+                <span class="badge badge-success">Aktif</span>
+              <% } else { %>
+                <span class="badge badge-danger">Nonaktif</span>
+              <% } %>
+            </td>
+            <td>
+              <small><%= u.last_login_at ? new Date(u.last_login_at).toLocaleString('id-ID') : 'Belum pernah' %></small>
+            </td>
+            <td style="text-align:center;font-weight:600">
+              <%= u.total_sales_count || 0 %> trx
+            </td>
+            <td style="text-align:center">
+              <div style="display:inline-flex;gap:0.35rem">
+                <a href="/users/<%= u.id %>/edit" class="btn btn-sm btn-secondary" title="Ubah Data">Ubah</a>
+                <a href="/users/<%= u.id %>/reset-password" class="btn btn-sm btn-secondary" title="Reset Password">🔑 Password</a>
+                
+                <% if (u.id !== currentUser.id) { %>
+                  <form action="/users/<%= u.id %>/toggle-status" method="POST" onsubmit="return confirm('Yakin ingin <%= u.is_active ? 'menonaktifkan' : 'mengaktifkan' %> akun <%= u.username %>?');" style="display:inline">
+                    <button type="submit" class="btn btn-sm <%= u.is_active ? 'btn-danger' : 'btn-success' %>" title="<%= u.is_active ? 'Nonaktifkan' : 'Aktifkan' %>">
+                      <%= u.is_active ? 'Nonaktifkan' : 'Aktifkan' %>
+                    </button>
+                  </form>
+                <% } %>
+              </div>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if (pagination.totalPages > 1) { %>
+    <div class="pagination">
+      <% for (let p = Math.max(1, pagination.page - 2); p <= Math.min(pagination.totalPages, pagination.page + 2); p++) { %>
+        <a href="/users?page=<%= p %>&search=<%= filters.search || '' %>&role=<%= filters.role || '' %>&status=<%= filters.status || '' %>"
+           class="pagination-link <%= p === pagination.page ? 'active' : '' %>">
+          <%= p %>
+        </a>
+      <% } %>
+    </div>
+    <% } %>
+
+    <% } else { %>
+      <p class="text-muted" style="text-align:center;padding:2rem">Tidak ada pengguna ditemukan.</p>
+    <% } %>
+  </div>
+</div>

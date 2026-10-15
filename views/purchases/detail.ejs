@@ -1,0 +1,71 @@
+<div class="page-header">
+  <h1>🛍️ <%= purchase.purchase_number %></h1>
+  <a href="/purchases" class="btn btn-secondary">← Kembali</a>
+</div>
+
+<div class="detail-grid">
+  <div class="card">
+    <div class="card-header"><h2>Info Pembelian</h2></div>
+    <div class="card-body">
+      <table class="detail-table">
+        <tr><th>No. Pembelian</th><td><strong><%= purchase.purchase_number %></strong></td></tr>
+        <tr><th>Supplier</th><td><%= purchase.supplier_name %></td></tr>
+        <tr><th>No. Faktur</th><td><%= purchase.supplier_invoice_number || '-' %></td></tr>
+        <tr><th>Dibuat oleh</th><td><%= purchase.user_name %></td></tr>
+        <tr><th>Status</th><td>
+          <% if (purchase.status === 'draft') { %><span class="badge" style="background:#f59e0b;color:#fff;padding:0.25rem 0.625rem;border-radius:9999px;font-size:0.75rem">Draft</span>
+          <% } else if (purchase.status === 'received') { %><span class="badge badge-success">Diterima</span>
+          <% } else { %><span class="badge badge-danger">Dibatalkan</span><% } %>
+        </td></tr>
+        <tr><th>Tanggal</th><td><%= purchase.created_at %></td></tr>
+        <% if (purchase.received_at) { %><tr><th>Diterima</th><td><%= purchase.received_at %></td></tr><% } %>
+        <% if (purchase.notes) { %><tr><th>Catatan</th><td><%= purchase.notes %></td></tr><% } %>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h2>Total</h2></div>
+    <div class="card-body">
+      <table class="detail-table">
+        <tr><th>Subtotal</th><td style="text-align:right">Rp <%= new Intl.NumberFormat('id-ID').format(purchase.subtotal) %></td></tr>
+        <tr><th>Diskon</th><td style="text-align:right">Rp <%= new Intl.NumberFormat('id-ID').format(purchase.discount) %></td></tr>
+        <tr style="font-size:1.2rem;font-weight:bold"><th>Total</th><td style="text-align:right">Rp <%= new Intl.NumberFormat('id-ID').format(purchase.total) %></td></tr>
+      </table>
+
+      <% if (purchase.status === 'draft') { %>
+      <div style="margin-top:1.5rem;display:flex;gap:0.75rem">
+        <form action="/purchases/<%= purchase.id %>/receive" method="POST">
+          <button type="submit" class="btn btn-success" onclick="return confirm('Terima barang dan update stok?')">✅ Terima Barang</button>
+        </form>
+        <form action="/purchases/<%= purchase.id %>/cancel" method="POST">
+          <button type="submit" class="btn btn-danger" onclick="return confirm('Batalkan pembelian ini?')">❌ Batalkan</button>
+        </form>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:1.5rem">
+  <div class="card-header"><h2>Item Pembelian</h2></div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table">
+        <thead><tr><th>#</th><th>SKU</th><th>Produk</th><th style="text-align:right">Jumlah</th><th style="text-align:right">Harga Modal</th><th style="text-align:right">Subtotal</th></tr></thead>
+        <tbody>
+          <% purchase.items.forEach((item, i) => { %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <td><code><%= item.product_sku %></code></td>
+            <td><%= item.product_name %></td>
+            <td style="text-align:right"><%= item.quantity %></td>
+            <td style="text-align:right">Rp <%= new Intl.NumberFormat('id-ID').format(item.unit_cost) %></td>
+            <td style="text-align:right">Rp <%= new Intl.NumberFormat('id-ID').format(item.subtotal) %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

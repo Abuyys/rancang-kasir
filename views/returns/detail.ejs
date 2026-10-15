@@ -1,0 +1,137 @@
+<div class="page-header">
+  <div>
+    <a href="/returns" class="btn btn-secondary btn-sm" style="margin-bottom:0.5rem;display:inline-block">← Kembali ke Daftar Retur</a>
+    <h1>Retur: <%= ret.return_number %></h1>
+  </div>
+  <div>
+    <% if (ret.status === 'completed') { %>
+      <span class="badge badge-success" style="font-size:1rem;padding:0.5rem 1rem">✅ Selesai</span>
+    <% } else if (ret.status === 'requested') { %>
+      <span class="badge badge-warning" style="font-size:1rem;padding:0.5rem 1rem">⏳ Menunggu Persetujuan</span>
+    <% } else if (ret.status === 'approved') { %>
+      <span class="badge badge-info" style="font-size:1rem;padding:0.5rem 1rem">Disetujui</span>
+    <% } else if (ret.status === 'rejected') { %>
+      <span class="badge badge-danger" style="font-size:1rem;padding:0.5rem 1rem">❌ Ditolak</span>
+    <% } %>
+  </div>
+</div>
+
+<div class="detail-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+  <!-- Left: Items -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Item yang Diretur</h2>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Produk</th>
+              <th style="text-align:right">Harga Satuan</th>
+              <th style="text-align:center">Qty Retur</th>
+              <th style="text-align:center">Dipulihkan ke Stok?</th>
+              <th style="text-align:right">Nilai Refund</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% ret.items.forEach(item => { %>
+            <tr>
+              <td>
+                <strong><%= item.product_name_snapshot %></strong><br>
+                <small class="text-muted"><%= item.sku_snapshot %></small>
+              </td>
+              <td style="text-align:right">
+                Rp <%= new Intl.NumberFormat('id-ID').format(item.unit_price) %>
+              </td>
+              <td style="text-align:center;font-weight:700"><%= item.quantity %></td>
+              <td style="text-align:center">
+                <% if (item.restock) { %>
+                  <span class="badge badge-success">Ya (Masuk Stok)</span>
+                <% } else { %>
+                  <span class="badge badge-secondary">Tidak (Rusak/Musnah)</span>
+                <% } %>
+              </td>
+              <td style="text-align:right;font-weight:700;color:#2563eb">
+                Rp <%= new Intl.NumberFormat('id-ID').format(item.refund_amount) %>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Info & Summary -->
+  <div style="display:flex;flex-direction:column;gap:1.5rem">
+    <div class="card">
+      <div class="card-header">
+        <h2>Ringkasan Retur</h2>
+      </div>
+      <div class="card-body">
+        <table class="detail-table" style="width:100%">
+          <tr>
+            <th style="padding:0.4rem 0">No. Faktur</th>
+            <td style="text-align:right;padding:0.4rem 0">
+              <a href="/transactions/<%= ret.sale_id %>" style="font-weight:700;color:#2563eb">
+                <%= ret.invoice_number %>
+              </a>
+            </td>
+          </tr>
+          <tr>
+            <th style="padding:0.4rem 0">Diajukan Oleh</th>
+            <td style="text-align:right;padding:0.4rem 0"><strong><%= ret.requester_name || '-' %></strong></td>
+          </tr>
+          <tr>
+            <th style="padding:0.4rem 0">Waktu Pengajuan</th>
+            <td style="text-align:right;padding:0.4rem 0"><small><%= new Date(ret.created_at).toLocaleString('id-ID') %></small></td>
+          </tr>
+          <tr>
+            <th style="padding:0.4rem 0">Disetujui Oleh</th>
+            <td style="text-align:right;padding:0.4rem 0"><%= ret.approver_name || '-' %></td>
+          </tr>
+          <tr style="border-top:2px solid #e2e8f0;font-size:1.15rem;font-weight:700">
+            <th style="padding:0.75rem 0">TOTAL REFUND</th>
+            <td style="text-align:right;padding:0.75rem 0;color:#16a34a">
+              Rp <%= new Intl.NumberFormat('id-ID').format(ret.total_refund) %>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Alasan Pengajuan</h2>
+      </div>
+      <div class="card-body">
+        <p style="margin:0;font-style:italic;color:#475569">
+          "<%= ret.reason %>"
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Action Card -->
+<% if (isAdmin && ret.status === 'requested') { %>
+<div class="card" style="border:1px solid #93c5fd;background:#eff6ff;margin-bottom:1.5rem">
+  <div class="card-header" style="background:#dbeafe;border-bottom:1px solid #bfdbfe">
+    <h2 style="color:#1e40af">⚙️ Keputusan Persetujuan Admin</h2>
+  </div>
+  <div class="card-body" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+    <p style="margin:0;color:#1e3a8a;font-size:0.95rem">
+      Menyetujui retur akan menyelesaikan pengembalian dana Rp <%= new Intl.NumberFormat('id-ID').format(ret.total_refund) %> dan mengembalikan stok barang yang bertanda "Masuk Stok" ke sistem toko secara otomatis.
+    </p>
+    <div style="display:flex;gap:0.75rem">
+      <form action="/returns/<%= ret.id %>/approve" method="POST" onsubmit="return confirm('Apakah Anda yakin menyetujui dan menyelesaikan retur ini?');">
+        <button type="submit" class="btn btn-success">✅ Setujui & Selesaikan</button>
+      </form>
+      <form action="/returns/<%= ret.id %>/reject" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menolak pengajuan retur ini?');">
+        <button type="submit" class="btn btn-danger">❌ Tolak Retur</button>
+      </form>
+    </div>
+  </div>
+</div>
+<% } %>

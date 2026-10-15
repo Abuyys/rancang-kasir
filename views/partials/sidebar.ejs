@@ -1,0 +1,68 @@
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <h2>🏪 MiniPOS</h2>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="/dashboard" class="nav-link">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+
+    <% if (currentUser.role === 'cashier' || currentUser.role === 'admin') { %>
+    <a href="/pos" class="nav-link">
+      <span class="nav-icon">🛒</span> Kasir / POS
+    </a>
+    <% } %>
+
+    <a href="/products" class="nav-link">
+      <span class="nav-icon">📦</span> Produk
+    </a>
+
+    <a href="/categories" class="nav-link">
+      <span class="nav-icon">🏷️</span> Kategori
+    </a>
+
+    <% if (currentUser.role === 'admin') { %>
+    <a href="/inventory" class="nav-link">
+      <span class="nav-icon">📋</span> Persediaan
+    </a>
+
+    <a href="/suppliers" class="nav-link">
+      <span class="nav-icon">🚚</span> Supplier
+    </a>
+
+    <a href="/purchases" class="nav-link">
+      <span class="nav-icon">🛍️</span> Pembelian
+    </a>
+    <% } %>
+
+    <a href="/transactions" class="nav-link">
+      <span class="nav-icon">🧾</span> Transaksi
+    </a>
+
+    <a href="/returns" class="nav-link">
+      <span class="nav-icon">↩️</span> Retur
+    </a>
+
+    <a href="/shifts" class="nav-link">
+      <span class="nav-icon">⏰</span> Shift
+    </a>
+
+    <% if (currentUser.role === 'admin') { %>
+    <a href="/expenses" class="nav-link">
+      <span class="nav-icon">💸</span> Pengeluaran
+    </a>
+
+    <a href="/reports" class="nav-link">
+      <span class="nav-icon">📈</span> Laporan
+    </a>
+
+    <a href="/users" class="nav-link">
+      <span class="nav-icon">👥</span> Pengguna
+    </a>
+
+    <a href="/settings" class="nav-link">
+      <span class="nav-icon">⚙️</span> Pengaturan
+    </a>
+    <% } %>
+  </nav>
+</aside>

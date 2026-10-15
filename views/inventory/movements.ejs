@@ -1,0 +1,64 @@
+<div class="page-header">
+  <h1>📑 Riwayat Pergerakan Stok</h1>
+  <a href="/inventory" class="btn btn-secondary">← Kembali ke Persediaan</a>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-body">
+    <form action="/inventory/movements" method="GET" class="filter-form">
+      <div class="filter-row">
+        <div class="form-group" style="width:200px;margin-bottom:0">
+          <select name="type" class="form-control">
+            <option value="">Semua Tipe</option>
+            <option value="purchase" <%= filters.type === 'purchase' ? 'selected' : '' %>>Pembelian</option>
+            <option value="sale" <%= filters.type === 'sale' ? 'selected' : '' %>>Penjualan</option>
+            <option value="sale_return" <%= filters.type === 'sale_return' ? 'selected' : '' %>>Retur</option>
+            <option value="adjustment_in" <%= filters.type === 'adjustment_in' ? 'selected' : '' %>>Penyesuaian Masuk</option>
+            <option value="adjustment_out" <%= filters.type === 'adjustment_out' ? 'selected' : '' %>>Penyesuaian Keluar</option>
+            <option value="cancellation" <%= filters.type === 'cancellation' ? 'selected' : '' %>>Pembatalan</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/inventory/movements" class="btn btn-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (movements.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead><tr><th>#</th><th>Waktu</th><th>Produk</th><th>Tipe</th><th style="text-align:right">Perubahan</th><th style="text-align:right">Sebelum</th><th style="text-align:right">Sesudah</th><th>Catatan</th><th>Oleh</th></tr></thead>
+        <tbody>
+          <% const typeLabels = { purchase: 'Pembelian', sale: 'Penjualan', sale_return: 'Retur', adjustment_in: 'Masuk', adjustment_out: 'Keluar', cancellation: 'Batal' }; %>
+          <% movements.forEach((m, i) => { %>
+          <tr>
+            <td><%= (pagination.page - 1) * 30 + i + 1 %></td>
+            <td><small><%= m.created_at %></small></td>
+            <td><code><%= m.product_sku %></code> <%= m.product_name %></td>
+            <td><span class="badge <%= m.quantity_change > 0 ? 'badge-success' : 'badge-danger' %>" style="font-size:0.7rem"><%= typeLabels[m.movement_type] || m.movement_type %></span></td>
+            <td style="text-align:right;font-weight:bold;color:<%= m.quantity_change > 0 ? '#16a34a' : '#dc2626' %>"><%= m.quantity_change > 0 ? '+' : '' %><%= m.quantity_change %></td>
+            <td style="text-align:right"><%= m.stock_before %></td>
+            <td style="text-align:right"><%= m.stock_after %></td>
+            <td><small><%= m.note || '-' %></small></td>
+            <td><%= m.user_name %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% if (pagination.totalPages > 1) { %>
+    <div class="pagination">
+      <% for (let p = Math.max(1, pagination.page-2); p <= Math.min(pagination.totalPages, pagination.page+2); p++) { %>
+        <a href="/inventory/movements?page=<%= p %>&type=<%= filters.type||'' %>&product_id=<%= filters.product_id||'' %>" class="pagination-link <%= p===pagination.page?'active':'' %>"><%= p %></a>
+      <% } %>
+    </div>
+    <% } %>
+    <p class="text-muted">Menampilkan <%= movements.length %> dari <%= pagination.total %> pergerakan</p>
+    <% } else { %>
+    <p class="text-muted">Belum ada riwayat pergerakan stok.</p>
+    <% } %>
+  </div>
+</div>

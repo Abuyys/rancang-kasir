@@ -1,0 +1,107 @@
+<div class="page-header">
+  <h1>↩️ Retur Penjualan</h1>
+  <div>
+    <a href="/returns/new" class="btn btn-primary">+ Ajukan Retur Baru</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-body">
+    <form action="/returns" method="GET" class="filter-form">
+      <div class="filter-row" style="display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap">
+        <div class="form-group" style="margin-bottom:0;flex:1;min-width:200px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Cari No. Retur / Invoice</label>
+          <input type="text" name="search" class="form-control" placeholder="Contoh: RET-... atau INV-..." value="<%= filters.search || '' %>">
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;width:180px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Status Retur</label>
+          <select name="status" class="form-control">
+            <option value="">Semua Status</option>
+            <option value="requested" <%= filters.status === 'requested' ? 'selected' : '' %>>Diajukan (Menunggu)</option>
+            <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>Selesai (Disetujui)</option>
+            <option value="rejected" <%= filters.status === 'rejected' ? 'selected' : '' %>>Ditolak</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:0.5rem">
+          <button type="submit" class="btn btn-primary">Filter</button>
+          <a href="/returns" class="btn btn-secondary">Reset</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (returns.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>No. Retur</th>
+            <th>Faktur Transaksi</th>
+            <th>Pengaju</th>
+            <th>Waktu Pengajuan</th>
+            <th style="text-align:right">Total Refund</th>
+            <th>Status</th>
+            <th style="text-align:center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% returns.forEach((r, idx) => { %>
+          <tr>
+            <td><%= (pagination.page - 1) * 20 + idx + 1 %></td>
+            <td>
+              <a href="/returns/<%= r.id %>" style="font-weight:700;color:#2563eb;text-decoration:none">
+                <%= r.return_number %>
+              </a>
+            </td>
+            <td>
+              <a href="/transactions/<%= r.sale_id %>" style="color:#64748b;text-decoration:none">
+                <%= r.invoice_number %>
+              </a>
+            </td>
+            <td><%= r.requester_name || '-' %></td>
+            <td><small><%= new Date(r.created_at).toLocaleString('id-ID') %></small></td>
+            <td style="text-align:right;font-weight:600">
+              Rp <%= new Intl.NumberFormat('id-ID').format(r.total_refund) %>
+            </td>
+            <td>
+              <% if (r.status === 'completed') { %>
+                <span class="badge badge-success">Selesai</span>
+              <% } else if (r.status === 'requested') { %>
+                <span class="badge badge-warning">Menunggu Persetujuan</span>
+              <% } else if (r.status === 'approved') { %>
+                <span class="badge badge-info">Disetujui</span>
+              <% } else if (r.status === 'rejected') { %>
+                <span class="badge badge-danger">Ditolak</span>
+              <% } %>
+            </td>
+            <td style="text-align:center">
+              <a href="/returns/<%= r.id %>" class="btn btn-sm btn-secondary">Detail</a>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if (pagination.totalPages > 1) { %>
+    <div class="pagination">
+      <% for (let p = Math.max(1, pagination.page - 2); p <= Math.min(pagination.totalPages, pagination.page + 2); p++) { %>
+        <a href="/returns?page=<%= p %>&search=<%= filters.search || '' %>&status=<%= filters.status || '' %>"
+           class="pagination-link <%= p === pagination.page ? 'active' : '' %>">
+          <%= p %>
+        </a>
+      <% } %>
+    </div>
+    <% } %>
+
+    <% } else { %>
+      <p class="text-muted" style="text-align:center;padding:2rem">Belum ada data retur penjualan.</p>
+    <% } %>
+  </div>
+</div>

@@ -1,0 +1,104 @@
+<div class="page-header">
+  <div>
+    <a href="/settings" class="btn btn-secondary btn-sm" style="margin-bottom:0.5rem;display:inline-block">← Kembali ke Pengaturan</a>
+    <h1>📜 Log Audit Aktivitas Sistem</h1>
+    <p>Catatan riwayat tindakan penting: perubahan harga, pembatalan, reset password, dan konfigurasi.</p>
+  </div>
+</div>
+
+<!-- Filters -->
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-body">
+    <form action="/settings/audit-logs" method="GET" class="filter-form">
+      <div class="filter-row" style="display:flex;gap:0.75rem;align-items:flex-end;flex-wrap:wrap">
+        <div class="form-group" style="margin-bottom:0;width:180px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Aksi</label>
+          <input type="text" name="action" class="form-control" placeholder="Contoh: user_create" value="<%= filters.action || '' %>">
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;width:160px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Tipe Entitas</label>
+          <input type="text" name="entity_type" class="form-control" placeholder="Contoh: user, sale" value="<%= filters.entity_type || '' %>">
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;width:140px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Dari Tanggal</label>
+          <input type="date" name="start_date" class="form-control" value="<%= filters.start_date || '' %>">
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;width:140px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Sampai Tanggal</label>
+          <input type="date" name="end_date" class="form-control" value="<%= filters.end_date || '' %>">
+        </div>
+
+        <div style="display:flex;gap:0.5rem">
+          <button type="submit" class="btn btn-primary">Filter</button>
+          <a href="/settings/audit-logs" class="btn btn-secondary">Reset</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Audit Log Table -->
+<div class="card">
+  <div class="card-body">
+    <% if (logs && logs.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Waktu</th>
+            <th>Pengguna</th>
+            <th>Aksi</th>
+            <th>Entitas</th>
+            <th>Rincian Aktivitas</th>
+            <th>IP Address</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% logs.forEach((l, idx) => { %>
+          <tr>
+            <td><%= (pagination.page - 1) * 25 + idx + 1 %></td>
+            <td><small><%= new Date(l.created_at).toLocaleString('id-ID') %></small></td>
+            <td>
+              <% if (l.user_name) { %>
+                <strong><%= l.user_name %></strong><br>
+                <span class="user-role-badge badge-<%= l.user_role %>" style="font-size:0.7rem;padding:0.1rem 0.4rem">
+                  <%= l.user_role === 'admin' ? 'Admin' : 'Kasir' %>
+                </span>
+              <% } else { %>
+                <span class="text-muted">Sistem</span>
+              <% } %>
+            </td>
+            <td><code><%= l.action %></code></td>
+            <td>
+              <span class="badge" style="background:#f1f5f9;color:#334155;text-transform:uppercase;font-size:0.75rem">
+                <%= l.entity_type %><%= l.entity_id ? ` #${l.entity_id}` : '' %>
+              </span>
+            </td>
+            <td><%= l.description || '-' %></td>
+            <td><small class="text-muted"><%= l.ip_address || '-' %></small></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if (pagination.totalPages > 1) { %>
+    <div class="pagination">
+      <% for (let p = Math.max(1, pagination.page - 2); p <= Math.min(pagination.totalPages, pagination.page + 2); p++) { %>
+        <a href="/settings/audit-logs?page=<%= p %>&action=<%= filters.action || '' %>&entity_type=<%= filters.entity_type || '' %>&start_date=<%= filters.start_date || '' %>&end_date=<%= filters.end_date || '' %>"
+           class="pagination-link <%= p === pagination.page ? 'active' : '' %>">
+          <%= p %>
+        </a>
+      <% } %>
+    </div>
+    <% } %>
+
+    <% } else { %>
+      <p class="text-muted" style="text-align:center;padding:2rem">Belum ada riwayat log audit tercatat.</p>
+    <% } %>
+  </div>
+</div>

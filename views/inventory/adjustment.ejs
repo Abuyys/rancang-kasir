@@ -1,0 +1,46 @@
+<div class="page-header">
+  <h1>🔧 Penyesuaian Stok</h1>
+  <a href="/inventory" class="btn btn-secondary">← Kembali</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form action="/inventory/adjustments" method="POST" style="max-width:600px">
+      <div class="form-group">
+        <label for="product_id">Produk <span style="color:red">*</span></label>
+        <select id="product_id" name="product_id" class="form-control" required>
+          <option value="">-- Pilih Produk --</option>
+          <% products.forEach(p => { %>
+            <option value="<%= p.id %>"><%= p.sku %> - <%= p.name %> (Stok: <%= p.stock %> <%= p.unit %>)</option>
+          <% }); %>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label for="type">Tipe <span style="color:red">*</span></label>
+          <select id="type" name="type" class="form-control" required>
+            <option value="in">➕ Stok Masuk (Tambah)</option>
+            <option value="out">➖ Stok Keluar (Kurangi)</option>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label for="quantity">Jumlah <span style="color:red">*</span></label>
+          <input type="number" id="quantity" name="quantity" class="form-control" min="0.001" step="any" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="reason">Alasan <span style="color:red">*</span></label>
+        <textarea id="reason" name="reason" class="form-control" rows="3" required
+          placeholder="Contoh: Barang expired, salah hitung, kehilangan, dll."></textarea>
+        <small class="text-muted">Alasan wajib diisi untuk pencatatan audit.</small>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" onclick="return confirm('Yakin menyesuaikan stok?')">Simpan Penyesuaian</button>
+        <a href="/inventory" class="btn btn-secondary">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>

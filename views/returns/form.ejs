@@ -1,0 +1,112 @@
+<div class="page-header">
+  <div>
+    <a href="/returns" class="btn btn-secondary btn-sm" style="margin-bottom:0.5rem;display:inline-block">← Kembali ke Daftar Retur</a>
+    <h1>↩️ Form Pengajuan Retur</h1>
+  </div>
+</div>
+
+<!-- Step 1: Search Invoice if not preloaded -->
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-header">
+    <h2>1. Pilih Transaksi yang Ingin Diretur</h2>
+  </div>
+  <div class="card-body">
+    <form action="/returns/new" method="GET" style="display:flex;gap:0.75rem;max-width:500px">
+      <input type="text" name="invoice" class="form-control" placeholder="Ketik No. Invoice (misal: INV-...)" value="<%= queryInvoice || '' %>" required autofocus>
+      <button type="submit" class="btn btn-primary" style="white-space:nowrap">Cari Faktur</button>
+    </form>
+  </div>
+</div>
+
+<% if (sale) { %>
+<!-- Step 2: Fill Return Details -->
+<form action="/returns" method="POST">
+  <input type="hidden" name="sale_id" value="<%= sale.id %>">
+
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+      <h2>2. Pilih Item & Kuantitas Retur</h2>
+      <span class="badge badge-success" style="font-size:0.9rem">Faktur: <%= sale.invoice_number %></span>
+    </div>
+    <div class="card-body">
+      <div style="background:#f8fafc;padding:0.75rem 1rem;border-radius:6px;margin-bottom:1rem;font-size:0.9rem">
+        <strong>Waktu Transaksi:</strong> <%= new Date(sale.created_at).toLocaleString('id-ID') %> &nbsp;|&nbsp;
+        <strong>Kasir:</strong> <%= sale.cashier_name || '-' %> &nbsp;|&nbsp;
+        <strong>Total Belanja:</strong> Rp <%= new Intl.NumberFormat('id-ID').format(sale.total) %>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Produk</th>
+              <th style="text-align:right">Harga</th>
+              <th style="text-align:center">Beli</th>
+              <th style="text-align:center">Sudah Retur</th>
+              <th style="text-align:center">Sisa Bisa Retur</th>
+              <th style="width:130px;text-align:center">Qty Retur</th>
+              <th style="text-align:center">Masuk Stok?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% sale.items.forEach((item, idx) => { %>
+            <tr style="<%= item.remaining_qty <= 0 ? 'opacity:0.5;background:#f8fafc' : '' %>">
+              <td>
+                <input type="hidden" name="items[<%= idx %>][sale_item_id]" value="<%= item.id %>">
+                <strong><%= item.product_name_snapshot %></strong><br>
+                <small class="text-muted"><%= item.sku_snapshot %></small>
+              </td>
+              <td style="text-align:right">
+                Rp <%= new Intl.NumberFormat('id-ID').format(item.unit_price) %>
+              </td>
+              <td style="text-align:center"><%= item.quantity %></td>
+              <td style="text-align:center"><%= item.already_returned_qty || 0 %></td>
+              <td style="text-align:center;font-weight:700;color:<%= item.remaining_qty > 0 ? '#16a34a' : '#94a3b8' %>">
+                <%= item.remaining_qty %>
+              </td>
+              <td style="text-align:center">
+                <input type="number"
+                       name="items[<%= idx %>][quantity]"
+                       class="form-control"
+                       min="0"
+                       max="<%= item.remaining_qty %>"
+                       step="1"
+                       value="0"
+                       style="text-align:center"
+                       <%= item.remaining_qty <= 0 ? 'disabled' : '' %>>
+              </td>
+              <td style="text-align:center">
+                <label style="display:flex;align-items:center;justify-content:center;gap:0.35rem;cursor:pointer">
+                  <input type="checkbox" name="items[<%= idx %>][restock]" value="1" checked <%= item.remaining_qty <= 0 ? 'disabled' : '' %>>
+                  <span style="font-size:0.8rem">Ya</span>
+                </label>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+      <small class="text-muted" style="display:block;margin-top:0.5rem">
+        * "Masuk Stok": Centang jika kondisi barang masih layak dijual kembali sehingga stok di toko akan otomatis bertambah saat retur disetujui.
+      </small>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <h2>3. Alasan Pengajuan Retur</h2>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="reason">Alasan Retur <span style="color:red">*</span></label>
+        <textarea name="reason" id="reason" class="form-control" rows="3" required placeholder="Contoh: Barang cacat fisik / tanggal kadaluarsa terlewat / salah ambil varian oleh pelanggan"></textarea>
+      </div>
+
+      <div class="form-actions" style="margin-top:1.5rem">
+        <button type="submit" class="btn btn-primary">Kirim Pengajuan Retur</button>
+        <a href="/returns" class="btn btn-secondary">Batal</a>
+      </div>
+    </div>
+  </div>
+</form>
+<% } %>

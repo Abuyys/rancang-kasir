@@ -1,0 +1,1186 @@
+<style>
+  /* ==========================================================================
+     Compact & Modern Expenses Management Theme
+     Fixed Viewport: Fit to Screen, No Horizontal Scroll
+     ========================================================================== */
+
+  .exp-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  /* --- Top Header Bar --- */
+  .exp-header-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .exp-header-title-box h1 {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.02em;
+    margin: 0 0 0.15rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .exp-header-title-box p {
+    color: #64748b;
+    font-size: 0.825rem;
+    margin: 0;
+  }
+
+  .btn-exp-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff !important;
+    padding: 0.5rem 1.15rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-exp-cta:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.35);
+  }
+
+  /* --- Compact Bento Stat Cards --- */
+  .exp-bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .exp-metric-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .exp-metric-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  .card-top-red::after { background: #e11d48; }
+  .card-top-amber::after { background: #f59e0b; }
+  .card-top-blue::after { background: #2563eb; }
+  .card-top-purple::after { background: #8b5cf6; }
+
+  .exp-metric-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.35rem;
+  }
+
+  .exp-metric-label {
+    font-size: 0.725rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+  }
+
+  .exp-metric-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+  }
+
+  .exp-metric-val {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 0.35rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .exp-metric-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.725rem;
+    color: #64748b;
+    padding-top: 0.35rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .exp-metric-pill {
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  /* --- Compact Distribution Bar --- */
+  .exp-dist-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.02);
+  }
+
+  .exp-dist-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.45rem;
+  }
+
+  .segmented-bar-wrap {
+    height: 8px;
+    border-radius: 9999px;
+    background: #f1f5f9;
+    overflow: hidden;
+    display: flex;
+    margin-bottom: 0.55rem;
+  }
+
+  .segmented-bar-slice {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+
+  .category-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1rem;
+  }
+
+  .category-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+    color: #475569;
+  }
+
+  .category-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .category-legend-name {
+    font-weight: 600;
+    color: #1e293b;
+  }
+
+  .category-legend-amt {
+    font-weight: 800;
+    color: #0f172a;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .category-legend-pct {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+
+  /* --- Compact Filter Toolbar --- */
+  .exp-filter-box {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+  }
+
+  .filter-presets-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.65rem;
+  }
+
+  .preset-chip-btn {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0.2rem 0.55rem;
+    font-size: 0.725rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .preset-chip-btn:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #2563eb;
+  }
+
+  .filter-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-input-compact {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.825rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    background: #ffffff;
+    height: 36px;
+    box-sizing: border-box;
+  }
+
+  /* --- Compact Table Panel --- */
+  .exp-table-panel {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .table-panel-header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .table-panel-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: #0f172a;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .modern-exp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.825rem;
+    table-layout: auto;
+  }
+
+  .modern-exp-table th {
+    background: #f8fafc;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.725rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .modern-exp-table td {
+    padding: 0.65rem 0.75rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+  }
+
+  .modern-exp-table tr:hover td {
+    background: #fafbfc;
+  }
+
+  /* Category Badge */
+  .category-pill-compact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.725rem;
+    font-weight: 700;
+    white-space: nowrap;
+    border: 1px solid transparent;
+  }
+
+  /* Creator user cell */
+  .creator-user-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #334155;
+    font-weight: 600;
+  }
+
+  .creator-avatar {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #334155;
+    font-weight: 800;
+    font-size: 0.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Amount styling */
+  .exp-amount-display {
+    font-size: 0.925rem;
+    font-weight: 800;
+    color: #e11d48;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* Action buttons */
+  .action-btn-compact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.725rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid transparent;
+  }
+
+  .action-edit-btn {
+    background: #f1f5f9;
+    color: #334155 !important;
+  }
+  .action-edit-btn:hover {
+    background: #e2e8f0;
+  }
+
+  .action-del-btn {
+    background: #fff1f2;
+    color: #e11d48 !important;
+    border-color: #fecdd3;
+    cursor: pointer;
+  }
+  .action-del-btn:hover {
+    background: #fee2e2;
+  }
+
+  /* --- Modal Styles --- */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  .modal-overlay.active {
+    display: flex;
+  }
+
+  .modal-box {
+    background: #ffffff;
+    border-radius: 16px;
+    max-width: 540px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+    border: 1px solid #e2e8f0;
+  }
+
+  .modal-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-header h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  .modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 1.35rem;
+    color: #94a3b8;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .modal-body {
+    padding: 1.25rem;
+  }
+
+  /* Currency Input Group */
+  .currency-input-group {
+    display: flex;
+    align-items: stretch;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    background: #ffffff;
+    overflow: hidden;
+  }
+
+  .currency-input-group:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  .currency-prefix-addon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.85rem;
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 800;
+    font-size: 1rem;
+    border-right: 1px solid #cbd5e1;
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  .currency-input-group input.currency-input-field {
+    flex: 1;
+    width: 100%;
+    border: none !important;
+    outline: none !important;
+    padding: 0.5rem 0.75rem !important;
+    font-size: 1.15rem !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    box-sizing: border-box;
+  }
+
+  .category-preset-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+  }
+
+  .cat-quick-chip {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 0.2rem 0.45rem;
+    font-size: 0.725rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .cat-quick-chip:hover, .cat-quick-chip.active {
+    background: #eff6ff;
+    border-color: #2563eb;
+    color: #1d4ed8;
+  }
+
+  .quick-nominal-chips {
+    display: flex;
+    gap: 0.3rem;
+    margin-top: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .quick-nominal-btn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 0.15rem 0.45rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+  }
+
+  .quick-nominal-btn:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+  }
+
+  /* --- Expenses Dark Mode Overrides --- */
+  html[data-theme="dark"] .exp-header-title-box h1 {
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .exp-metric-card {
+    background: #151e32;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .exp-metric-val {
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .exp-metric-footer {
+    border-top-color: #243049;
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .exp-dist-panel {
+    background: #151e32;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .dist-track {
+    background: #0b1120;
+  }
+  html[data-theme="dark"] .exp-filter-card {
+    background: #151e32;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .preset-chip-btn {
+    background: #0b1120;
+    border-color: #334155;
+    color: #cbd5e1;
+  }
+  html[data-theme="dark"] .preset-chip-btn:hover {
+    background: #1e293b;
+    color: #ffffff;
+    border-color: #475569;
+  }
+  html[data-theme="dark"] .filter-input-compact {
+    background: #0b1120;
+    border-color: #334155;
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .exp-table-panel {
+    background: #151e32;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .table-panel-header {
+    background: #151e32;
+    border-bottom-color: #243049;
+  }
+  html[data-theme="dark"] .table-panel-title {
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .modern-exp-table th {
+    background: #111a2d;
+    color: #94a3b8;
+    border-bottom-color: #243049;
+  }
+  html[data-theme="dark"] .modern-exp-table td {
+    border-bottom-color: #1e293b;
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .modern-exp-table tbody tr:hover {
+    background: #1a253a;
+  }
+  html[data-theme="dark"] .action-edit-btn {
+    background: #0b1120;
+    color: #cbd5e1 !important;
+    border: 1px solid #334155;
+  }
+  html[data-theme="dark"] .modal-box {
+    background: #151e32;
+    border-color: #334155;
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .modal-header {
+    border-bottom-color: #243049;
+  }
+  html[data-theme="dark"] .modal-header h3 {
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .currency-input-group {
+    background: #0b1120;
+    border-color: #334155;
+  }
+  html[data-theme="dark"] .currency-prefix-addon {
+    background: #111a2d;
+    border-right-color: #334155;
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .currency-input-group input.currency-input-field {
+    color: #f8fafc !important;
+  }
+  html[data-theme="dark"] .cat-quick-chip {
+    background: #0b1120;
+    border-color: #334155;
+    color: #cbd5e1;
+  }
+  html[data-theme="dark"] .quick-nominal-btn {
+    background: #0b1120;
+    border-color: #334155;
+    color: #cbd5e1;
+  }
+</style>
+
+<div class="exp-page-container">
+  
+  <!-- 1. Compact Top Bar -->
+  <div class="exp-header-bar">
+    <div class="exp-header-title-box">
+      <h1>
+        <span>💸</span>
+        <span>Pengeluaran Operasional Toko</span>
+      </h1>
+      <p>Catatan dan monitoring biaya operasional toko, utilitas, dan perawatan.</p>
+    </div>
+
+    <div>
+      <button type="button" class="btn-exp-cta" id="btnOpenModal">
+        <span>+</span>
+        <span>Catat Pengeluaran Baru</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 2. Compact Bento Metric Cards -->
+  <%
+    const sumData = typeof summary !== 'undefined' ? summary : {};
+    const topCat = sumData.topCategories && sumData.topCategories.length > 0 ? sumData.topCategories[0] : null;
+    const avgExpense = pagination.total > 0 ? Math.round(totalAmount / pagination.total) : 0;
+  %>
+  <div class="exp-bento-grid">
+    <!-- Card 1: Total Beban -->
+    <div class="exp-metric-card card-top-red">
+      <div class="exp-metric-top">
+        <span class="exp-metric-label">Total Beban</span>
+        <div class="exp-metric-icon" style="background:#fff1f2;color:#e11d48">💸</div>
+      </div>
+      <div>
+        <div class="exp-metric-val" style="color:#be123c">
+          Rp <%= new Intl.NumberFormat('id-ID').format(totalAmount) %>
+        </div>
+      </div>
+      <div class="exp-metric-footer">
+        <span class="exp-metric-pill" style="background:#ffe4e6;color:#9f1239">
+          <%= pagination.total %> Transaksi
+        </span>
+        <span>Terfilter</span>
+      </div>
+    </div>
+
+    <!-- Card 2: Hari Ini -->
+    <div class="exp-metric-card card-top-amber">
+      <div class="exp-metric-top">
+        <span class="exp-metric-label">Biaya Hari Ini</span>
+        <div class="exp-metric-icon" style="background:#fffbeb;color:#d97706">🗓️</div>
+      </div>
+      <div>
+        <div class="exp-metric-val" style="color:#b45309">
+          Rp <%= new Intl.NumberFormat('id-ID').format(sumData.todayTotal || 0) %>
+        </div>
+      </div>
+      <div class="exp-metric-footer">
+        <span class="exp-metric-pill" style="background:#fef3c7;color:#92400e">
+          <%= sumData.todayCount || 0 %> Nota
+        </span>
+        <span>Kas Hari Ini</span>
+      </div>
+    </div>
+
+    <!-- Card 3: Rata-Rata -->
+    <div class="exp-metric-card card-top-blue">
+      <div class="exp-metric-top">
+        <span class="exp-metric-label">Rata-Rata per Nota</span>
+        <div class="exp-metric-icon" style="background:#eff6ff;color:#2563eb">📊</div>
+      </div>
+      <div>
+        <div class="exp-metric-val" style="color:#1d4ed8">
+          Rp <%= new Intl.NumberFormat('id-ID').format(avgExpense) %>
+        </div>
+      </div>
+      <div class="exp-metric-footer">
+        <span class="exp-metric-pill" style="background:#dbeafe;color:#1e40af">
+          Rata-rata
+        </span>
+        <span>Per pengeluaran</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Kategori Terbesar -->
+    <div class="exp-metric-card card-top-purple">
+      <div class="exp-metric-top">
+        <span class="exp-metric-label">Kategori Terbesar</span>
+        <div class="exp-metric-icon" style="background:#faf5ff;color:#7c3aed">🏷️</div>
+      </div>
+      <div>
+        <div class="exp-metric-val" style="color:#6d28d9;font-size:1.05rem" title="<%= topCat ? topCat.category : 'Belum Ada' %>">
+          <%= topCat ? topCat.category : 'Belum Ada' %>
+        </div>
+      </div>
+      <div class="exp-metric-footer">
+        <span class="exp-metric-pill" style="background:#ede9fe;color:#5b21b6">
+          Tertinggi
+        </span>
+        <span><%= topCat ? 'Rp ' + new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(topCat.total) : '-' %></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Compact Category Distribution Bar -->
+  <%
+    const catList = (sumData && sumData.topCategories) ? sumData.topCategories : [];
+    const colors = ['#2563eb', '#8b5cf6', '#e11d48', '#d97706', '#10b981'];
+    const totalDist = catList.reduce((acc, c) => acc + c.total, 0) || 1;
+  %>
+  <% if (catList.length > 0) { %>
+    <div class="exp-dist-panel">
+      <div class="exp-dist-header">
+        <span style="font-size:0.8rem;font-weight:700;color:#1e293b">Alokasi Biaya Terbesar:</span>
+        <span style="font-size:0.725rem;color:#64748b"><%= catList.length %> Kategori Dominan</span>
+      </div>
+
+      <div class="segmented-bar-wrap">
+        <% catList.forEach((c, idx) => { 
+          const pct = Math.max(2, Math.round((c.total / totalDist) * 100));
+          const col = colors[idx % colors.length];
+        %>
+          <div class="segmented-bar-slice" style="width:<%= pct %>%;background:<%= col %>" title="<%= c.category %>: <%= pct %>%"></div>
+        <% }); %>
+      </div>
+
+      <div class="category-tags-row">
+        <% catList.forEach((c, idx) => { 
+          const pct = Math.round((c.total / totalDist) * 100);
+          const col = colors[idx % colors.length];
+        %>
+          <div class="category-legend-item">
+            <span class="category-dot" style="background:<%= col %>"></span>
+            <span class="category-legend-name"><%= c.category %></span>
+            <span class="category-legend-amt">Rp <%= new Intl.NumberFormat('id-ID').format(c.total) %></span>
+            <span class="category-legend-pct">(<%= pct %>%)</span>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  <% } %>
+
+  <!-- 4. Compact Filter Bar -->
+  <div class="exp-filter-box">
+    <div class="filter-presets-row">
+      <span style="font-size:0.725rem;font-weight:700;color:#64748b;text-transform:uppercase">Preset:</span>
+      <button type="button" class="preset-chip-btn" onclick="applyDatePreset('today')">Hari Ini</button>
+      <button type="button" class="preset-chip-btn" onclick="applyDatePreset('week')">7 Hari</button>
+      <button type="button" class="preset-chip-btn" onclick="applyDatePreset('month')">Bulan Ini</button>
+      <button type="button" class="preset-chip-btn" onclick="applyDatePreset('all')">Semua</button>
+    </div>
+
+    <form id="expFilterForm" action="/expenses" method="GET">
+      <div class="filter-controls-row">
+        <!-- Category -->
+        <select name="category" class="filter-input-compact" style="flex:1;min-width:140px">
+          <option value="">Semua Kategori Biaya</option>
+          <% if (categories && categories.length > 0) { %>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat %>" <%= filters.category === cat ? 'selected' : '' %>><%= cat %></option>
+            <% }); %>
+          <% } %>
+        </select>
+
+        <!-- Dates -->
+        <input type="date" id="startDateInput" name="start_date" class="filter-input-compact" style="width:135px" value="<%= filters.start_date || '' %>" title="Dari Tanggal">
+        <input type="date" id="endDateInput" name="end_date" class="filter-input-compact" style="width:135px" value="<%= filters.end_date || '' %>" title="Sampai Tanggal">
+
+        <!-- Buttons -->
+        <button type="submit" class="btn btn-primary" style="height:36px;padding:0 0.85rem;font-weight:700;font-size:0.8rem;border-radius:6px">
+          Filter
+        </button>
+        <a href="/expenses" class="btn btn-secondary" style="height:36px;padding:0 0.75rem;font-size:0.8rem;border-radius:6px;display:inline-flex;align-items:center">
+          Reset
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <!-- 5. Compact Table Panel (100% Fit, Zero Horizontal Scroll) -->
+  <div class="exp-table-panel">
+    <div class="table-panel-header">
+      <div class="table-panel-title">
+        <span>📋</span>
+        <span>Daftar Pengeluaran Toko</span>
+      </div>
+      <span style="font-size:0.75rem;color:#64748b;font-weight:600">
+        Total: <strong><%= pagination.total %></strong> data
+      </span>
+    </div>
+
+    <% if (expenses && expenses.length > 0) { %>
+      <div class="table-responsive" style="overflow-x:auto">
+        <table class="modern-exp-table">
+          <thead>
+            <tr>
+              <th style="width:30px;text-align:center">#</th>
+              <th style="width:105px">Tanggal</th>
+              <th style="width:130px">Kategori</th>
+              <th>Keterangan / Rincian</th>
+              <th style="width:100px">Pencatat</th>
+              <th style="text-align:right;width:120px">Nominal (Rp)</th>
+              <th style="text-align:center;width:115px">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% 
+              // Compact helper for categories
+              function getCompactCategoryConfig(cat) {
+                const c = (cat || '').toLowerCase();
+                if (c.includes('listrik') || c.includes('air')) return { bg: '#eff6ff', color: '#1d4ed8', border: '#bfdbfe', icon: '⚡' };
+                if (c.includes('internet') || c.includes('wifi') || c.includes('telepon')) return { bg: '#eef2ff', color: '#4338ca', border: '#c7d2fe', icon: '🌐' };
+                if (c.includes('plastik') || c.includes('kresek')) return { bg: '#fffbeb', color: '#b45309', border: '#fde68a', icon: '🛍️' };
+                if (c.includes('struk') || c.includes('thermal')) return { bg: '#ecfeff', color: '#0e7490', border: '#a5f3fc', icon: '🖨️' };
+                if (c.includes('bersih') || c.includes('sapu')) return { bg: '#ecfdf5', color: '#047857', border: '#a7f3d0', icon: '🧹' };
+                if (c.includes('makan') || c.includes('minum') || c.includes('konsumsi')) return { bg: '#f0fdf4', color: '#15803d', border: '#bbf7d0', icon: '☕' };
+                if (c.includes('servis') || c.includes('rawat') || c.includes('ac')) return { bg: '#fff7ed', color: '#c2410c', border: '#fed7aa', icon: '🔧' };
+                if (c.includes('sewa') || c.includes('aman') || c.includes('retribusi')) return { bg: '#fdf4ff', color: '#86198f', border: '#f5d0fe', icon: '🛡️' };
+                return { bg: '#f8fafc', color: '#475569', border: '#e2e8f0', icon: '📦' };
+              }
+            %>
+
+            <% expenses.forEach((e, idx) => { 
+              const d = new Date(e.expense_date);
+              const dateStr = d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+              const dayName = d.toLocaleDateString('id-ID', { weekday: 'short' });
+              const catCfg = getCompactCategoryConfig(e.category);
+            %>
+              <tr>
+                <td style="text-align:center;color:#94a3b8;font-weight:600">
+                  <%= (pagination.page - 1) * 20 + idx + 1 %>
+                </td>
+                
+                <!-- Date -->
+                <td>
+                  <strong style="color:var(--text-main)"><%= dateStr %></strong><br>
+                  <small style="color:#94a3b8;font-size:0.7rem"><%= dayName %></small>
+                </td>
+
+                <!-- Category -->
+                <td>
+                  <span class="category-pill-compact" style="background:<%= catCfg.bg %>;color:<%= catCfg.color %>;border-color:<%= catCfg.border %>">
+                    <span><%= catCfg.icon %></span>
+                    <span><%= e.category %></span>
+                  </span>
+                </td>
+
+                <!-- Description -->
+                <td>
+                  <% if (e.description) { %>
+                    <span style="color:var(--text-main);font-weight:500"><%= e.description %></span>
+                  <% } else { %>
+                    <span style="color:#94a3b8;font-style:italic">Tanpa rincian</span>
+                  <% } %>
+                </td>
+
+                <!-- Creator -->
+                <td>
+                  <div class="creator-user-cell">
+                    <div class="creator-avatar">
+                      <%= (e.user_name || 'A').charAt(0).toUpperCase() %>
+                    </div>
+                    <span style="font-size:0.775rem"><%= e.user_name || 'Admin' %></span>
+                  </div>
+                </td>
+
+                <!-- Amount -->
+                <td style="text-align:right">
+                  <div class="exp-amount-display">
+                    Rp <%= new Intl.NumberFormat('id-ID').format(e.amount) %>
+                  </div>
+                </td>
+
+                <!-- Actions -->
+                <td style="text-align:center">
+                  <div style="display:inline-flex;gap:0.3rem;align-items:center">
+                    <a href="/expenses/<%= e.id %>/edit" class="action-btn-compact action-edit-btn" title="Ubah Catatan">
+                      Ubah
+                    </a>
+                    <form action="/expenses/<%= e.id %>/delete" method="POST" onsubmit="return confirm('Hapus catatan pengeluaran ini?');" style="display:inline;margin:0">
+                      <button type="submit" class="action-btn-compact action-del-btn" title="Hapus Catatan">
+                        Hapus
+                      </button>
+                    </form>
+                  </div>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Compact Pagination -->
+      <% if (pagination.totalPages > 1) { %>
+        <div style="padding:0.75rem 1rem;border-top:1px solid #f1f5f9;display:flex;justify-content:flex-end">
+          <div class="pagination">
+            <% for (let p = Math.max(1, pagination.page - 2); p <= Math.min(pagination.totalPages, pagination.page + 2); p++) { %>
+              <a href="/expenses?page=<%= p %>&category=<%= filters.category || '' %>&start_date=<%= filters.start_date || '' %>&end_date=<%= filters.end_date || '' %>"
+                 class="pagination-link <%= p === pagination.page ? 'active' : '' %>" style="border-radius:6px;padding:0.3rem 0.6rem;font-size:0.8rem">
+                <%= p %>
+              </a>
+            <% } %>
+          </div>
+        </div>
+      <% } %>
+
+    <% } else { %>
+      <div style="text-align:center;padding:2.5rem 1rem;color:#64748b">
+        <div style="font-size:2rem;margin-bottom:0.35rem">💸</div>
+        <strong style="color:#0f172a;font-size:0.95rem">Belum ada catatan pengeluaran</strong>
+        <p style="font-size:0.8rem;margin:0.25rem 0 0.85rem">Tidak ada data untuk kriteria filter ini.</p>
+        <button type="button" class="btn btn-primary btn-sm" onclick="openExpenseModal()" style="font-weight:700">
+          + Catat Pengeluaran Baru
+        </button>
+      </div>
+    <% } %>
+  </div>
+
+</div>
+
+<!-- Quick Expense Modal -->
+<div class="modal-overlay" id="quickExpenseModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3>
+        <span>➕</span>
+        <span>Catat Pengeluaran Baru</span>
+      </h3>
+      <button type="button" class="modal-close-btn" id="btnCloseModal">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <form action="/expenses" method="POST">
+        
+        <!-- Category & Quick Chips -->
+        <div class="form-group" style="margin-bottom:1rem">
+          <label style="font-weight:700;font-size:0.8rem;color:#1e293b;margin-bottom:0.25rem;display:block">
+            Kategori Pengeluaran <span style="color:#e11d48">*</span>
+          </label>
+          <input type="text" id="modalCategory" name="category" list="modalCategoryList" class="form-control" style="border-radius:8px;font-weight:600;font-size:0.9rem" required placeholder="Pilih atau ketik kategori..." autofocus autocomplete="off">
+          
+          <div class="category-preset-pills">
+            <span class="cat-quick-chip" data-val="Listrik & Air">⚡ Listrik & Air</span>
+            <span class="cat-quick-chip" data-val="Internet & Telepon">🌐 Internet & WiFi</span>
+            <span class="cat-quick-chip" data-val="Perlengkapan Toko & Plastik">🛍️ Plastik</span>
+            <span class="cat-quick-chip" data-val="Kertas Struk & Thermal">🖨️ Struk</span>
+            <span class="cat-quick-chip" data-val="Kebersihan">🧹 Kebersihan</span>
+            <span class="cat-quick-chip" data-val="Konsumsi Karyawan">☕ Konsumsi</span>
+            <span class="cat-quick-chip" data-val="Perawatan & Servis AC/Peralatan">🔧 Servis AC</span>
+            <span class="cat-quick-chip" data-val="Lain-lain">📦 Lain-lain</span>
+          </div>
+
+          <datalist id="modalCategoryList">
+            <option value="Listrik & Air">
+            <option value="Internet & Telepon">
+            <option value="Perlengkapan Toko & Plastik">
+            <option value="Kertas Struk & Thermal">
+            <option value="Kebersihan">
+            <option value="Konsumsi Karyawan">
+            <option value="Perawatan & Servis AC/Peralatan">
+            <option value="Sewa & Keamanan">
+            <option value="Lain-lain">
+          </datalist>
+        </div>
+
+        <!-- Amount with Input Group (No Overlap, step="any") -->
+        <div class="form-group" style="margin-bottom:1rem">
+          <label style="font-weight:700;font-size:0.8rem;color:#1e293b;margin-bottom:0.25rem;display:block">
+            Nominal Pengeluaran <span style="color:#e11d48">*</span>
+          </label>
+          <div class="currency-input-group">
+            <div class="currency-prefix-addon">Rp</div>
+            <input type="number" id="modalAmount" name="amount" class="currency-input-field" min="1" step="any" required placeholder="0">
+          </div>
+
+          <!-- Live Preview -->
+          <div style="margin-top:0.35rem;display:flex;justify-content:space-between;font-size:0.775rem;color:#64748b;background:#f8fafc;padding:0.35rem 0.6rem;border-radius:6px;border:1px solid #e2e8f0">
+            <span>Terbaca:</span>
+            <strong style="color:#e11d48;font-size:0.85rem" id="modalAmountPreview">Rp 0</strong>
+          </div>
+
+          <!-- Quick Nominal Add Buttons -->
+          <div class="quick-nominal-chips">
+            <span style="font-size:0.7rem;color:#64748b;align-self:center;font-weight:600">Tambah:</span>
+            <button type="button" class="quick-nominal-btn" data-plus="10000">+10 rb</button>
+            <button type="button" class="quick-nominal-btn" data-plus="50000">+50 rb</button>
+            <button type="button" class="quick-nominal-btn" data-plus="100000">+100 rb</button>
+            <button type="button" class="quick-nominal-btn" data-plus="500000">+500 rb</button>
+            <button type="button" class="quick-nominal-btn" id="btnModalClearAmount" style="color:#dc2626">Reset 0</button>
+          </div>
+        </div>
+
+        <!-- Date -->
+        <div class="form-group" style="margin-bottom:1rem">
+          <label style="font-weight:700;font-size:0.8rem;color:#1e293b;margin-bottom:0.25rem;display:block">
+            Tanggal Pengeluaran <span style="color:#e11d48">*</span>
+          </label>
+          <input type="date" name="expense_date" class="form-control" style="border-radius:8px;font-size:0.875rem" required value="<%= new Date().toISOString().split('T')[0] %>">
+        </div>
+
+        <!-- Description -->
+        <div class="form-group" style="margin-bottom:1.15rem">
+          <label style="font-weight:700;font-size:0.8rem;color:#1e293b;margin-bottom:0.25rem;display:block">
+            Keterangan / Rincian Tambahan
+          </label>
+          <textarea name="description" class="form-control" rows="2" style="border-radius:8px;font-size:0.85rem" placeholder="Contoh: Beli kantong kresek kasir atau bayar WiFi bulanan..."></textarea>
+        </div>
+
+        <!-- Submit & Cancel -->
+        <div style="display:flex;gap:0.65rem;padding-top:0.75rem;border-top:1px solid #f1f5f9">
+          <button type="submit" class="btn btn-primary" style="flex:1;font-weight:700;padding:0.65rem;border-radius:8px">
+            Simpan Pengeluaran
+          </button>
+          <button type="button" class="btn btn-secondary" id="btnModalCancel" style="padding:0.65rem 1rem;border-radius:8px">
+            Batal
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function applyDatePreset(type) {
+    const today = new Date();
+    const startInput = document.getElementById('startDateInput');
+    const endInput = document.getElementById('endDateInput');
+
+    function fmt(d) {
+      return d.toISOString().split('T')[0];
+    }
+
+    if (type === 'today') {
+      startInput.value = fmt(today);
+      endInput.value = fmt(today);
+    } else if (type === 'week') {
+      const d = new Date();
+      d.setDate(d.getDate() - 7);
+      startInput.value = fmt(d);
+      endInput.value = fmt(today);
+    } else if (type === 'month') {
+      const d = new Date(today.getFullYear(), today.getMonth(), 1);
+      startInput.value = fmt(d);
+      endInput.value = fmt(today);
+    } else if (type === 'all') {
+      startInput.value = '';
+      endInput.value = '';
+    }
+
+    document.getElementById('expFilterForm').submit();
+  }
+
+  // Modal interactions
+  const modal = document.getElementById('quickExpenseModal');
+  const btnOpenModal = document.getElementById('btnOpenModal');
+  const btnCloseModal = document.getElementById('btnCloseModal');
+  const btnModalCancel = document.getElementById('btnModalCancel');
+  const modalCategory = document.getElementById('modalCategory');
+  const modalAmount = document.getElementById('modalAmount');
+  const modalAmountPreview = document.getElementById('modalAmountPreview');
+
+  function openExpenseModal() {
+    modal.classList.add('active');
+    setTimeout(() => modalCategory.focus(), 100);
+  }
+
+  function closeExpenseModal() {
+    modal.classList.remove('active');
+  }
+
+  if (btnOpenModal) btnOpenModal.addEventListener('click', openExpenseModal);
+  if (btnCloseModal) btnCloseModal.addEventListener('click', closeExpenseModal);
+  if (btnModalCancel) btnModalCancel.addEventListener('click', closeExpenseModal);
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeExpenseModal();
+  });
+
+  // Category quick chips
+  document.querySelectorAll('.cat-quick-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      modalCategory.value = chip.dataset.val;
+      document.querySelectorAll('.cat-quick-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      modalAmount.focus();
+    });
+  });
+
+  // Real-time preview inside modal
+  function updateModalAmountPreview() {
+    const val = parseFloat(modalAmount.value) || 0;
+    modalAmountPreview.textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(val);
+  }
+  if (modalAmount) {
+    modalAmount.addEventListener('input', updateModalAmountPreview);
+  }
+
+  // Quick addition buttons
+  document.querySelectorAll('.quick-nominal-btn[data-plus]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const plus = parseInt(btn.dataset.plus);
+      const cur = parseFloat(modalAmount.value) || 0;
+      modalAmount.value = cur + plus;
+      updateModalAmountPreview();
+      modalAmount.focus();
+    });
+  });
+
+  const btnModalClear = document.getElementById('btnModalClearAmount');
+  if (btnModalClear) {
+    btnModalClear.addEventListener('click', () => {
+      modalAmount.value = '';
+      updateModalAmountPreview();
+      modalAmount.focus();
+    });
+  }
+
+  // Escape to close
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeExpenseModal();
+    }
+  });
+</script>

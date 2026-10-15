@@ -1,0 +1,209 @@
+<div class="page-header">
+  <div>
+    <a href="/transactions" class="btn btn-secondary btn-sm" style="margin-bottom:0.5rem;display:inline-block">← Kembali ke Riwayat</a>
+    <h1>Faktur: <%= sale.invoice_number %></h1>
+  </div>
+  <div style="display:flex;gap:0.5rem;align-items:center">
+    <button onclick="window.open('/transactions/<%= sale.id %>/receipt', '_blank', 'width=400,height=600')" class="btn btn-primary">
+      🖨️ Cetak Ulang Struk
+    </button>
+    <% if (sale.status !== 'cancelled') { %>
+      <a href="/returns/new?sale_id=<%= sale.id %>" class="btn btn-warning">
+        ↩️ Ajukan Retur
+      </a>
+    <% } %>
+  </div>
+</div>
+
+<% if (sale.status === 'cancelled') { %>
+<div class="alert alert-danger" style="margin-bottom:1.5rem;padding:1rem;border-radius:8px;background:#fee2e2;border:1px solid #ef4444;color:#991b1b">
+  <h4 style="margin-bottom:0.25rem">⚠️ Transaksi Telah Dibatalkan</h4>
+  <p style="margin:0;font-size:0.9rem">
+    Dibatalkan oleh <strong><%= sale.cancelled_by_name || 'Admin' %></strong> pada <%= new Date(sale.cancelled_at).toLocaleString('id-ID') %><br>
+    <strong>Alasan:</strong> <%= sale.cancel_reason || '-' %>
+  </p>
+  <p style="margin:0.25rem 0 0;font-size:0.85rem;color:#b91c1c">
+    Seluruh stok barang pada transaksi ini telah otomatis dikembalikan ke inventaris toko.
+  </p>
+</div>
+<% } %>
+
+<div class="detail-grid" style="display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+  <!-- Left: Items -->
+  <div class="card">
+    <div class="card-header">
+      <h2>Daftar Item Penjualan</h2>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Produk</th>
+              <th>SKU</th>
+              <th style="text-align:right">Harga Satuan</th>
+              <th style="text-align:center">Qty</th>
+              <th style="text-align:right">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% sale.items.forEach(item => { %>
+            <tr>
+              <td><strong><%= item.product_name_snapshot %></strong></td>
+              <td><code><%= item.sku_snapshot %></code></td>
+              <td style="text-align:right">Rp <%= new Intl.NumberFormat('id-ID').format(item.unit_price) %></td>
+              <td style="text-align:center"><%= item.quantity %></td>
+              <td style="text-align:right;font-weight:600">Rp <%= new Intl.NumberFormat('id-ID').format(item.subtotal) %></td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right: Summary & Info -->
+  <div style="display:flex;flex-direction:column;gap:1.5rem">
+    <div class="card">
+      <div class="card-header">
+        <h2>Rincian Pembayaran</h2>
+      </div>
+      <div class="card-body">
+        <table class="detail-table" style="width:100%">
+          <tr>
+            <th style="padding:0.5rem 0">Subtotal</th>
+            <td style="text-align:right;padding:0.5rem 0">Rp <%= new Intl.NumberFormat('id-ID').format(sale.subtotal) %></td>
+          </tr>
+          <tr>
+            <th style="padding:0.5rem 0">Diskon</th>
+            <td style="text-align:right;padding:0.5rem 0;color:#dc2626">-Rp <%= new Intl.NumberFormat('id-ID').format(sale.discount) %></td>
+          </tr>
+          <tr style="border-top:2px solid #e2e8f0;font-size:1.15rem;font-weight:700">
+            <th style="padding:0.75rem 0">TOTAL</th>
+            <td style="text-align:right;padding:0.75rem 0;color:#2563eb">Rp <%= new Intl.NumberFormat('id-ID').format(sale.total) %></td>
+          </tr>
+          <tr>
+            <th style="padding:0.5rem 0">Metode Bayar</th>
+            <td style="text-align:right;padding:0.5rem 0;text-transform:uppercase;font-weight:600"><%= sale.payment_method %></td>
+          </tr>
+          <tr>
+            <th style="padding:0.5rem 0">Jumlah Dibayar</th>
+            <td style="text-align:right;padding:0.5rem 0">Rp <%= new Intl.NumberFormat('id-ID').format(sale.paid_amount) %></td>
+          </tr>
+          <% if (sale.change_amount > 0) { %>
+          <tr>
+            <th style="padding:0.5rem 0">Kembalian</th>
+            <td style="text-align:right;padding:0.5rem 0;color:#16a34a;font-weight:700">Rp <%= new Intl.NumberFormat('id-ID').format(sale.change_amount) %></td>
+          </tr>
+          <% } %>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Informasi Transaksi</h2>
+      </div>
+      <div class="card-body">
+        <table class="detail-table" style="width:100%">
+          <tr>
+            <th style="padding:0.4rem 0">Status</th>
+            <td style="text-align:right;padding:0.4rem 0">
+              <% if (sale.status === 'completed') { %>
+                <span class="badge badge-success">Selesai</span>
+              <% } else if (sale.status === 'cancelled') { %>
+                <span class="badge badge-danger">Dibatalkan</span>
+              <% } else if (sale.status === 'partially_returned') { %>
+                <span class="badge" style="background:#fef08a;color:#854d0e">Sebagian Retur</span>
+              <% } else if (sale.status === 'returned') { %>
+                <span class="badge" style="background:#fed7aa;color:#9a3412">Diretur Penuh</span>
+              <% } %>
+            </td>
+          </tr>
+          <tr>
+            <th style="padding:0.4rem 0">Kasir</th>
+            <td style="text-align:right;padding:0.4rem 0"><strong><%= sale.cashier_name || '-' %></strong></td>
+          </tr>
+          <tr>
+            <th style="padding:0.4rem 0">Shift ID</th>
+            <td style="text-align:right;padding:0.4rem 0">#<%= sale.shift_id %></td>
+          </tr>
+          <tr>
+            <th style="padding:0.4rem 0">Waktu</th>
+            <td style="text-align:right;padding:0.4rem 0"><small><%= new Date(sale.created_at).toLocaleString('id-ID') %></small></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if (sale.returns && sale.returns.length > 0) { %>
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-header">
+    <h2>Riwayat Retur untuk Transaksi Ini</h2>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>No. Retur</th>
+            <th>Pengaju</th>
+            <th>Waktu</th>
+            <th style="text-align:right">Total Refund</th>
+            <th>Status</th>
+            <th>Alasan</th>
+            <th style="text-align:center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% sale.returns.forEach(r => { %>
+          <tr>
+            <td><strong><%= r.return_number %></strong></td>
+            <td><%= r.requester_name || '-' %></td>
+            <td><small><%= new Date(r.created_at).toLocaleString('id-ID') %></small></td>
+            <td style="text-align:right">Rp <%= new Intl.NumberFormat('id-ID').format(r.total_refund) %></td>
+            <td>
+              <% if (r.status === 'completed') { %>
+                <span class="badge badge-success">Selesai</span>
+              <% } else if (r.status === 'requested') { %>
+                <span class="badge badge-warning">Diajukan</span>
+              <% } else if (r.status === 'approved') { %>
+                <span class="badge badge-info">Disetujui</span>
+              <% } else if (r.status === 'rejected') { %>
+                <span class="badge badge-danger">Ditolak</span>
+              <% } %>
+            </td>
+            <td><%= r.reason %></td>
+            <td style="text-align:center">
+              <a href="/returns/<%= r.id %>" class="btn btn-sm btn-secondary">Lihat Retur</a>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<% } %>
+
+<% if (isAdmin && sale.status === 'completed' && (!sale.returns || sale.returns.length === 0)) { %>
+<div class="card" style="border:1px solid #fca5a5;background:#fff1f2">
+  <div class="card-header" style="background:#fee2e2;border-bottom:1px solid #fecaca">
+    <h2 style="color:#991b1b">⚠️ Batalkan Transaksi (Void)</h2>
+  </div>
+  <div class="card-body">
+    <p style="font-size:0.9rem;color:#7f1d1d">
+      Pembatalan akan mengembalikan seluruh stok barang ke inventaris dan menandai transaksi sebagai dibatalkan. Tindakan ini tidak dapat diurungkan.
+    </p>
+    <form action="/transactions/<%= sale.id %>/cancel" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin membatalkan transaksi ini? Stok akan otomatis dikembalikan.');">
+      <div class="form-group">
+        <label for="reason" style="font-weight:600;color:#991b1b">Alasan Pembatalan <span style="color:red">*</span></label>
+        <textarea name="reason" id="reason" class="form-control" rows="2" required placeholder="Contoh: Salah input pesanan / pelanggan batal bayar"></textarea>
+      </div>
+      <button type="submit" class="btn btn-danger">Batalkan Transaksi Sekarang</button>
+    </form>
+  </div>
+</div>
+<% } %>

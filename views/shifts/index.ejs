@@ -1,0 +1,66 @@
+<div class="page-header">
+  <h1>⏰ Shift Kasir</h1>
+  <div>
+    <% if (openShift) { %>
+      <span class="badge badge-success" style="font-size:0.9rem;padding:0.5rem 1rem">Shift Aktif (sejak <%= openShift.opened_at %>)</span>
+      <a href="/shifts/<%= openShift.id %>/close" class="btn btn-danger">Tutup Shift</a>
+    <% } else { %>
+      <a href="/shifts/open" class="btn btn-primary">▶ Buka Shift</a>
+    <% } %>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-body">
+    <form action="/shifts" method="GET" class="filter-form">
+      <div class="filter-row">
+        <div class="form-group" style="width:160px;margin-bottom:0">
+          <select name="status" class="form-control">
+            <option value="">Semua Status</option>
+            <option value="open" <%= filters.status === 'open' ? 'selected' : '' %>>Terbuka</option>
+            <option value="closed" <%= filters.status === 'closed' ? 'selected' : '' %>>Ditutup</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/shifts" class="btn btn-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (shifts.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead><tr><th>#</th><th>Kasir</th><th>Dibuka</th><th>Ditutup</th><th style="text-align:right">Modal</th><th style="text-align:right">Kas Diharapkan</th><th style="text-align:right">Kas Aktual</th><th style="text-align:right">Selisih</th><th>Status</th></tr></thead>
+        <tbody>
+          <% shifts.forEach((s, i) => { %>
+          <tr>
+            <td><%= (pagination.page-1)*20+i+1 %></td>
+            <td><strong><%= s.user_name %></strong></td>
+            <td><small><%= s.opened_at %></small></td>
+            <td><small><%= s.closed_at || '-' %></small></td>
+            <td style="text-align:right">Rp <%= new Intl.NumberFormat('id-ID').format(s.opening_cash) %></td>
+            <td style="text-align:right"><%= s.closing_cash_expected != null ? 'Rp ' + new Intl.NumberFormat('id-ID').format(s.closing_cash_expected) : '-' %></td>
+            <td style="text-align:right"><%= s.closing_cash_actual != null ? 'Rp ' + new Intl.NumberFormat('id-ID').format(s.closing_cash_actual) : '-' %></td>
+            <td style="text-align:right">
+              <% if (s.cash_difference != null) { %>
+                <span style="color:<%= s.cash_difference >= 0 ? '#16a34a' : '#dc2626' %>;font-weight:bold">
+                  <%= s.cash_difference >= 0 ? '+' : '' %>Rp <%= new Intl.NumberFormat('id-ID').format(s.cash_difference) %>
+                </span>
+              <% } else { %>-<% } %>
+            </td>
+            <td>
+              <% if (s.status === 'open') { %><span class="badge badge-success">Terbuka</span>
+              <% } else { %><span class="badge badge-danger">Ditutup</span><% } %>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% if (pagination.totalPages > 1) { %><div class="pagination"><% for (let p = Math.max(1,pagination.page-2); p <= Math.min(pagination.totalPages,pagination.page+2); p++) { %><a href="/shifts?page=<%= p %>&status=<%= filters.status||'' %>" class="pagination-link <%= p===pagination.page?'active':'' %>"><%= p %></a><% } %></div><% } %>
+    <% } else { %><p class="text-muted">Belum ada riwayat shift.</p><% } %>
+  </div>
+</div>

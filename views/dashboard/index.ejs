@@ -1,0 +1,1564 @@
+<style>
+  /* ==========================================================================
+     Ultra-Modern Executive POS Dashboard
+     Design System: Tailwind / Shadcn / Linear Inspired
+     ========================================================================== */
+  
+  :root {
+    --dash-bg: #f8fafc;
+    --dash-card: #ffffff;
+    --dash-border: #e2e8f0;
+    --dash-border-hover: #cbd5e1;
+    --dash-text-main: #0f172a;
+    --dash-text-muted: #64748b;
+    --dash-text-sub: #94a3b8;
+    --dash-primary: #2563eb;
+    --dash-primary-hover: #1d4ed8;
+    --dash-primary-soft: #eff6ff;
+    --dash-success: #10b981;
+    --dash-success-soft: #ecfdf5;
+    --dash-amber: #f59e0b;
+    --dash-amber-soft: #fffbeb;
+    --dash-rose: #f43f5e;
+    --dash-rose-soft: #fff1f2;
+    --dash-purple: #8b5cf6;
+    --dash-purple-soft: #f5f3ff;
+  }
+
+  html[data-theme="dark"] {
+    --dash-bg: #0b1120;
+    --dash-card: #151e32;
+    --dash-border: #243049;
+    --dash-border-hover: #3b4d6b;
+    --dash-text-main: #f8fafc;
+    --dash-text-muted: #94a3b8;
+    --dash-text-sub: #64748b;
+    --dash-primary-soft: rgba(37, 99, 235, 0.18);
+    --dash-success-soft: rgba(16, 185, 129, 0.18);
+    --dash-amber-soft: rgba(245, 158, 11, 0.18);
+    --dash-rose-soft: rgba(244, 63, 94, 0.18);
+    --dash-purple-soft: rgba(139, 92, 246, 0.18);
+  }
+
+  .dashboard-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    color: var(--dash-text-main);
+    font-family: inherit;
+  }
+
+  /* --- Hero Executive Banner --- */
+  .hero-banner {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #1e1b4b 100%);
+    border-radius: 20px;
+    padding: 1.75rem 2rem;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25), 0 8px 10px -6px rgba(15, 23, 42, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.18) 0%, rgba(59, 130, 246, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: 20%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0) 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-left {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-badge-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .hero-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+    padding: 0.25rem 0.7rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .hero-pulse-dot {
+    width: 7px;
+    height: 7px;
+    background-color: #10b981;
+    border-radius: 50%;
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    animation: heroPulse 1.8s infinite;
+  }
+
+  @keyframes heroPulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+  }
+
+  .hero-role-pill {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    color: #e2e8f0;
+    padding: 0.25rem 0.7rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .hero-title {
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    margin: 0 0 0.4rem 0;
+    color: #ffffff;
+  }
+
+  .hero-subtitle {
+    color: #cbd5e1;
+    font-size: 0.925rem;
+    margin: 0;
+    max-width: 580px;
+  }
+
+  .hero-right {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.85rem;
+  }
+
+  .hero-clock-box {
+    text-align: right;
+  }
+
+  .hero-clock-time {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: #f8fafc;
+  }
+
+  .hero-clock-date {
+    font-size: 0.825rem;
+    color: #94a3b8;
+    font-weight: 500;
+  }
+
+  .hero-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: #ffffff !important;
+    padding: 0.75rem 1.45rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .hero-cta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    background: linear-gradient(135deg, #60a5fa 0%, #2563eb 100%);
+  }
+
+  /* --- Quick Actions Bar --- */
+  .quick-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .quick-card {
+    background: var(--dash-card);
+    border: 1px solid var(--dash-border);
+    border-radius: 14px;
+    padding: 0.85rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    text-decoration: none;
+    color: var(--dash-text-main);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  }
+
+  .quick-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--dash-primary);
+    background: #ffffff;
+    box-shadow: 0 6px 16px -4px rgba(37, 99, 235, 0.12);
+    color: var(--dash-primary);
+  }
+
+  .quick-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .quick-card-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .quick-card-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .quick-card-desc {
+    font-size: 0.725rem;
+    color: var(--dash-text-muted);
+  }
+
+  /* --- Modern Metric KPI Cards --- */
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    gap: 1rem;
+  }
+
+  .metric-card {
+    background: var(--dash-card);
+    border: 1px solid var(--dash-border);
+    border-radius: 16px;
+    padding: 1.35rem 1.25rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+
+  .metric-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--dash-border-hover);
+    box-shadow: 0 12px 24px -6px rgba(15, 23, 42, 0.08);
+  }
+
+  .metric-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: transparent;
+  }
+
+  .metric-card.card-revenue::after { background: linear-gradient(90deg, #3b82f6, #2563eb); }
+  .metric-card.card-profit::after { background: linear-gradient(90deg, #10b981, #059669); }
+  .metric-card.card-aov::after { background: linear-gradient(90deg, #f59e0b, #d97706); }
+  .metric-card.card-products::after { background: linear-gradient(90deg, #8b5cf6, #7c3aed); }
+  .metric-card.card-alert-danger::after { background: linear-gradient(90deg, #f43f5e, #dc2626); }
+  .metric-card.card-alert-safe::after { background: linear-gradient(90deg, #10b981, #059669); }
+
+  .metric-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.85rem;
+  }
+
+  .metric-label-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .metric-label {
+    font-size: 0.775rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--dash-text-muted);
+  }
+
+  .metric-icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .metric-value-box {
+    margin-bottom: 0.75rem;
+  }
+
+  .metric-value {
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+    color: var(--dash-text-main);
+  }
+
+  .metric-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.775rem;
+    color: var(--dash-text-muted);
+    padding-top: 0.65rem;
+    border-top: 1px solid #f1f5f9;
+  }
+
+  .metric-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.725rem;
+    font-weight: 700;
+  }
+
+  /* --- Layout Split: 2-Columns --- */
+  .grid-two-split {
+    display: grid;
+    grid-template-columns: 7fr 5fr;
+    gap: 1.35rem;
+  }
+
+  @media (max-width: 1080px) {
+    .grid-two-split {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* --- Premium Card Panels --- */
+  .dash-panel {
+    background: var(--dash-card);
+    border: 1px solid var(--dash-border);
+    border-radius: 18px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+  }
+
+  .dash-panel:hover {
+    border-color: var(--dash-border-hover);
+  }
+
+  .dash-panel-header {
+    padding: 1.15rem 1.45rem;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    background: #ffffff;
+  }
+
+  .dash-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+  }
+
+  .dash-panel-title h2 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--dash-text-main);
+    margin: 0;
+  }
+
+  .dash-panel-title .title-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .dash-panel-body {
+    padding: 1.35rem 1.45rem;
+    flex: 1;
+  }
+
+  /* --- Chart Panel Stats Header --- */
+  .chart-stats-summary {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-wrap: wrap;
+  }
+
+  .chart-stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.8rem;
+    color: var(--dash-text-muted);
+    font-weight: 500;
+  }
+
+  .chart-stat-chip strong {
+    color: var(--dash-text-main);
+    font-weight: 800;
+  }
+
+  /* --- Top Selling Products List --- */
+  .top-prod-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+
+  .top-prod-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 0.95rem;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #f1f5f9;
+    transition: all 0.15s ease;
+  }
+
+  .top-prod-card:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    transform: translateX(2px);
+    box-shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.05);
+  }
+
+  .prod-rank-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.825rem;
+    flex-shrink: 0;
+  }
+
+  .rank-1 { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; border: 1px solid #fcd34d; }
+  .rank-2 { background: linear-gradient(135deg, #f1f5f9, #e2e8f0); color: #475569; border: 1px solid #cbd5e1; }
+  .rank-3 { background: linear-gradient(135deg, #ffedd5, #fed7aa); color: #9a3412; border: 1px solid #fdba74; }
+  .rank-other { background: #f1f5f9; color: #64748b; }
+
+  .prod-details {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .prod-title {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--dash-text-main);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .prod-sub {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.775rem;
+    color: var(--dash-text-muted);
+    margin-top: 0.2rem;
+  }
+
+  .sku-badge {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.725rem;
+    background: #e2e8f0;
+    color: #334155;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .prod-amount-col {
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  .prod-sales-val {
+    font-weight: 800;
+    font-size: 0.925rem;
+    color: var(--dash-primary);
+  }
+
+  .prod-qty-val {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--dash-text-muted);
+  }
+
+  /* --- Active Shift Card --- */
+  .active-shift-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 1rem 1.15rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  .active-shift-card:hover {
+    background: #ffffff;
+    border-color: #cbd5e1;
+  }
+
+  .shift-avatar-ring {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.15rem;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+    flex-shrink: 0;
+  }
+
+  .shift-info-title {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--dash-text-main);
+  }
+
+  .shift-info-sub {
+    font-size: 0.775rem;
+    color: var(--dash-text-muted);
+    margin-top: 0.15rem;
+  }
+
+  .shift-badge-active {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.725rem;
+    font-weight: 700;
+    color: #15803d;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+  }
+
+  /* --- Recent Transactions Table --- */
+  .recent-sales-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  .recent-sales-table th {
+    padding: 0.75rem 0.65rem;
+    text-align: left;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--dash-text-muted);
+    border-bottom: 1px solid var(--dash-border);
+    background: #f8fafc;
+  }
+
+  .recent-sales-table td {
+    padding: 0.85rem 0.65rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+  }
+
+  .recent-sales-table tr:hover td {
+    background: #f8fafc;
+  }
+
+  .invoice-pill {
+    font-family: var(--font-mono, monospace);
+    font-weight: 700;
+    color: var(--dash-text-main);
+    background: #f1f5f9;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    display: inline-block;
+  }
+
+  .pay-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.725rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .pay-cash { background: #dcfce7; color: #166534; }
+  .pay-qris { background: #f3e8ff; color: #7e22ce; }
+  .pay-debit { background: #e0f2fe; color: #0369a1; }
+  .pay-transfer { background: #fef3c7; color: #92400e; }
+  .pay-other { background: #f1f5f9; color: #475569; }
+
+  /* --- Low Stock Table Modern --- */
+  .stock-alert-box {
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .stock-bar-wrap {
+    width: 100%;
+    height: 6px;
+    background: #f1f5f9;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-top: 0.35rem;
+  }
+
+  .stock-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.3s ease;
+  }
+
+  .stock-bar-critical { background: #ef4444; }
+  .stock-bar-warning { background: #f59e0b; }
+
+  /* --- Empty State Styles --- */
+  .dash-empty-state {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    color: var(--dash-text-muted);
+  }
+
+  .dash-empty-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    background: #f1f5f9;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.85rem;
+    color: #64748b;
+  }
+
+  /* --- Dashboard Dark Mode Specific Overrides --- */
+  html[data-theme="dark"] .dash-panel {
+    background: #151e32;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .dash-panel-header {
+    background: #111a2d;
+    border-bottom-color: #243049;
+  }
+  html[data-theme="dark"] .quick-card {
+    background: #151e32;
+    border-color: #243049;
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .quick-card:hover {
+    background: #1a253a;
+    border-color: #3b82f6;
+  }
+  html[data-theme="dark"] .top-prod-card {
+    background: #111a2d;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .top-prod-card:hover {
+    background: #1a253a;
+    border-color: #3b4d6b;
+  }
+  html[data-theme="dark"] .active-shift-card {
+    background: #111a2d;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .active-shift-card:hover {
+    background: #1a253a;
+    border-color: #3b4d6b;
+  }
+  .recent-tx-time {
+    color: #64748b;
+  }
+  .recent-tx-cashier {
+    font-weight: 600;
+    color: #334155;
+  }
+  .recent-tx-total {
+    text-align: right;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  html[data-theme="dark"] .recent-sales-table th {
+    background: #111a2d;
+    border-bottom-color: #243049;
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .recent-sales-table td {
+    border-bottom-color: #1e293b;
+    color: #f8fafc !important;
+  }
+  html[data-theme="dark"] .recent-sales-table tr:hover td {
+    background: #1a253a;
+  }
+  html[data-theme="dark"] .recent-tx-time {
+    color: #94a3b8 !important;
+  }
+  html[data-theme="dark"] .recent-tx-cashier {
+    color: #e2e8f0 !important;
+  }
+  html[data-theme="dark"] .recent-tx-total {
+    color: #60a5fa !important;
+  }
+  html[data-theme="dark"] .invoice-pill {
+    background: rgba(37, 99, 235, 0.15) !important;
+    color: #93c5fd !important;
+    border: 1px solid rgba(59, 130, 246, 0.35) !important;
+  }
+  html[data-theme="dark"] .sku-badge {
+    background: #0b1120;
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .dash-empty-icon {
+    background: #111a2d;
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .stock-bar-wrap {
+    background: #111a2d;
+  }
+  html[data-theme="dark"] .dash-empty-shift-box {
+    background: #111a2d !important;
+    border-color: #243049 !important;
+  }
+</style>
+
+<div class="dashboard-container">
+  
+  <!-- 1. Executive Hero Header Banner -->
+  <div class="hero-banner">
+    <div class="hero-left">
+      <div class="hero-badge-row">
+        <span class="hero-status-pill">
+          <span class="hero-pulse-dot"></span>
+          POS Online • Aktif
+        </span>
+        <span class="hero-role-pill">
+          Role: <%= currentUser.role === 'admin' ? 'Administrator' : 'Kasir Toko' %>
+        </span>
+      </div>
+      <h1 class="hero-title">
+        Halo, <%= currentUser.name %>! 👋
+      </h1>
+      <p class="hero-subtitle">
+        Sistem Kasir & Manajemen Persediaan Minimarket terintegrasi siap melayani transaksi pelanggan hari ini.
+      </p>
+    </div>
+
+    <div class="hero-right">
+      <div class="hero-clock-box">
+        <div class="hero-clock-time" id="liveClock">--:--:-- WIB</div>
+        <div class="hero-clock-date">
+          <%= new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) %>
+        </div>
+      </div>
+      <a href="/pos" class="hero-cta-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+        <span>Buka Kasir / POS</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- 2. Fast Navigation Quick Actions Bar -->
+  <div class="quick-bar">
+    <a href="/pos" class="quick-card" style="border-color:#bfdbfe;background:#eff6ff">
+      <div class="quick-icon-wrap" style="background:#dbeafe;color:#2563eb">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+          <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+        </svg>
+      </div>
+      <div class="quick-card-text">
+        <span class="quick-card-title" style="color:#1d4ed8">Kasir POS</span>
+        <span class="quick-card-desc">Transaksi Baru</span>
+      </div>
+    </a>
+
+    <a href="/products" class="quick-card">
+      <div class="quick-icon-wrap" style="background:#f3e8ff;color:#7e22ce">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+          <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
+        </svg>
+      </div>
+      <div class="quick-card-text">
+        <span class="quick-card-title">Katalog Produk</span>
+        <span class="quick-card-desc">Kelola SKU</span>
+      </div>
+    </a>
+
+    <a href="/transactions" class="quick-card">
+      <div class="quick-icon-wrap" style="background:#ecfdf5;color:#059669">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+        </svg>
+      </div>
+      <div class="quick-card-text">
+        <span class="quick-card-title">Riwayat</span>
+        <span class="quick-card-desc">Struk & Retur</span>
+      </div>
+    </a>
+
+    <% if (currentUser.role === 'admin') { %>
+      <a href="/reports" class="quick-card">
+        <div class="quick-icon-wrap" style="background:#e0f2fe;color:#0284c7">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+          </svg>
+        </div>
+        <div class="quick-card-text">
+          <span class="quick-card-title">Laporan</span>
+          <span class="quick-card-desc">Laba & Rugi</span>
+        </div>
+      </a>
+
+      <a href="/purchases/create" class="quick-card">
+        <div class="quick-icon-wrap" style="background:#fef3c7;color:#d97706">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </div>
+        <div class="quick-card-text">
+          <span class="quick-card-title">Pembelian</span>
+          <span class="quick-card-desc">Restock Masuk</span>
+        </div>
+      </a>
+
+      <a href="/expenses" class="quick-card">
+        <div class="quick-icon-wrap" style="background:#fee2e2;color:#dc2626">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+        <div class="quick-card-text">
+          <span class="quick-card-title">Pengeluaran</span>
+          <span class="quick-card-desc">Biaya Toko</span>
+        </div>
+      </a>
+
+      <a href="/inventory" class="quick-card">
+        <div class="quick-icon-wrap" style="background:#f1f5f9;color:#475569">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+          </svg>
+        </div>
+        <div class="quick-card-text">
+          <span class="quick-card-title">Opname Stok</span>
+          <span class="quick-card-desc">Audit Fisik</span>
+        </div>
+      </a>
+    <% } %>
+
+    <a href="/shifts" class="quick-card">
+      <div class="quick-icon-wrap" style="background:#ecfeff;color:#0891b2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+      </div>
+      <div class="quick-card-text">
+        <span class="quick-card-title">Shift Kasir</span>
+        <span class="quick-card-desc">Buka & Tutup</span>
+      </div>
+    </a>
+  </div>
+
+  <!-- 3. Key Performance Indicators (KPI Cards) -->
+  <div class="kpi-row">
+    <!-- Card 1: Omzet Hari Ini -->
+    <div class="metric-card card-revenue">
+      <div class="metric-top">
+        <div class="metric-label-group">
+          <span class="metric-label">Omzet Penjualan</span>
+        </div>
+        <div class="metric-icon-box" style="background:#eff6ff;color:#2563eb">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+          </svg>
+        </div>
+      </div>
+      <div class="metric-value-box">
+        <div class="metric-value">
+          Rp <%= new Intl.NumberFormat('id-ID').format(metrics.revenue) %>
+        </div>
+      </div>
+      <div class="metric-footer">
+        <span class="metric-pill" style="background:#dbeafe;color:#1e40af">
+          <%= metrics.transactions %> Transaksi
+        </span>
+        <span title="Tunai: Rp <%= new Intl.NumberFormat('id-ID').format(metrics.cashRevenue || 0) %>">
+          Tunai: Rp <%= new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(metrics.cashRevenue || 0) %>
+        </span>
+      </div>
+    </div>
+
+    <!-- Card 2: Laba Kotor Estimasi (Admin Only) or Nilai Transaksi -->
+    <% if (currentUser.role === 'admin') { %>
+      <div class="metric-card card-profit">
+        <div class="metric-top">
+          <div class="metric-label-group">
+            <span class="metric-label">Estimasi Laba Kotor</span>
+          </div>
+          <div class="metric-icon-box" style="background:#f0fdf4;color:#16a34a">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+            </svg>
+          </div>
+        </div>
+        <div class="metric-value-box">
+          <div class="metric-value" style="color:#15803d">
+            Rp <%= new Intl.NumberFormat('id-ID').format(metrics.profit) %>
+          </div>
+        </div>
+        <div class="metric-footer">
+          <span class="metric-pill" style="background:#dcfce7;color:#166534">
+            Margin Toko
+          </span>
+          <span>Setelah HPP Produk</span>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Card 3: Rata-Rata Keranjang (AOV) -->
+    <div class="metric-card card-aov">
+      <div class="metric-top">
+        <div class="metric-label-group">
+          <span class="metric-label">Rata-Rata Belanja</span>
+        </div>
+        <div class="metric-icon-box" style="background:#fffbeb;color:#d97706">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/>
+            <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>
+          </svg>
+        </div>
+      </div>
+      <div class="metric-value-box">
+        <div class="metric-value">
+          Rp <%= new Intl.NumberFormat('id-ID').format(Math.round(metrics.avgOrderValue)) %>
+        </div>
+      </div>
+      <div class="metric-footer">
+        <span class="metric-pill" style="background:#fef3c7;color:#92400e">
+          AOV
+        </span>
+        <span>Per Keranjang Struk</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Katalog Produk Aktif -->
+    <div class="metric-card card-products">
+      <div class="metric-top">
+        <div class="metric-label-group">
+          <span class="metric-label">Katalog Produk</span>
+        </div>
+        <div class="metric-icon-box" style="background:#faf5ff;color:#7c3aed">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+            <path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/>
+          </svg>
+        </div>
+      </div>
+      <div class="metric-value-box">
+        <div class="metric-value">
+          <%= metrics.totalProducts %> <span style="font-size:1rem;color:#64748b;font-weight:600">Item</span>
+        </div>
+      </div>
+      <div class="metric-footer">
+        <span class="metric-pill" style="background:#ede9fe;color:#5b21b6">
+          Aktif Dijual
+        </span>
+        <span>Tersedia di Register POS</span>
+      </div>
+    </div>
+
+    <!-- Card 5: Peringatan Stok Kritis -->
+    <div class="metric-card <%= metrics.lowStockCount > 0 ? 'card-alert-danger' : 'card-alert-safe' %>">
+      <div class="metric-top">
+        <div class="metric-label-group">
+          <span class="metric-label">Status Persediaan</span>
+        </div>
+        <div class="metric-icon-box" style="background:<%= metrics.lowStockCount > 0 ? '#fef2f2' : '#f0fdf4' %>;color:<%= metrics.lowStockCount > 0 ? '#dc2626' : '#16a34a' %>">
+          <% if (metrics.lowStockCount > 0) { %>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+          <% } else { %>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/>
+            </svg>
+          <% } %>
+        </div>
+      </div>
+      <div class="metric-value-box">
+        <div class="metric-value" style="color:<%= metrics.lowStockCount > 0 ? '#b91c1c' : '#15803d' %>">
+          <%= metrics.lowStockCount > 0 ? metrics.lowStockCount + ' SKU' : 'Aman' %>
+        </div>
+      </div>
+      <div class="metric-footer">
+        <% if (metrics.lowStockCount > 0) { %>
+          <span class="metric-pill" style="background:#fee2e2;color:#991b1b">
+            Stok Kritis
+          </span>
+          <span style="color:#b91c1c;font-weight:600">Perlu reorder supplier</span>
+        <% } else { %>
+          <span class="metric-pill" style="background:#dcfce7;color:#166534">
+            Optimum
+          </span>
+          <span>Semua di atas minimum</span>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Main Split: 7-Day Chart & Active Shifts / Top Products -->
+  <div class="grid-two-split">
+    
+    <!-- LEFT COLUMN: Sales Trend Area Chart & Live Recent Transactions -->
+    <div style="display:flex;flex-direction:column;gap:1.35rem">
+      
+      <!-- Chart Panel -->
+      <div class="dash-panel">
+        <div class="dash-panel-header">
+          <div class="dash-panel-title">
+            <span class="title-icon" style="background:#eff6ff;color:#2563eb">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+              </svg>
+            </span>
+            <div>
+              <h2>Tren Penjualan 7 Hari Terakhir</h2>
+            </div>
+          </div>
+          <div class="chart-stats-summary">
+            <div class="chart-stat-chip">
+              <span>Total 7 Hari:</span>
+              <strong>Rp <%= new Intl.NumberFormat('id-ID').format(chart.weeklyTotalRevenue || 0) %></strong>
+            </div>
+            <div class="chart-stat-chip">
+              <span>Transaksi:</span>
+              <strong><%= chart.weeklyTotalTransactions || 0 %> struk</strong>
+            </div>
+          </div>
+        </div>
+        <div class="dash-panel-body">
+          <div style="position:relative;height:290px;width:100%">
+            <canvas id="salesAnalyticsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Recent Sales Activity Feed -->
+      <div class="dash-panel">
+        <div class="dash-panel-header">
+          <div class="dash-panel-title">
+            <span class="title-icon" style="background:#ecfdf5;color:#059669">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+              </svg>
+            </span>
+            <div>
+              <h2>Transaksi Penjualan Terkini</h2>
+            </div>
+          </div>
+          <a href="/transactions" style="font-size:0.825rem;font-weight:700;color:#2563eb;text-decoration:none">
+            Semua Transaksi →
+          </a>
+        </div>
+        <div class="dash-panel-body" style="padding:0">
+          <% if (typeof recentTransactions !== 'undefined' && recentTransactions && recentTransactions.length > 0) { %>
+            <div class="table-responsive">
+              <table class="recent-sales-table">
+                <thead>
+                  <tr>
+                    <th style="padding-left:1.45rem">No. Struk</th>
+                    <th>Waktu</th>
+                    <th>Kasir</th>
+                    <th>Metode</th>
+                    <th style="text-align:right">Total Belanja</th>
+                    <th style="text-align:center;padding-right:1.45rem">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% recentTransactions.forEach(tx => { %>
+                    <tr>
+                      <td style="padding-left:1.45rem">
+                        <span class="invoice-pill"><%= tx.invoice_number %></span>
+                      </td>
+                      <td class="recent-tx-time">
+                        <%= new Date(tx.created_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) %>
+                      </td>
+                      <td class="recent-tx-cashier">
+                        <%= tx.cashier_name %>
+                      </td>
+                      <td>
+                        <% if (tx.payment_method === 'cash') { %>
+                          <span class="pay-chip pay-cash">Tunai</span>
+                        <% } else if (tx.payment_method === 'qris') { %>
+                          <span class="pay-chip pay-qris">QRIS</span>
+                        <% } else if (tx.payment_method === 'debit') { %>
+                          <span class="pay-chip pay-debit">Debit</span>
+                        <% } else if (tx.payment_method === 'transfer') { %>
+                          <span class="pay-chip pay-transfer">Transfer</span>
+                        <% } else { %>
+                          <span class="pay-chip pay-other"><%= tx.payment_method %></span>
+                        <% } %>
+                      </td>
+                      <td class="recent-tx-total">
+                        Rp <%= new Intl.NumberFormat('id-ID').format(tx.total) %>
+                      </td>
+                      <td style="text-align:center;padding-right:1.45rem">
+                        <a href="/transactions/<%= tx.id %>" class="btn btn-sm btn-secondary" style="padding:0.25rem 0.65rem;font-size:0.775rem;border-radius:6px">
+                          Lihat
+                        </a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div class="dash-empty-state">
+              <div class="dash-empty-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+              </div>
+              <p style="font-weight:600;margin:0 0 0.35rem;color:var(--dash-text-main)">Belum ada transaksi</p>
+              <span style="font-size:0.8rem">Buka register POS untuk melayani pelanggan pertama.</span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN: Active Shift, Top Selling Products, & Stock Alerts -->
+    <div style="display:flex;flex-direction:column;gap:1.35rem">
+      
+      <!-- Active Shift Panel -->
+      <div class="dash-panel">
+        <div class="dash-panel-header">
+          <div class="dash-panel-title">
+            <span class="title-icon" style="background:#f0fdf4;color:#16a34a">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </span>
+            <div>
+              <h2>Status Shift Kasir</h2>
+            </div>
+          </div>
+          <a href="/shifts" style="font-size:0.825rem;color:#64748b;font-weight:600;text-decoration:none">
+            Kelola Shift
+          </a>
+        </div>
+        <div class="dash-panel-body">
+          <% if (activeShifts && activeShifts.length > 0) { %>
+            <div style="display:flex;flex-direction:column;gap:0.75rem">
+              <% activeShifts.forEach(s => { %>
+                <div class="active-shift-card">
+                  <div style="display:flex;align-items:center;gap:0.85rem">
+                    <div class="shift-avatar-ring">
+                      <%= (s.cashier_name || 'K').charAt(0).toUpperCase() %>
+                    </div>
+                    <div>
+                      <div class="shift-info-title"><%= s.cashier_name %></div>
+                      <div class="shift-info-sub">
+                        Mulai: <%= new Date(s.opened_at).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) %> WIB
+                      </div>
+                    </div>
+                  </div>
+                  <div style="text-align:right">
+                    <span class="shift-badge-active">
+                      <span class="hero-pulse-dot" style="width:5px;height:5px"></span>
+                      Register Dibuka
+                    </span>
+                    <div style="font-size:0.775rem;font-weight:700;color:var(--dash-text-main);margin-top:0.35rem">
+                      Modal: Rp <%= new Intl.NumberFormat('id-ID').format(s.opening_cash) %>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="dash-empty-shift-box" style="text-align:center;padding:1.75rem 1rem;background:#f8fafc;border-radius:14px;border:1px dashed #cbd5e1">
+              <div style="font-size:1.75rem;margin-bottom:0.4rem">🔒</div>
+              <div style="font-weight:800;color:var(--dash-text-main);font-size:0.95rem">Register Kasir Ditutup</div>
+              <p style="font-size:0.8rem;color:var(--dash-text-muted);margin:0.25rem 0 1rem">Tidak ada shift yang sedang bertugas saat ini.</p>
+              <a href="/shifts/open" class="btn btn-sm btn-primary" style="font-weight:700;border-radius:8px;padding:0.45rem 1rem">
+                ▶ Buka Shift Kasir
+              </a>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Top Selling Products Panel -->
+      <div class="dash-panel">
+        <div class="dash-panel-header">
+          <div class="dash-panel-title">
+            <span class="title-icon" style="background:#fef3c7;color:#d97706">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+              </svg>
+            </span>
+            <div>
+              <h2>Produk Terlaris Minggu Ini</h2>
+            </div>
+          </div>
+          <% if (currentUser.role === 'admin') { %>
+            <a href="/reports" style="font-size:0.825rem;color:#2563eb;font-weight:700;text-decoration:none">
+              Laporan Lengkap →
+            </a>
+          <% } %>
+        </div>
+        <div class="dash-panel-body">
+          <% if (topProducts && topProducts.length > 0) { %>
+            <div class="top-prod-list">
+              <% topProducts.forEach((p, idx) => { %>
+                <div class="top-prod-card">
+                  <div class="prod-rank-badge <%= idx === 0 ? 'rank-1' : (idx === 1 ? 'rank-2' : (idx === 2 ? 'rank-3' : 'rank-other')) %>">
+                    <%= idx + 1 %>
+                  </div>
+                  <div class="prod-details">
+                    <div class="prod-title"><%= p.name %></div>
+                    <div class="prod-sub">
+                      <span class="sku-badge"><%= p.sku %></span>
+                      <span>•</span>
+                      <span>Terjual <strong><%= p.total_qty %></strong> pcs</span>
+                    </div>
+                  </div>
+                  <div class="prod-amount-col">
+                    <div class="prod-sales-val">
+                      Rp <%= new Intl.NumberFormat('id-ID').format(p.total_sales) %>
+                    </div>
+                    <div class="prod-qty-val">Total Omzet</div>
+                  </div>
+                </div>
+              <% }); %>
+            </div>
+          <% } else { %>
+            <div class="dash-empty-state">
+              <div class="dash-empty-icon">📦</div>
+              <p style="font-weight:600;margin:0 0 0.25rem;color:var(--dash-text-main)">Belum ada data produk terlaris</p>
+              <span style="font-size:0.8rem">Data akan terisi otomatis seiring transaksi berjalan.</span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Low Stock Alerts Panel -->
+      <div class="dash-panel">
+        <div class="dash-panel-header" style="<%= metrics.lowStockCount > 0 ? 'background:#fff1f2;border-bottom-color:#fecdd3' : '' %>">
+          <div class="dash-panel-title">
+            <span class="title-icon" style="background:<%= metrics.lowStockCount > 0 ? '#fee2e2' : '#f0fdf4' %>;color:<%= metrics.lowStockCount > 0 ? '#dc2626' : '#16a34a' %>">
+              <% if (metrics.lowStockCount > 0) { %>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+              <% } else { %>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/>
+                </svg>
+              <% } %>
+            </span>
+            <div>
+              <h2 style="<%= metrics.lowStockCount > 0 ? 'color:#991b1b' : '' %>">
+                <%= metrics.lowStockCount > 0 ? 'Peringatan Stok Menipis' : 'Kondisi Stok Gudang' %>
+              </h2>
+            </div>
+          </div>
+          <% if (currentUser.role === 'admin') { %>
+            <a href="/inventory" style="font-size:0.825rem;color:<%= metrics.lowStockCount > 0 ? '#dc2626' : '#64748b' %>;font-weight:700;text-decoration:none">
+              Semua Inventaris →
+            </a>
+          <% } %>
+        </div>
+        <div class="dash-panel-body" style="padding:0">
+          <% if (lowStockProducts && lowStockProducts.length > 0) { %>
+            <div class="table-responsive">
+              <table class="recent-sales-table">
+                <thead>
+                  <tr>
+                    <th style="padding-left:1.45rem">Produk & SKU</th>
+                    <th style="text-align:center">Sisa</th>
+                    <th style="text-align:center">Min</th>
+                    <% if (currentUser.role === 'admin') { %>
+                      <th style="text-align:center;padding-right:1.45rem">Order</th>
+                    <% } %>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% lowStockProducts.forEach(lp => { %>
+                    <tr>
+                      <td style="padding-left:1.45rem">
+                        <div style="font-weight:700;color:var(--dash-text-main)"><%= lp.name %></div>
+                        <span class="sku-badge"><%= lp.sku %></span>
+                      </td>
+                      <td style="text-align:center;font-weight:800;color:<%= lp.stock <= 0 ? '#dc2626' : '#d97706' %>">
+                        <%= lp.stock %> <%= lp.unit %>
+                      </td>
+                      <td style="text-align:center;color:var(--dash-text-muted);font-weight:600">
+                        <%= lp.min_stock %>
+                      </td>
+                      <% if (currentUser.role === 'admin') { %>
+                        <td style="text-align:center;padding-right:1.45rem">
+                          <a href="/purchases/create" class="btn btn-sm btn-primary" style="padding:0.25rem 0.65rem;font-size:0.75rem;font-weight:700;border-radius:6px">
+                            + Order
+                          </a>
+                        </td>
+                      <% } %>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            </div>
+          <% } else { %>
+            <div style="text-align:center;padding:2rem 1.5rem;color:#16a34a">
+              <div style="width:48px;height:48px;border-radius:50%;background:#dcfce7;color:#16a34a;display:inline-flex;align-items:center;justify-content:center;margin-bottom:0.75rem">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </div>
+              <div style="font-weight:800;font-size:0.95rem;color:#15803d">Stok Seluruh Produk Terjaga!</div>
+              <p style="margin:0.25rem 0 0;font-size:0.8rem;color:#64748b">Semua produk berada dalam jumlah aman di atas ambang batas minimum.</p>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<!-- Chart.js Engine & Live Clock Script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // 1. Live Real-time Clock in Hero
+  function updateLiveClock() {
+    const clockEl = document.getElementById('liveClock');
+    if (!clockEl) return;
+    const now = new Date();
+    const hrs = String(now.getHours()).padStart(2, '0');
+    const mins = String(now.getMinutes()).padStart(2, '0');
+    const secs = String(now.getSeconds()).padStart(2, '0');
+    clockEl.textContent = `${hrs}:${mins}:${secs} WIB`;
+  }
+  updateLiveClock();
+  setInterval(updateLiveClock, 1000);
+
+  // 2. High Definition Smooth Chart.js
+  const ctx = document.getElementById('salesAnalyticsChart');
+  if (!ctx) return;
+
+  const chartLabels = <%- JSON.stringify(chart.labels) %>;
+  const chartRevenue = <%- JSON.stringify(chart.revenue) %>;
+  const chartTransactions = <%- JSON.stringify(chart.transactions) %>;
+
+  const chartCtx = ctx.getContext('2d');
+  
+  // Refined vertical gradient for smooth modern SaaS look
+  const gradientFill = chartCtx.createLinearGradient(0, 0, 0, 280);
+  gradientFill.addColorStop(0, 'rgba(37, 99, 235, 0.28)');
+  gradientFill.addColorStop(0.7, 'rgba(37, 99, 235, 0.04)');
+  gradientFill.addColorStop(1, 'rgba(37, 99, 235, 0.0)');
+
+  new Chart(ctx, {
+    data: {
+      labels: chartLabels,
+      datasets: [
+        {
+          type: 'line',
+          label: 'Omzet Penjualan (Rp)',
+          data: chartRevenue,
+          borderColor: '#2563eb',
+          borderWidth: 3,
+          backgroundColor: gradientFill,
+          fill: true,
+          tension: 0.4,
+          pointRadius: 4,
+          pointHoverRadius: 7,
+          pointBackgroundColor: '#ffffff',
+          pointBorderColor: '#2563eb',
+          pointBorderWidth: 2.5,
+          yAxisID: 'y',
+        },
+        {
+          type: 'bar',
+          label: 'Jumlah Transaksi',
+          data: chartTransactions,
+          backgroundColor: 'rgba(16, 185, 129, 0.45)',
+          hoverBackgroundColor: 'rgba(16, 185, 129, 0.85)',
+          borderRadius: 8,
+          barPercentage: 0.45,
+          yAxisID: 'y1',
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        mode: 'index',
+        intersect: false,
+      },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          align: 'end',
+          labels: {
+            boxWidth: 8,
+            boxHeight: 8,
+            usePointStyle: true,
+            pointStyle: 'circle',
+            font: { family: 'system-ui', size: 12, weight: '600' },
+            color: '#475569'
+          }
+        },
+        tooltip: {
+          backgroundColor: '#0f172a',
+          titleColor: '#f8fafc',
+          bodyColor: '#e2e8f0',
+          titleFont: { family: 'system-ui', size: 12, weight: '700' },
+          bodyFont: { family: 'system-ui', size: 12 },
+          padding: 12,
+          cornerRadius: 10,
+          boxPadding: 6,
+          usePointStyle: true,
+          callbacks: {
+            label: function(context) {
+              if (context.dataset.type === 'line') {
+                return ' Omzet: Rp ' + new Intl.NumberFormat('id-ID').format(context.raw);
+              } else {
+                return ' Transaksi: ' + context.raw + ' struk';
+              }
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { font: { family: 'system-ui', size: 11, weight: '600' }, color: '#64748b' }
+        },
+        y: {
+          type: 'linear',
+          display: true,
+          position: 'left',
+          beginAtZero: true,
+          grid: { color: '#f1f5f9', borderDash: [4, 4] },
+          ticks: {
+            font: { family: 'system-ui', size: 11 },
+            color: '#64748b',
+            callback: function(val) {
+              return 'Rp ' + new Intl.NumberFormat('id-ID', { notation: 'compact' }).format(val);
+            }
+          }
+        },
+        y1: {
+          type: 'linear',
+          display: true,
+          position: 'right',
+          beginAtZero: true,
+          grid: { drawOnChartArea: false },
+          ticks: {
+            stepSize: 1,
+            font: { family: 'system-ui', size: 11 },
+            color: '#10b981'
+          }
+        }
+      }
+    }
+  });
+});
+</script>

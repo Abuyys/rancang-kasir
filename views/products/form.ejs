@@ -1,0 +1,77 @@
+<div class="page-header">
+  <h1><%= product ? '✏️ Edit Produk' : '➕ Tambah Produk' %></h1>
+  <a href="/products" class="btn btn-secondary">← Kembali</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form action="<%= product ? '/products/' + product.id : '/products' %>" method="POST" style="max-width: 700px;">
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label for="category_id">Kategori <span style="color:red">*</span></label>
+          <select id="category_id" name="category_id" class="form-control" required>
+            <option value="">-- Pilih Kategori --</option>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat.id %>" <%= (product && product.category_id == cat.id) ? 'selected' : '' %>><%= cat.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label for="unit">Satuan</label>
+          <select id="unit" name="unit" class="form-control">
+            <% ['pcs','kg','gram','liter','ml','pack','box','botol','sachet','lusin'].forEach(u => { %>
+              <option value="<%= u %>" <%= (product && product.unit === u) ? 'selected' : '' %>><%= u %></option>
+            <% }); %>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label for="sku">SKU <span style="color:red">*</span></label>
+          <input type="text" id="sku" name="sku" class="form-control" placeholder="Contoh: MKN-001" required value="<%= product ? product.sku : '' %>">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label for="barcode">Barcode</label>
+          <input type="text" id="barcode" name="barcode" class="form-control" placeholder="Scan atau ketik barcode" value="<%= product ? (product.barcode || '') : '' %>">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="name">Nama Produk <span style="color:red">*</span></label>
+        <input type="text" id="name" name="name" class="form-control" placeholder="Contoh: Indomie Goreng" required value="<%= product ? product.name : '' %>">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label for="cost_price">Harga Modal (Rp)</label>
+          <input type="number" id="cost_price" name="cost_price" class="form-control" step="1" min="0" placeholder="0" value="<%= product ? product.cost_price : '' %>">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label for="selling_price">Harga Jual (Rp) <span style="color:red">*</span></label>
+          <input type="number" id="selling_price" name="selling_price" class="form-control" step="1" min="1" placeholder="0" required value="<%= product ? product.selling_price : '' %>">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label for="min_stock">Stok Minimum</label>
+          <input type="number" id="min_stock" name="min_stock" class="form-control" step="1" min="0" placeholder="0" value="<%= product ? product.min_stock : '0' %>">
+        </div>
+        <div class="form-group" style="flex:1">
+          <label>Status</label>
+          <div style="padding-top:8px">
+            <label style="display:inline-flex;align-items:center;gap:6px;cursor:pointer">
+              <input type="checkbox" name="is_active" value="1" <%= (!product || product.is_active) ? 'checked' : '' %>> Produk Aktif
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary"><%= product ? 'Simpan Perubahan' : 'Tambah Produk' %></button>
+        <a href="/products" class="btn btn-secondary">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>

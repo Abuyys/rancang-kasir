@@ -1,0 +1,21 @@
+<header class="top-header">
+  <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar">
+    ☰
+  </button>
+  <div class="header-right">
+    <!-- Dark Mode Toggle Button -->
+    <button type="button" class="theme-toggle-btn" id="themeToggleBtn" title="Ganti Tema Dark / Light (Alt + T)" aria-label="Toggle theme">
+      <span class="theme-icon moon-icon">🌙</span>
+      <span class="theme-icon sun-icon">☀️</span>
+      <span class="theme-btn-text" id="themeBtnText">Dark Mode</span>
+    </button>
+
+    <span class="user-info">
+      <span class="user-role-badge badge-<%= currentUser.role %>"><%= currentUser.role === 'admin' ? 'Admin' : 'Kasir' %></span>
+      <strong><%= currentUser.name %></strong>
+    </span>
+    <form action="/auth/logout" method="POST" style="display:inline;">
+      <button type="submit" class="btn btn-logout" title="Logout">🚪 Logout</button>
+    </form>
+  </div>
+</header>

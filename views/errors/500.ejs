@@ -1,0 +1,9 @@
+<div class="error-page">
+  <h1>500</h1>
+  <h2>Kesalahan Server</h2>
+  <p><%= typeof message !== 'undefined' ? message : 'Terjadi kesalahan internal.' %></p>
+  <% if (typeof error !== 'undefined' && error && error.stack) { %>
+    <pre class="error-stack"><%= error.stack %></pre>
+  <% } %>
+  <a href="/dashboard" class="btn btn-primary">Kembali ke Dashboard</a>
+</div>

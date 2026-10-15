@@ -1,0 +1,66 @@
+<div class="page-header">
+  <h1>🚚 Supplier</h1>
+  <a href="/suppliers/create" class="btn btn-primary">+ Tambah Supplier</a>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-body">
+    <form action="/suppliers" method="GET" class="filter-form">
+      <div class="filter-row">
+        <div class="form-group" style="flex:1;margin-bottom:0">
+          <input type="text" name="search" placeholder="Cari nama, telepon, email..." value="<%= filters.search || '' %>" class="form-control">
+        </div>
+        <div class="form-group" style="width:160px;margin-bottom:0">
+          <select name="status" class="form-control">
+            <option value="">Semua Status</option>
+            <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Aktif</option>
+            <option value="inactive" <%= filters.status === 'inactive' ? 'selected' : '' %>>Nonaktif</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Cari</button>
+        <a href="/suppliers" class="btn btn-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (suppliers.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead><tr><th style="width:50px">#</th><th>Nama</th><th>Telepon</th><th>Email</th><th style="width:100px">Status</th><th style="width:180px">Aksi</th></tr></thead>
+        <tbody>
+          <% suppliers.forEach((s, i) => { %>
+          <tr>
+            <td><%= (pagination.page - 1) * 20 + i + 1 %></td>
+            <td><strong><%= s.name %></strong><% if (s.address) { %><br><small class="text-muted"><%= s.address.substring(0, 60) %></small><% } %></td>
+            <td><%= s.phone || '-' %></td>
+            <td><%= s.email || '-' %></td>
+            <td><span class="badge <%= s.is_active ? 'badge-success' : 'badge-danger' %>"><%= s.is_active ? 'Aktif' : 'Nonaktif' %></span></td>
+            <td>
+              <a href="/suppliers/<%= s.id %>/edit" class="btn btn-sm btn-secondary">Edit</a>
+              <form action="/suppliers/<%= s.id %>/toggle-status" method="POST" style="display:inline">
+                <button type="submit" class="btn btn-sm <%= s.is_active ? 'btn-danger' : 'btn-success' %>" onclick="return confirm('Ubah status supplier ini?')">
+                  <%= s.is_active ? 'Nonaktifkan' : 'Aktifkan' %>
+                </button>
+              </form>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% if (pagination.totalPages > 1) { %>
+    <div class="pagination">
+      <% for (let p = 1; p <= pagination.totalPages; p++) { %>
+        <a href="/suppliers?page=<%= p %>&search=<%= filters.search || '' %>&status=<%= filters.status || '' %>" class="pagination-link <%= p === pagination.page ? 'active' : '' %>"><%= p %></a>
+      <% } %>
+    </div>
+    <% } %>
+    <p class="text-muted">Menampilkan <%= suppliers.length %> dari <%= pagination.total %> supplier</p>
+    <% } else { %>
+    <p class="text-muted">Belum ada supplier. <a href="/suppliers/create">Tambah supplier pertama</a></p>
+    <% } %>
+  </div>
+</div>

@@ -1,0 +1,402 @@
+<style>
+  .form-container-card {
+    max-width: 680px;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06);
+    overflow: hidden;
+  }
+
+  .form-header-banner {
+    padding: 1.5rem 2rem;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff;
+  }
+
+  .form-header-banner h1 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0 0 0.25rem 0;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .form-header-banner p {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin: 0;
+  }
+
+  .form-inner-body {
+    padding: 2rem;
+  }
+
+  .category-chips-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .category-preset-chip {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .category-preset-chip:hover {
+    background: #eff6ff;
+    border-color: #93c5fd;
+    color: #2563eb;
+    transform: translateY(-1px);
+  }
+
+  .category-preset-chip.active {
+    background: #eff6ff;
+    border-color: #2563eb;
+    color: #1d4ed8;
+    box-shadow: 0 0 0 1px #2563eb;
+  }
+
+  /* Currency Input Group (Flexbox prevents overlapping) */
+  .currency-input-group {
+    display: flex;
+    align-items: stretch;
+    border: 2px solid #cbd5e1;
+    border-radius: 10px;
+    background: #ffffff;
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .currency-input-group:focus-within {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  }
+
+  .currency-prefix-addon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 1.15rem;
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 800;
+    font-size: 1.15rem;
+    border-right: 1px solid #cbd5e1;
+    user-select: none;
+    flex-shrink: 0;
+  }
+
+  .currency-input-group input.currency-input-field {
+    flex: 1;
+    width: 100%;
+    border: none !important;
+    outline: none !important;
+    padding: 0.65rem 1rem !important;
+    font-size: 1.25rem !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    box-sizing: border-box;
+  }
+
+  .nominal-preview-badge {
+    margin-top: 0.45rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.8rem;
+    color: #475569;
+  }
+
+  .nominal-preview-val {
+    font-weight: 800;
+    color: #dc2626;
+    font-size: 0.95rem;
+  }
+
+  .quick-add-pills {
+    display: flex;
+    gap: 0.35rem;
+    margin-top: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .quick-add-btn {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.725rem;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .quick-add-btn:hover {
+    background: #2563eb;
+    border-color: #2563eb;
+    color: #ffffff;
+  }
+
+  /* Form actions */
+  .form-button-row {
+    display: flex;
+    gap: 0.85rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #f1f5f9;
+    margin-top: 1.5rem;
+  }
+
+  /* --- Expense Form Dark Mode Overrides --- */
+  html[data-theme="dark"] .form-container-card {
+    background: #151e32;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .category-preset-chip {
+    background: #0b1120;
+    border-color: #334155;
+    color: #cbd5e1;
+  }
+  html[data-theme="dark"] .category-preset-chip:hover {
+    background: #1e293b;
+    color: #ffffff;
+    border-color: #475569;
+  }
+  html[data-theme="dark"] .currency-input-group {
+    background: #0b1120;
+    border-color: #334155;
+  }
+  html[data-theme="dark"] .currency-prefix-addon {
+    background: #111a2d;
+    border-right-color: #334155;
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .currency-input-group input.currency-input-field {
+    color: #f8fafc !important;
+  }
+  html[data-theme="dark"] .nominal-preview-badge {
+    background: #0b1120;
+    border-color: #243049;
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .quick-add-btn {
+    background: #0b1120;
+    border-color: #334155;
+    color: #cbd5e1;
+  }
+  html[data-theme="dark"] .form-button-row {
+    border-top-color: #243049;
+  }
+</style>
+
+<div style="margin-bottom:1.25rem">
+  <a href="/expenses" style="display:inline-flex;align-items:center;gap:0.4rem;color:#475569;font-weight:600;font-size:0.875rem;text-decoration:none">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+    </svg>
+    <span>Kembali ke Daftar Pengeluaran</span>
+  </a>
+</div>
+
+<div class="form-container-card">
+  <!-- Banner Header -->
+  <div class="form-header-banner">
+    <h1>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+      </svg>
+      <span><%= expense ? 'Ubah Catatan Pengeluaran' : 'Catat Pengeluaran Toko Baru' %></span>
+    </h1>
+    <p>Masukkan rincian biaya operasional untuk menjaga keakuratan laporan laba rugi toko.</p>
+  </div>
+
+  <!-- Form Body -->
+  <div class="form-inner-body">
+    <form action="<%= expense ? `/expenses/${expense.id}` : '/expenses' %>" method="POST">
+      
+      <!-- Category Field & Quick Chips -->
+      <div class="form-group" style="margin-bottom:1.35rem">
+        <label for="category" style="font-weight:700;font-size:0.875rem;color:#1e293b;margin-bottom:0.35rem;display:block">
+          Kategori Pengeluaran <span style="color:#dc2626">*</span>
+        </label>
+        
+        <input type="text" id="category" name="category" list="categoryList" class="form-control" style="font-size:0.95rem;font-weight:600;border-radius:10px" required placeholder="Pilih chip di bawah atau ketik kategori bebas..." value="<%= expense ? expense.category : '' %>" autofocus autocomplete="off">
+        
+        <!-- Quick Clickable Category Chips -->
+        <div class="category-chips-grid">
+          <button type="button" class="category-preset-chip" data-cat="Listrik & Air">⚡ Listrik & Air</button>
+          <button type="button" class="category-preset-chip" data-cat="Internet & Telepon">🌐 Internet & WiFi</button>
+          <button type="button" class="category-preset-chip" data-cat="Perlengkapan Toko & Plastik">🛍️ Kantong Plastik/Kresek</button>
+          <button type="button" class="category-preset-chip" data-cat="Kertas Struk & Thermal">🖨️ Kertas Thermal</button>
+          <button type="button" class="category-preset-chip" data-cat="Kebersihan">🧹 Alat Kebersihan</button>
+          <button type="button" class="category-preset-chip" data-cat="Konsumsi Karyawan">☕ Konsumsi Karyawan</button>
+          <button type="button" class="category-preset-chip" data-cat="Perawatan & Servis AC/Peralatan">🔧 Servis AC/Chiller</button>
+          <button type="button" class="category-preset-chip" data-cat="Sewa & Keamanan">🛡️ Keamanan & Retribusi</button>
+          <button type="button" class="category-preset-chip" data-cat="Lain-lain">📦 Lain-lain</button>
+        </div>
+
+        <datalist id="categoryList">
+          <option value="Listrik & Air">
+          <option value="Internet & Telepon">
+          <option value="Perlengkapan Toko & Plastik">
+          <option value="Kertas Struk & Thermal">
+          <option value="Kebersihan">
+          <option value="Konsumsi Karyawan">
+          <option value="Perawatan & Servis AC/Peralatan">
+          <option value="Sewa & Keamanan">
+          <option value="Lain-lain">
+          <% if (categories && categories.length > 0) { %>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat %>">
+            <% }); %>
+          <% } %>
+        </datalist>
+      </div>
+
+      <!-- Amount with Live Preview and Quick Buttons -->
+      <div class="form-group" style="margin-bottom:1.35rem">
+        <label for="amount" style="font-weight:700;font-size:0.875rem;color:#1e293b;margin-bottom:0.35rem;display:block">
+          Nominal Pengeluaran <span style="color:#dc2626">*</span>
+        </label>
+        
+        <div class="currency-input-group">
+          <div class="currency-prefix-addon">Rp</div>
+          <input type="number" id="amount" name="amount" class="currency-input-field" min="1" step="any" required placeholder="0" value="<%= expense ? Math.round(expense.amount) : '' %>">
+        </div>
+
+        <!-- Live Rupiah Formatter Preview to prevent accidental extra zeros -->
+        <div class="nominal-preview-badge">
+          <span>Konfirmasi Terbaca:</span>
+          <span class="nominal-preview-val" id="amountPreview">Rp 0</span>
+        </div>
+
+        <!-- Quick Addition Chips -->
+        <div class="quick-add-pills">
+          <span style="font-size:0.75rem;color:#64748b;align-self:center;font-weight:600">Tambah cepat:</span>
+          <button type="button" class="quick-add-btn" data-add="10000">+10 rb</button>
+          <button type="button" class="quick-add-btn" data-add="50000">+50 rb</button>
+          <button type="button" class="quick-add-btn" data-add="100000">+100 rb</button>
+          <button type="button" class="quick-add-btn" data-add="500000">+500 rb</button>
+          <button type="button" class="quick-add-btn" id="btnClearAmount" style="color:#dc2626">Reset 0</button>
+        </div>
+      </div>
+
+      <!-- Date Field -->
+      <div class="form-group" style="margin-bottom:1.35rem">
+        <label for="expense_date" style="font-weight:700;font-size:0.875rem;color:#1e293b;margin-bottom:0.35rem;display:block">
+          Tanggal Pengeluaran <span style="color:#dc2626">*</span>
+        </label>
+        <% 
+          let dateVal = new Date().toISOString().split('T')[0];
+          if (expense && expense.expense_date) {
+            dateVal = new Date(expense.expense_date).toISOString().split('T')[0];
+          }
+        %>
+        <input type="date" id="expense_date" name="expense_date" class="form-control" style="border-radius:10px;font-size:0.95rem" required value="<%= dateVal %>">
+      </div>
+
+      <!-- Description Textarea -->
+      <div class="form-group" style="margin-bottom:1.35rem">
+        <label for="description" style="font-weight:700;font-size:0.875rem;color:#1e293b;margin-bottom:0.35rem;display:block">
+          Keterangan / Rincian Tambahan
+        </label>
+        <textarea id="description" name="description" class="form-control" rows="3" style="border-radius:10px;font-size:0.9rem" placeholder="Contoh: Pembelian 10 rol kantong kresek sedang dan sabun cuci lantai untuk area kasir..."><%= expense ? expense.description : '' %></textarea>
+      </div>
+
+      <!-- Buttons -->
+      <div class="form-button-row">
+        <button type="submit" class="btn btn-primary" style="font-weight:700;padding:0.75rem 1.75rem;border-radius:10px;font-size:0.95rem;display:inline-flex;align-items:center;gap:0.5rem">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span><%= expense ? 'Simpan Perubahan' : 'Simpan Catatan Pengeluaran' %></span>
+        </button>
+        <a href="/expenses" class="btn btn-secondary" style="font-weight:600;padding:0.75rem 1.25rem;border-radius:10px">
+          Batal
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const categoryInput = document.getElementById('category');
+    const amountInput = document.getElementById('amount');
+    const amountPreview = document.getElementById('amountPreview');
+    const categoryChips = document.querySelectorAll('.category-preset-chip');
+
+    // 1. Interactive category chips
+    categoryChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        const catVal = chip.dataset.cat;
+        categoryInput.value = catVal;
+        categoryChips.forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        amountInput.focus();
+      });
+    });
+
+    // Highlight matching chip if editing
+    function syncChipState() {
+      const cur = categoryInput.value.trim().toLowerCase();
+      categoryChips.forEach(chip => {
+        if (chip.dataset.cat.toLowerCase() === cur) {
+          chip.classList.add('active');
+        } else {
+          chip.classList.remove('active');
+        }
+      });
+    }
+    syncChipState();
+    categoryInput.addEventListener('input', syncChipState);
+
+    // 2. Real-time Rupiah preview
+    function updateAmountPreview() {
+      const val = parseFloat(amountInput.value) || 0;
+      amountPreview.textContent = 'Rp ' + new Intl.NumberFormat('id-ID').format(val);
+    }
+    updateAmountPreview();
+    amountInput.addEventListener('input', updateAmountPreview);
+
+    // 3. Quick addition buttons
+    document.querySelectorAll('.quick-add-btn[data-add]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const add = parseInt(btn.dataset.add);
+        const cur = parseFloat(amountInput.value) || 0;
+        amountInput.value = cur + add;
+        updateAmountPreview();
+        amountInput.focus();
+      });
+    });
+
+    document.getElementById('btnClearAmount').addEventListener('click', () => {
+      amountInput.value = '';
+      updateAmountPreview();
+      amountInput.focus();
+    });
+  });
+</script>

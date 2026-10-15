@@ -1,0 +1,64 @@
+<div class="page-header">
+  <h1>📋 Persediaan</h1>
+  <div>
+    <a href="/inventory/movements" class="btn btn-secondary">📑 Riwayat Stok</a>
+    <a href="/inventory/adjustments" class="btn btn-primary">🔧 Penyesuaian Stok</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-body">
+    <form action="/inventory" method="GET" class="filter-form">
+      <div class="filter-row">
+        <div class="form-group" style="flex:1;margin-bottom:0">
+          <input type="text" name="search" placeholder="Cari produk..." value="<%= filters.search || '' %>" class="form-control">
+        </div>
+        <label style="display:flex;align-items:center;gap:6px;cursor:pointer">
+          <input type="checkbox" name="low_stock" value="1" <%= filters.low_stock === '1' ? 'checked' : '' %>> Stok Menipis Saja
+        </label>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/inventory" class="btn btn-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (stocks.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead><tr><th>#</th><th>SKU</th><th>Produk</th><th>Kategori</th><th style="text-align:right">Stok</th><th style="text-align:right">Min Stok</th><th>Satuan</th><th>Status Stok</th></tr></thead>
+        <tbody>
+          <% stocks.forEach((s, i) => { %>
+          <tr class="<%= s.stock <= s.min_stock ? 'row-warning' : '' %>">
+            <td><%= (pagination.page - 1) * 30 + i + 1 %></td>
+            <td><code><%= s.sku %></code></td>
+            <td><strong><%= s.name %></strong></td>
+            <td><%= s.category_name || '-' %></td>
+            <td style="text-align:right;font-weight:bold"><%= s.stock %></td>
+            <td style="text-align:right"><%= s.min_stock %></td>
+            <td><%= s.unit %></td>
+            <td>
+              <% if (s.stock <= 0) { %><span class="badge badge-danger">Habis</span>
+              <% } else if (s.stock <= s.min_stock) { %><span class="badge" style="background:#f59e0b;color:#fff;padding:0.25rem 0.625rem;border-radius:9999px;font-size:0.75rem">Menipis</span>
+              <% } else { %><span class="badge badge-success">Aman</span><% } %>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% if (pagination.totalPages > 1) { %>
+    <div class="pagination">
+      <% for (let p = Math.max(1, pagination.page-2); p <= Math.min(pagination.totalPages, pagination.page+2); p++) { %>
+        <a href="/inventory?page=<%= p %>&search=<%= filters.search||'' %>&low_stock=<%= filters.low_stock||'' %>" class="pagination-link <%= p===pagination.page?'active':'' %>"><%= p %></a>
+      <% } %>
+    </div>
+    <% } %>
+    <p class="text-muted">Menampilkan <%= stocks.length %> dari <%= pagination.total %> produk</p>
+    <% } else { %>
+    <p class="text-muted">Tidak ada data stok.</p>
+    <% } %>
+  </div>
+</div>

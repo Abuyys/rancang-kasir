@@ -1,0 +1,110 @@
+<div class="page-header">
+  <div>
+    <h1>⚙️ Pengaturan Toko & Sistem</h1>
+    <p>Kelola profil toko, format struk, batasan diskon kasir, dan preferensi operasional.</p>
+  </div>
+  <div>
+    <a href="/settings/audit-logs" class="btn btn-secondary">
+      📜 Log Audit Aktivitas
+    </a>
+  </div>
+</div>
+
+<form action="/settings" method="POST" style="max-width:850px">
+  <!-- Card 1: Profil Toko -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <h2>🏪 Profil & Identitas Toko</h2>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="store_name">Nama Toko / Minimarket <span style="color:red">*</span></label>
+        <input type="text" id="store_name" name="store_name" class="form-control" required value="<%= settings.store_name %>">
+      </div>
+
+      <div class="form-group">
+        <label for="store_phone">Nomor Telepon / WhatsApp</label>
+        <input type="text" id="store_phone" name="store_phone" class="form-control" placeholder="Contoh: 08123456789" value="<%= settings.store_phone %>">
+      </div>
+
+      <div class="form-group">
+        <label for="store_address">Alamat Toko</label>
+        <textarea id="store_address" name="store_address" class="form-control" rows="2" placeholder="Jl. ..."><%= settings.store_address %></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Format Struk & Faktur -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <h2>🧾 Format Struk & Faktur</h2>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label for="invoice_prefix">Prefix Nomor Faktur Penjualan <span style="color:red">*</span></label>
+        <input type="text" id="invoice_prefix" name="invoice_prefix" class="form-control" style="max-width:200px" required value="<%= settings.invoice_prefix %>">
+        <small class="text-muted">Awalan nomor invoice, contoh: INV (menjadi INV-YYYYMMDD-0001).</small>
+      </div>
+
+      <div class="form-group">
+        <label for="receipt_footer">Pesan Penutup Struk (Footer)</label>
+        <textarea id="receipt_footer" name="receipt_footer" class="form-control" rows="2"><%= settings.receipt_footer %></textarea>
+        <small class="text-muted">Pesan yang tercetak di bagian paling bawah struk belanja thermal.</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: Batasan Operasional Kasir & Diskon -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <h2>🛡️ Batasan Operasional & Kebijakan Kasir</h2>
+    </div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+        <div class="form-group">
+          <label for="max_cashier_discount">Batas Diskon Maksimum Kasir (%) <span style="color:red">*</span></label>
+          <input type="number" id="max_cashier_discount" name="max_cashier_discount" class="form-control" min="0" max="100" step="0.5" required value="<%= settings.max_cashier_discount %>">
+          <small class="text-muted">Kasir tidak dapat memberikan diskon melebihi persentase ini dari subtotal belanja.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="default_min_stock">Batas Stok Minimum Default <span style="color:red">*</span></label>
+          <input type="number" id="default_min_stock" name="default_min_stock" class="form-control" min="0" step="1" required value="<%= settings.default_min_stock %>">
+          <small class="text-muted">Peringatan otomatis saat stok produk mencapai atau di bawah angka ini.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 4: Preferensi Sistem -->
+  <div class="card" style="margin-bottom:1.5rem">
+    <div class="card-header">
+      <h2>🌐 Preferensi Waktu & Mata Uang</h2>
+    </div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+        <div class="form-group">
+          <label for="timezone">Zona Waktu Sistem <span style="color:red">*</span></label>
+          <select id="timezone" name="timezone" class="form-control" required>
+            <option value="Asia/Jakarta" <%= settings.timezone === 'Asia/Jakarta' ? 'selected' : '' %>>Asia/Jakarta (WIB, UTC+7)</option>
+            <option value="Asia/Makassar" <%= settings.timezone === 'Asia/Makassar' ? 'selected' : '' %>>Asia/Makassar (WITA, UTC+8)</option>
+            <option value="Asia/Jayapura" <%= settings.timezone === 'Asia/Jayapura' ? 'selected' : '' %>>Asia/Jayapura (WIT, UTC+9)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="currency">Mata Uang <span style="color:red">*</span></label>
+          <select id="currency" name="currency" class="form-control" required>
+            <option value="IDR" <%= settings.currency === 'IDR' ? 'selected' : '' %>>Rupiah Indonesia (Rp / IDR)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions" style="margin-bottom:2rem">
+    <button type="submit" class="btn btn-primary" style="padding:0.75rem 2rem;font-size:1rem;font-weight:600">
+      💾 Simpan Semua Pengaturan
+    </button>
+  </div>
+</form>

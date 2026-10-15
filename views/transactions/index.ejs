@@ -1,0 +1,131 @@
+<div class="page-header">
+  <h1>🧾 Riwayat Transaksi</h1>
+  <div>
+    <a href="/pos" class="btn btn-primary">🛒 Buka Kasir / POS</a>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:1.5rem">
+  <div class="card-body">
+    <form action="/transactions" method="GET" class="filter-form">
+      <div class="filter-row" style="display:flex;flex-wrap:wrap;gap:0.75rem;align-items:flex-end">
+        <div class="form-group" style="margin-bottom:0;flex:1;min-width:180px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Cari Invoice</label>
+          <input type="text" name="search" class="form-control" placeholder="Contoh: INV-..." value="<%= filters.search || '' %>">
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;width:150px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Status</label>
+          <select name="status" class="form-control">
+            <option value="">Semua Status</option>
+            <option value="completed" <%= filters.status === 'completed' ? 'selected' : '' %>>Selesai</option>
+            <option value="partially_returned" <%= filters.status === 'partially_returned' ? 'selected' : '' %>>Sebagian Diretur</option>
+            <option value="returned" <%= filters.status === 'returned' ? 'selected' : '' %>>Diretur</option>
+            <option value="cancelled" <%= filters.status === 'cancelled' ? 'selected' : '' %>>Dibatalkan</option>
+          </select>
+        </div>
+
+        <% if (isAdmin && cashiers && cashiers.length > 0) { %>
+        <div class="form-group" style="margin-bottom:0;width:160px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Kasir</label>
+          <select name="user_id" class="form-control">
+            <option value="">Semua Kasir</option>
+            <% cashiers.forEach(c => { %>
+              <option value="<%= c.id %>" <%= String(filters.user_id) === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <% } %>
+
+        <div class="form-group" style="margin-bottom:0;width:140px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Dari Tanggal</label>
+          <input type="date" name="start_date" class="form-control" value="<%= filters.start_date || '' %>">
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;width:140px">
+          <label style="font-size:0.8rem;margin-bottom:0.25rem">Sampai Tanggal</label>
+          <input type="date" name="end_date" class="form-control" value="<%= filters.end_date || '' %>">
+        </div>
+
+        <div style="display:flex;gap:0.5rem">
+          <button type="submit" class="btn btn-primary">Filter</button>
+          <a href="/transactions" class="btn btn-secondary">Reset</a>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (sales.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>No. Invoice</th>
+            <th>Tanggal</th>
+            <th>Kasir</th>
+            <th style="text-align:right">Total</th>
+            <th>Metode</th>
+            <th>Status</th>
+            <th style="text-align:center">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% sales.forEach((s, idx) => { %>
+          <tr>
+            <td><%= (pagination.page - 1) * 20 + idx + 1 %></td>
+            <td>
+              <a href="/transactions/<%= s.id %>" style="font-weight:700;color:#2563eb;text-decoration:none">
+                <%= s.invoice_number %>
+              </a>
+            </td>
+            <td><small><%= new Date(s.created_at).toLocaleString('id-ID') %></small></td>
+            <td><%= s.cashier_name || '-' %></td>
+            <td style="text-align:right;font-weight:600">
+              Rp <%= new Intl.NumberFormat('id-ID').format(s.total) %>
+            </td>
+            <td>
+              <span class="badge" style="background:#e2e8f0;color:#1e293b;text-transform:uppercase">
+                <%= s.payment_method %>
+              </span>
+            </td>
+            <td>
+              <% if (s.status === 'completed') { %>
+                <span class="badge badge-success">Selesai</span>
+              <% } else if (s.status === 'cancelled') { %>
+                <span class="badge badge-danger">Dibatalkan</span>
+              <% } else if (s.status === 'partially_returned') { %>
+                <span class="badge" style="background:#fef08a;color:#854d0e">Sebagian Retur</span>
+              <% } else if (s.status === 'returned') { %>
+                <span class="badge" style="background:#fed7aa;color:#9a3412">Diretur Penuh</span>
+              <% } %>
+            </td>
+            <td style="text-align:center">
+              <a href="/transactions/<%= s.id %>" class="btn btn-sm btn-secondary" title="Detail">Detail</a>
+              <button onclick="window.open('/transactions/<%= s.id %>/receipt', '_blank', 'width=400,height=600')" class="btn btn-sm btn-secondary" title="Cetak Ulang Struk">🖨️ Struk</button>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+
+    <% if (pagination.totalPages > 1) { %>
+    <div class="pagination">
+      <% for (let p = Math.max(1, pagination.page - 2); p <= Math.min(pagination.totalPages, pagination.page + 2); p++) { %>
+        <a href="/transactions?page=<%= p %>&search=<%= filters.search || '' %>&status=<%= filters.status || '' %>&user_id=<%= filters.user_id || '' %>&start_date=<%= filters.start_date || '' %>&end_date=<%= filters.end_date || '' %>"
+           class="pagination-link <%= p === pagination.page ? 'active' : '' %>">
+          <%= p %>
+        </a>
+      <% } %>
+    </div>
+    <% } %>
+
+    <% } else { %>
+      <p class="text-muted" style="text-align:center;padding:2rem">Tidak ada transaksi ditemukan.</p>
+    <% } %>
+  </div>
+</div>

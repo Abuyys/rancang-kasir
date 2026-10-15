@@ -1,0 +1,1350 @@
+<style>
+  /* ==========================================================================
+     Ultra-Modern Executive Reports & Analytics Dashboard
+     Zero Horizontal Scroll - Compact, Pixel-Perfect Layout
+     ========================================================================== */
+
+  .rpt-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.15rem;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    font-family: inherit;
+    color: #0f172a;
+  }
+
+  /* --- Top Header & Action Bar --- */
+  .rpt-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .rpt-title-box h1 {
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.025em;
+    margin: 0 0 0.25rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .rpt-title-sub {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.825rem;
+    color: #64748b;
+    flex-wrap: wrap;
+  }
+
+  .rpt-period-badge {
+    background: #e2e8f0;
+    color: #334155;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.775rem;
+  }
+
+  .rpt-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-rpt {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+
+  .btn-rpt-primary {
+    background: #2563eb;
+    color: #ffffff !important;
+    border-color: #1d4ed8;
+    box-shadow: 0 1px 3px rgba(37, 99, 235, 0.2);
+  }
+  .btn-rpt-primary:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(37, 99, 235, 0.3);
+  }
+
+  .btn-rpt-outline {
+    background: #ffffff;
+    color: #334155 !important;
+    border-color: #cbd5e1;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  }
+  .btn-rpt-outline:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a !important;
+  }
+
+  .btn-rpt-danger {
+    background: #fff1f2;
+    color: #e11d48 !important;
+    border-color: #fecdd3;
+  }
+  .btn-rpt-danger:hover {
+    background: #ffe4e6;
+    border-color: #fda4af;
+  }
+
+  /* --- Compact Filter Toolbar & Quick Presets --- */
+  .rpt-filter-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .rpt-filter-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .rpt-filter-form {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .rpt-input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+  }
+
+  .rpt-input-group label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  .rpt-input-date {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 7px;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #1e293b;
+    outline: none;
+    transition: all 0.15s;
+  }
+  .rpt-input-date:focus {
+    background: #ffffff;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  }
+
+  .rpt-presets {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .rpt-preset-chip {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 0.25rem 0.55rem;
+    border-radius: 6px;
+    font-size: 0.725rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .rpt-preset-chip:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+    border-color: #cbd5e1;
+  }
+  .rpt-preset-chip.active {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #1d4ed8;
+  }
+
+  /* --- Executive P&L Financial Strip --- */
+  .rpt-pnl-strip {
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    border-radius: 12px;
+    padding: 0.85rem 1.25rem;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+  }
+
+  .rpt-pnl-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .rpt-pnl-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .rpt-pnl-val {
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .rpt-pnl-divider {
+    color: #64748b;
+    font-size: 1.1rem;
+    font-weight: 700;
+    user-select: none;
+  }
+
+  .rpt-pnl-badge-pos {
+    background: rgba(16, 185, 129, 0.2);
+    border: 1px solid rgba(16, 185, 129, 0.4);
+    color: #34d399;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  .rpt-pnl-badge-neg {
+    background: rgba(244, 63, 94, 0.2);
+    border: 1px solid rgba(244, 63, 94, 0.4);
+    color: #fb7185;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+
+  /* --- Compact Bento KPI Cards Grid --- */
+  .rpt-bento-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .rpt-kpi-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .rpt-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+  }
+
+  .rpt-kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+  }
+
+  .kpi-accent-blue::before { background: #2563eb; }
+  .kpi-accent-green::before { background: #10b981; }
+  .kpi-accent-rose::before { background: #f43f5e; }
+  .kpi-accent-purple::before { background: #8b5cf6; }
+  .kpi-accent-amber::before { background: #f59e0b; }
+  .kpi-accent-slate::before { background: #64748b; }
+
+  .rpt-kpi-card.hero-kpi {
+    background: #f0fdf4;
+    border: 2px solid #86efac;
+  }
+  .rpt-kpi-card.hero-kpi-loss {
+    background: #fff1f2;
+    border: 2px solid #fecdd3;
+  }
+
+  .rpt-kpi-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.4rem;
+  }
+
+  .rpt-kpi-title {
+    font-size: 0.725rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #64748b;
+  }
+
+  .rpt-kpi-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 7px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    background: #f1f5f9;
+  }
+
+  .rpt-kpi-val {
+    font-size: 1.25rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    margin-bottom: 0.35rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .rpt-kpi-sub {
+    font-size: 0.725rem;
+    color: #64748b;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 0.35rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* --- 2-Column Split Grids --- */
+  .rpt-grid-split {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 1rem;
+  }
+
+  /* --- Section Card Container --- */
+  .rpt-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rpt-card-header {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e2e8f0;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+  }
+
+  .rpt-card-header h2 {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #0f172a;
+    letter-spacing: -0.015em;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .rpt-card-body {
+    padding: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* --- Tables & Lists --- */
+  .rpt-table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .rpt-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+    text-align: left;
+  }
+
+  .rpt-table th {
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.725rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.55rem 0.85rem;
+    border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
+  }
+
+  .rpt-table td {
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #1e293b;
+  }
+
+  .rpt-table tbody tr:hover {
+    background: #f8fafc;
+  }
+
+  .rpt-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  /* --- Table Pills & Badges --- */
+  .rpt-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.45rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .rpt-pill-blue { background: #eff6ff; color: #1d4ed8; }
+  .rpt-pill-emerald { background: #ecfdf5; color: #047857; }
+  .rpt-pill-rose { background: #fff1f2; color: #be123c; }
+  .rpt-pill-amber { background: #fffbeb; color: #b45309; }
+  .rpt-pill-purple { background: #f5f3ff; color: #6d28d9; }
+  .rpt-pill-slate { background: #f1f5f9; color: #475569; }
+
+  /* Rank Badges */
+  .rpt-rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 800;
+  }
+  .rank-1 { background: #fef3c7; color: #b45309; }
+  .rank-2 { background: #e2e8f0; color: #334155; }
+  .rank-3 { background: #ffedd5; color: #c2410c; }
+  .rank-normal { background: #f1f5f9; color: #64748b; font-weight: 600; }
+
+  /* Mini visual progress bar in table */
+  .rpt-bar-track {
+    width: 60px;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 9999px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 0.4rem;
+  }
+  .rpt-bar-fill {
+    height: 100%;
+    border-radius: 9999px;
+  }
+
+  /* Empty state */
+  .rpt-empty-state {
+    padding: 1.75rem 1rem;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.825rem;
+  }
+  .rpt-empty-state span {
+    font-size: 1.5rem;
+    display: block;
+    margin-bottom: 0.35rem;
+  }
+
+  /* Table Search Input */
+  .rpt-table-search {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 0.25rem 0.55rem;
+    font-size: 0.75rem;
+    color: #1e293b;
+    outline: none;
+    width: 170px;
+  }
+  .rpt-table-search:focus {
+    background: #ffffff;
+    border-color: #2563eb;
+  }
+
+  /* --- Print Mode Optimizations --- */
+  @media print {
+    body {
+      background: #ffffff !important;
+      color: #000000 !important;
+    }
+    .app-layout .main-content {
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+    .rpt-header .rpt-actions,
+    .rpt-filter-card,
+    .rpt-table-search,
+    .app-layout aside,
+    .app-layout header,
+    .btn-rpt {
+      display: none !important;
+    }
+    .rpt-container {
+      gap: 0.75rem !important;
+    }
+    .rpt-card, .rpt-kpi-card, .rpt-pnl-strip {
+      box-shadow: none !important;
+      border: 1px solid #cbd5e1 !important;
+    }
+    .rpt-pnl-strip {
+      background: #f8fafc !important;
+      color: #0f172a !important;
+    }
+    .rpt-pnl-label, .rpt-pnl-divider {
+      color: #475569 !important;
+    }
+    .rpt-grid-split {
+      grid-template-columns: 1fr 1fr !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .rpt-grid-split {
+      grid-template-columns: 1fr;
+    }
+    .rpt-bento-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  /* --- Reports Dark Mode Overrides --- */
+  html[data-theme="dark"] .rpt-title-box h1 {
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .rpt-card {
+    background: #151e32;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .rpt-card-header {
+    background: #151e32;
+    border-bottom-color: #243049;
+  }
+  html[data-theme="dark"] .rpt-card-header h2 {
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .rpt-filter-card {
+    background: #151e32;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .rpt-input-group label {
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .rpt-input-date {
+    background: #0b1120;
+    border-color: #334155;
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .rpt-preset-chip {
+    background: #0b1120;
+    border-color: #334155;
+    color: #cbd5e1;
+  }
+  html[data-theme="dark"] .rpt-preset-chip:hover {
+    background: #1e293b;
+    color: #ffffff;
+    border-color: #475569;
+  }
+  html[data-theme="dark"] .rpt-kpi-card {
+    background: #151e32;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .rpt-kpi-top .rpt-kpi-title {
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .rpt-kpi-sub {
+    border-top-color: #243049;
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .rpt-kpi-card.hero-kpi {
+    background: #052e16;
+    border-color: #15803d;
+  }
+  html[data-theme="dark"] .rpt-kpi-card.hero-kpi-loss {
+    background: #4c0519;
+    border-color: #9f1239;
+  }
+  html[data-theme="dark"] .rpt-table th {
+    background: #111a2d;
+    color: #94a3b8;
+    border-bottom-color: #243049;
+  }
+  html[data-theme="dark"] .rpt-table td {
+    border-bottom-color: #1e293b;
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .rpt-table tbody tr:hover {
+    background: #1a253a;
+  }
+  html[data-theme="dark"] .rpt-table-search {
+    background: #0b1120;
+    border-color: #334155;
+    color: #f8fafc;
+  }
+  html[data-theme="dark"] .btn-rpt-outline {
+    background: #151e32;
+    border-color: #334155;
+    color: #f1f5f9 !important;
+  }
+  html[data-theme="dark"] .btn-rpt-outline:hover {
+    background: #1e293b;
+    border-color: #475569;
+  }
+  html[data-theme="dark"] .rpt-period-badge {
+    background: #1e293b;
+    color: #cbd5e1;
+  }
+  html[data-theme="dark"] .rank-normal {
+    background: #0b1120;
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .rpt-bar-track {
+    background: #243049;
+  }
+  html[data-theme="dark"] .rpt-empty-state {
+    color: #64748b;
+  }
+</style>
+
+<div class="rpt-container">
+  <!-- Top Header Bar -->
+  <div class="rpt-header">
+    <div class="rpt-title-box">
+      <h1>📈 Laporan Bisnis & Keuangan</h1>
+      <div class="rpt-title-sub">
+        <span>Rentang Analisis:</span>
+        <span class="rpt-period-badge">
+          📅 <%= new Date(dates.startDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %> 
+          &nbsp;—&nbsp; 
+          <%= new Date(dates.endDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+        </span>
+      </div>
+    </div>
+
+    <!-- Export & Print Actions -->
+    <div class="rpt-actions">
+      <button onclick="window.print()" class="btn-rpt btn-rpt-outline" title="Cetak atau simpan format PDF">
+        🖨️ Cetak / PDF
+      </button>
+      <a href="/reports/export/sales-csv?start_date=<%= dates.startDate %>&end_date=<%= dates.endDate %>" class="btn-rpt btn-rpt-primary" title="Download spreadsheet penjualan">
+        📥 CSV Penjualan
+      </a>
+      <a href="/reports/export/expenses-csv?start_date=<%= dates.startDate %>&end_date=<%= dates.endDate %>" class="btn-rpt btn-rpt-danger" title="Download data pengeluaran operasional">
+        💸 CSV Beban Toko
+      </a>
+      <a href="/reports/export/products-csv" class="btn-rpt btn-rpt-outline" title="Download stok & master produk">
+        📦 CSV Katalog
+      </a>
+    </div>
+  </div>
+
+  <!-- Filter & Quick Presets Toolbar -->
+  <div class="rpt-filter-card">
+    <div class="rpt-filter-row">
+      <form action="/reports" method="GET" class="rpt-filter-form" id="reportDateForm">
+        <div class="rpt-input-group">
+          <label>Dari</label>
+          <input type="date" id="startDateInput" name="start_date" class="rpt-input-date" value="<%= dates.startDate %>" required>
+        </div>
+
+        <div class="rpt-input-group">
+          <label>Sampai</label>
+          <input type="date" id="endDateInput" name="end_date" class="rpt-input-date" value="<%= dates.endDate %>" required>
+        </div>
+
+        <button type="submit" class="btn-rpt btn-rpt-primary" style="padding:0.35rem 0.75rem">
+          🔍 Terapkan Filter
+        </button>
+      </form>
+
+      <!-- Quick Preset Chips -->
+      <div class="rpt-presets">
+        <span style="font-size:0.725rem;font-weight:700;color:#64748b;margin-right:0.2rem">Preset:</span>
+        <button type="button" class="rpt-preset-chip" onclick="setPreset('today')">Hari Ini</button>
+        <button type="button" class="rpt-preset-chip" onclick="setPreset('7days')">7 Hari</button>
+        <button type="button" class="rpt-preset-chip" onclick="setPreset('thisMonth')">Bulan Ini</button>
+        <button type="button" class="rpt-preset-chip" onclick="setPreset('lastMonth')">Bulan Lalu</button>
+        <button type="button" class="rpt-preset-chip" onclick="setPreset('thisYear')">Tahun Ini</button>
+      </div>
+    </div>
+  </div>
+
+  <% 
+    const netSales = summary.adjustedNetSales || 0;
+    const grossProfit = summary.grossProfit || 0;
+    const totalExpenses = summary.totalExpenses || 0;
+    const netProfit = summary.netProfit || 0;
+    const isProfitable = netProfit >= 0;
+    const netMarginPct = netSales > 0 ? ((netProfit / netSales) * 100).toFixed(1) : 0;
+    const expenseRatioPct = netSales > 0 ? ((totalExpenses / netSales) * 100).toFixed(1) : 0;
+  %>
+
+  <!-- Executive P&L Strip (Visual Laba Rugi Eksekutif) -->
+  <div class="rpt-pnl-strip">
+    <div class="rpt-pnl-item">
+      <div class="rpt-pnl-label">
+        <span>💰 1. Omzet Bersih</span>
+      </div>
+      <div class="rpt-pnl-val" style="color:#60a5fa">
+        Rp <%= new Intl.NumberFormat('id-ID').format(netSales) %>
+      </div>
+    </div>
+
+    <div class="rpt-pnl-divider">−</div>
+
+    <div class="rpt-pnl-item">
+      <div class="rpt-pnl-label">
+        <span>📦 Beban Pokok (HPP)</span>
+      </div>
+      <div class="rpt-pnl-val" style="color:#cbd5e1">
+        Rp <%= new Intl.NumberFormat('id-ID').format(Math.max(0, netSales - grossProfit)) %>
+      </div>
+    </div>
+
+    <div class="rpt-pnl-divider">=</div>
+
+    <div class="rpt-pnl-item">
+      <div class="rpt-pnl-label">
+        <span>📈 2. Laba Kotor</span>
+      </div>
+      <div class="rpt-pnl-val" style="color:#34d399">
+        Rp <%= new Intl.NumberFormat('id-ID').format(grossProfit) %>
+      </div>
+    </div>
+
+    <div class="rpt-pnl-divider">−</div>
+
+    <div class="rpt-pnl-item">
+      <div class="rpt-pnl-label">
+        <span>💸 3. Beban Toko</span>
+      </div>
+      <div class="rpt-pnl-val" style="color:#fb7185">
+        Rp <%= new Intl.NumberFormat('id-ID').format(totalExpenses) %>
+      </div>
+    </div>
+
+    <div class="rpt-pnl-divider">=</div>
+
+    <div class="rpt-pnl-item">
+      <div class="rpt-pnl-label">
+        <span>💎 4. Laba Bersih Akhir</span>
+        <% if (isProfitable) { %>
+          <span class="rpt-pnl-badge-pos">SURPLUS</span>
+        <% } else { %>
+          <span class="rpt-pnl-badge-neg">DEFISIT</span>
+        <% } %>
+      </div>
+      <div class="rpt-pnl-val" style="color:<%= isProfitable ? '#4ade80' : '#f43f5e' %>">
+        Rp <%= new Intl.NumberFormat('id-ID').format(netProfit) %>
+        <span style="font-size:0.75rem;font-weight:600;opacity:0.85">
+          (<%= netMarginPct %>%)
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Compact Bento Metric Grid (7 KPI Cards) -->
+  <div class="rpt-bento-grid">
+    <!-- Card 1: Omzet Bersih -->
+    <div class="rpt-kpi-card kpi-accent-blue">
+      <div class="rpt-kpi-top">
+        <span class="rpt-kpi-title">Omzet Bersih</span>
+        <div class="rpt-kpi-icon" style="background:#eff6ff;color:#2563eb">💰</div>
+      </div>
+      <div class="rpt-kpi-val" style="color:#2563eb">
+        Rp <%= new Intl.NumberFormat('id-ID').format(summary.adjustedNetSales) %>
+      </div>
+      <div class="rpt-kpi-sub">
+        <span>Gross: Rp <%= new Intl.NumberFormat('id-ID').format(summary.grossSales) %></span>
+        <span class="rpt-pill rpt-pill-blue"><%= summary.transactionCount %> Trx</span>
+      </div>
+    </div>
+
+    <!-- Card 2: Laba Kotor -->
+    <div class="rpt-kpi-card kpi-accent-green">
+      <div class="rpt-kpi-top">
+        <span class="rpt-kpi-title">Laba Kotor</span>
+        <div class="rpt-kpi-icon" style="background:#ecfdf5;color:#10b981">📈</div>
+      </div>
+      <div class="rpt-kpi-val" style="color:#10b981">
+        Rp <%= new Intl.NumberFormat('id-ID').format(summary.grossProfit) %>
+      </div>
+      <div class="rpt-kpi-sub">
+        <span>Margin Barang</span>
+        <span class="rpt-pill rpt-pill-emerald">
+          <%= summary.adjustedNetSales > 0 ? ((summary.grossProfit / summary.adjustedNetSales) * 100).toFixed(1) : 0 %>%
+        </span>
+      </div>
+    </div>
+
+    <!-- Card 3: Beban Pengeluaran Toko -->
+    <div class="rpt-kpi-card kpi-accent-rose">
+      <div class="rpt-kpi-top">
+        <span class="rpt-kpi-title">Beban Toko</span>
+        <div class="rpt-kpi-icon" style="background:#fff1f2;color:#f43f5e">💸</div>
+      </div>
+      <div class="rpt-kpi-val" style="color:#e11d48">
+        Rp <%= new Intl.NumberFormat('id-ID').format(summary.totalExpenses || 0) %>
+      </div>
+      <div class="rpt-kpi-sub">
+        <span>Operasional</span>
+        <span class="rpt-pill rpt-pill-rose"><%= summary.expenseCount || 0 %> Nota</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Estimasi Laba Bersih (Hero Card) -->
+    <div class="rpt-kpi-card <%= isProfitable ? 'hero-kpi' : 'hero-kpi-loss' %>">
+      <div class="rpt-kpi-top">
+        <span class="rpt-kpi-title" style="color:<%= isProfitable ? '#15803d' : '#be123c' %>">
+          Laba Bersih
+        </span>
+        <div class="rpt-kpi-icon" style="background:<%= isProfitable ? '#dcfce7' : '#fee2e2' %>">
+          <%= isProfitable ? '💎' : '⚠️' %>
+        </div>
+      </div>
+      <div class="rpt-kpi-val" style="color:<%= isProfitable ? '#15803d' : '#e11d48' %>">
+        Rp <%= new Intl.NumberFormat('id-ID').format(summary.netProfit || 0) %>
+      </div>
+      <div class="rpt-kpi-sub">
+        <span style="font-weight:700">Kotor − Beban</span>
+        <span class="rpt-pill <%= isProfitable ? 'rpt-pill-emerald' : 'rpt-pill-rose' %>">
+          <%= isProfitable ? 'Surplus' : 'Defisit' %>
+        </span>
+      </div>
+    </div>
+
+    <!-- Card 5: Transaksi Kasir -->
+    <div class="rpt-kpi-card kpi-accent-slate">
+      <div class="rpt-kpi-top">
+        <span class="rpt-kpi-title">Total Transaksi</span>
+        <div class="rpt-kpi-icon" style="background:#f1f5f9;color:#475569">🧾</div>
+      </div>
+      <div class="rpt-kpi-val" style="color:var(--text-main)">
+        <%= summary.transactionCount %>
+      </div>
+      <div class="rpt-kpi-sub">
+        <span>Rata-rata Trx</span>
+        <span style="font-weight:700;color:var(--text-main)">
+          Rp <%= new Intl.NumberFormat('id-ID').format(Math.round(summary.avgTransactionValue || 0)) %>
+        </span>
+      </div>
+    </div>
+
+    <!-- Card 6: Pembelian Supplier -->
+    <div class="rpt-kpi-card kpi-accent-amber">
+      <div class="rpt-kpi-top">
+        <span class="rpt-kpi-title">Faktur Masuk</span>
+        <div class="rpt-kpi-icon" style="background:#fffbeb;color:#f59e0b">🚚</div>
+      </div>
+      <div class="rpt-kpi-val" style="color:#d97706">
+        Rp <%= new Intl.NumberFormat('id-ID').format(summary.totalPurchases || 0) %>
+      </div>
+      <div class="rpt-kpi-sub">
+        <span>Restock Gudang</span>
+        <span class="rpt-pill rpt-pill-amber"><%= summary.purchaseCount || 0 %> PO</span>
+      </div>
+    </div>
+
+    <!-- Card 7: Retur Penjualan -->
+    <div class="rpt-kpi-card kpi-accent-rose">
+      <div class="rpt-kpi-top">
+        <span class="rpt-kpi-title">Retur Pelanggan</span>
+        <div class="rpt-kpi-icon" style="background:#fee2e2;color:#dc2626">↩️</div>
+      </div>
+      <div class="rpt-kpi-val" style="color:#dc2626">
+        Rp <%= new Intl.NumberFormat('id-ID').format(summary.totalRefund || 0) %>
+      </div>
+      <div class="rpt-kpi-sub">
+        <span>Pengembalian</span>
+        <span class="rpt-pill rpt-pill-rose"><%= summary.returnCount || 0 %> Kasus</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Split Row 1: Beban Pengeluaran Toko (Kategori & Riwayat Nota) -->
+  <div class="rpt-grid-split">
+    <!-- Alokasi Beban per Kategori -->
+    <div class="rpt-card">
+      <div class="rpt-card-header">
+        <h2>💸 Alokasi Beban Biaya per Kategori</h2>
+        <a href="/expenses" class="btn-rpt btn-rpt-outline" style="font-size:0.725rem;padding:0.25rem 0.55rem">
+          Kelola Beban →
+        </a>
+      </div>
+      <div class="rpt-card-body">
+        <% if (typeof expensesByCategory !== 'undefined' && expensesByCategory && expensesByCategory.length > 0) { %>
+          <% const totalBeban = (summary.totalExpenses > 0 ? summary.totalExpenses : 1); %>
+          <div class="rpt-table-responsive">
+            <table class="rpt-table">
+              <thead>
+                <tr>
+                  <th>Kategori Biaya</th>
+                  <th style="text-align:center">Nota</th>
+                  <th style="text-align:right">Total Nilai</th>
+                  <th style="text-align:right">Proporsi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% expensesByCategory.forEach(ebc => { %>
+                  <% const pct = ((parseFloat(ebc.total_amount) / totalBeban) * 100).toFixed(1); %>
+                  <tr>
+                    <td>
+                      <span class="rpt-pill rpt-pill-slate" style="font-weight:700">
+                        <%= ebc.category %>
+                      </span>
+                    </td>
+                    <td style="text-align:center;font-weight:600;color:#64748b">
+                      <%= ebc.count %>
+                    </td>
+                    <td style="text-align:right;font-weight:700;color:#e11d48">
+                      Rp <%= new Intl.NumberFormat('id-ID').format(ebc.total_amount) %>
+                    </td>
+                    <td style="text-align:right">
+                      <div class="rpt-bar-track">
+                        <div class="rpt-bar-fill" style="width:<%= pct %>%;background:#f43f5e"></div>
+                      </div>
+                      <span style="font-weight:700;font-size:0.75rem;color:#475569"><%= pct %>%</span>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="rpt-empty-state">
+            <span>✨</span>
+            <p>Tidak ada catatan beban pengeluaran operasional pada periode ini.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Riwayat Pengeluaran Terakhir -->
+    <div class="rpt-card">
+      <div class="rpt-card-header">
+        <h2>📋 Riwayat Pengeluaran Operasional</h2>
+        <a href="/reports/export/expenses-csv?start_date=<%= dates.startDate %>&end_date=<%= dates.endDate %>" class="btn-rpt btn-rpt-outline" style="font-size:0.725rem;padding:0.25rem 0.55rem">
+          Unduh CSV
+        </a>
+      </div>
+      <div class="rpt-card-body">
+        <% if (typeof recentExpenses !== 'undefined' && recentExpenses && recentExpenses.length > 0) { %>
+          <div class="rpt-table-responsive">
+            <table class="rpt-table">
+              <thead>
+                <tr>
+                  <th>Waktu</th>
+                  <th>Kategori</th>
+                  <th>Keterangan</th>
+                  <th style="text-align:right">Nominal</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% recentExpenses.forEach(re => { %>
+                  <tr>
+                    <td style="white-space:nowrap;color:#64748b;font-size:0.75rem">
+                      <%= new Date(re.expense_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) %>
+                    </td>
+                    <td>
+                      <span class="rpt-pill rpt-pill-blue" style="font-size:0.675rem">
+                        <%= re.category %>
+                      </span>
+                    </td>
+                    <td style="max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="<%= re.description %>">
+                      <span style="font-size:0.775rem;color:#334155"><%= re.description || '-' %></span>
+                    </td>
+                    <td style="text-align:right;font-weight:700;color:#e11d48;white-space:nowrap">
+                      Rp <%= new Intl.NumberFormat('id-ID').format(re.amount) %>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="rpt-empty-state">
+            <span>📋</span>
+            <p>Belum ada rincian pengeluaran pada rentang waktu ini.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Split Row 2: Kinerja Kasir & Pembelian Supplier -->
+  <div class="rpt-grid-split">
+    <!-- Kinerja Kasir -->
+    <div class="rpt-card">
+      <div class="rpt-card-header">
+        <h2>👤 Kinerja Penjualan per Kasir</h2>
+        <span class="rpt-pill rpt-pill-blue"><%= cashiers ? cashiers.length : 0 %> Petugas</span>
+      </div>
+      <div class="rpt-card-body">
+        <% if (cashiers && cashiers.length > 0) { %>
+          <% const totalSalesAll = summary.grossSales || 1; %>
+          <div class="rpt-table-responsive">
+            <table class="rpt-table">
+              <thead>
+                <tr>
+                  <th>Kasir</th>
+                  <th style="text-align:center">Trx</th>
+                  <th style="text-align:right">Total Omzet</th>
+                  <th style="text-align:right">Rata-rata/Trx</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% cashiers.forEach((c, idx) => { %>
+                  <% const avgTrx = Math.round(c.total_sales / (c.transaction_count || 1)); %>
+                  <tr>
+                    <td>
+                      <div style="display:flex;align-items:center;gap:0.4rem">
+                        <span class="rpt-rank-badge <%= idx === 0 ? 'rank-1' : (idx === 1 ? 'rank-2' : 'rank-normal') %>">
+                          <%= idx + 1 %>
+                        </span>
+                        <strong><%= c.cashier_name %></strong>
+                      </div>
+                    </td>
+                    <td style="text-align:center;font-weight:700;color:#475569">
+                      <%= c.transaction_count %>
+                    </td>
+                    <td style="text-align:right;font-weight:800;color:#2563eb">
+                      Rp <%= new Intl.NumberFormat('id-ID').format(c.total_sales) %>
+                    </td>
+                    <td style="text-align:right;color:#64748b;font-size:0.75rem">
+                      Rp <%= new Intl.NumberFormat('id-ID').format(avgTrx) %>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="rpt-empty-state">
+            <span>👤</span>
+            <p>Tidak ada transaksi kasir pada rentang tanggal ini.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Pembelian dari Supplier -->
+    <div class="rpt-card">
+      <div class="rpt-card-header">
+        <h2>🚚 Penerimaan Stok dari Supplier</h2>
+        <span class="rpt-pill rpt-pill-amber"><%= purchases ? purchases.length : 0 %> Faktur</span>
+      </div>
+      <div class="rpt-card-body">
+        <% if (purchases && purchases.length > 0) { %>
+          <div class="rpt-table-responsive">
+            <table class="rpt-table">
+              <thead>
+                <tr>
+                  <th>No. PO</th>
+                  <th>Supplier</th>
+                  <th>Diterima</th>
+                  <th style="text-align:right">Total Nilai</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% purchases.forEach(p => { %>
+                  <tr>
+                    <td>
+                      <span class="rpt-pill rpt-pill-slate" style="font-family:monospace;font-weight:700">
+                        <%= p.purchase_number %>
+                      </span>
+                    </td>
+                    <td>
+                      <strong style="color:#1e293b"><%= p.supplier_name || '-' %></strong>
+                    </td>
+                    <td style="white-space:nowrap;color:#64748b;font-size:0.75rem">
+                      <%= new Date(p.received_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) %>
+                    </td>
+                    <td style="text-align:right;font-weight:700;color:#d97706">
+                      Rp <%= new Intl.NumberFormat('id-ID').format(p.total) %>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        <% } else { %>
+          <div class="rpt-empty-state">
+            <span>🚚</span>
+            <p>Tidak ada penerimaan barang supplier pada periode ini.</p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Full Width: Kinerja Produk & Margin Laba Kotor (Top 20) -->
+  <div class="rpt-card">
+    <div class="rpt-card-header">
+      <div style="display:flex;align-items:center;gap:0.6rem">
+        <h2>🏆 Kinerja Produk & Estimasi Laba Kotor (Top 20)</h2>
+        <span class="rpt-pill rpt-pill-emerald">Katalog Terlaris</span>
+      </div>
+      <input type="text" id="productSearchInput" class="rpt-table-search" placeholder="Cari nama / SKU..." onkeyup="filterProductTable()">
+    </div>
+    <div class="rpt-card-body">
+      <% if (products && products.length > 0) { %>
+        <div class="rpt-table-responsive">
+          <table class="rpt-table" id="productTable">
+            <thead>
+              <tr>
+                <th style="width:40px;text-align:center">#</th>
+                <th>Nama Produk</th>
+                <th>SKU</th>
+                <th style="text-align:center">Terjual</th>
+                <th style="text-align:right">Total Omzet</th>
+                <th style="text-align:right">Laba Kotor</th>
+                <th style="text-align:right">Margin (%)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% products.forEach((p, idx) => { %>
+                <% const marginPct = p.total_revenue > 0 ? ((p.total_profit / p.total_revenue) * 100).toFixed(1) : '0'; %>
+                <tr>
+                  <td style="text-align:center">
+                    <span class="rpt-rank-badge <%= idx === 0 ? 'rank-1' : (idx === 1 ? 'rank-2' : (idx === 2 ? 'rank-3' : 'rank-normal')) %>">
+                      <%= idx + 1 %>
+                    </span>
+                  </td>
+                  <td>
+                    <strong style="color:var(--text-main)"><%= p.name %></strong>
+                  </td>
+                  <td>
+                    <code style="background:#f1f5f9;padding:0.15rem 0.35rem;border-radius:4px;font-size:0.75rem;color:#475569">
+                      <%= p.sku %>
+                    </code>
+                  </td>
+                  <td style="text-align:center">
+                    <span class="rpt-pill rpt-pill-blue" style="font-weight:800">
+                      <%= p.total_quantity_sold %> pcs
+                    </span>
+                  </td>
+                  <td style="text-align:right;font-weight:700;color:var(--text-main)">
+                    Rp <%= new Intl.NumberFormat('id-ID').format(p.total_revenue) %>
+                  </td>
+                  <td style="text-align:right;font-weight:800;color:#10b981">
+                    Rp <%= new Intl.NumberFormat('id-ID').format(p.total_profit) %>
+                  </td>
+                  <td style="text-align:right">
+                    <div class="rpt-bar-track">
+                      <div class="rpt-bar-fill" style="width:<%= Math.min(100, Math.max(0, marginPct)) %>%;background:#10b981"></div>
+                    </div>
+                    <span style="font-weight:700;font-size:0.75rem;color:#047857"><%= marginPct %>%</span>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      <% } else { %>
+        <div class="rpt-empty-state">
+          <span>📦</span>
+          <p>Belum ada penjualan produk pada rentang tanggal yang dipilih.</p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Riwayat Retur Penjualan (Hanya Tampil Jika Ada Retur) -->
+  <% if (returns && returns.length > 0) { %>
+    <div class="rpt-card">
+      <div class="rpt-card-header">
+        <h2>↩️ Riwayat Pengembalian & Retur Barang</h2>
+        <span class="rpt-pill rpt-pill-rose"><%= returns.length %> Pengajuan</span>
+      </div>
+      <div class="rpt-card-body">
+        <div class="rpt-table-responsive">
+          <table class="rpt-table">
+            <thead>
+              <tr>
+                <th>No. Retur</th>
+                <th>No. Invoice</th>
+                <th>Pengaju</th>
+                <th>Waktu</th>
+                <th>Alasan</th>
+                <th style="text-align:right">Refund</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% returns.forEach(r => { %>
+                <tr>
+                  <td>
+                    <span class="rpt-pill rpt-pill-slate" style="font-family:monospace;font-weight:700">
+                      <%= r.return_number %>
+                    </span>
+                  </td>
+                  <td>
+                    <span style="font-family:monospace;font-weight:600;color:#334155"><%= r.invoice_number %></span>
+                  </td>
+                  <td><%= r.requester_name || '-' %></td>
+                  <td style="white-space:nowrap;color:#64748b;font-size:0.75rem">
+                    <%= new Date(r.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) %>
+                  </td>
+                  <td><small style="color:#64748b"><%= r.reason || '-' %></small></td>
+                  <td style="text-align:right;font-weight:700;color:#e11d48">
+                    Rp <%= new Intl.NumberFormat('id-ID').format(r.total_refund) %>
+                  </td>
+                  <td>
+                    <% if (r.status === 'completed') { %>
+                      <span class="rpt-pill rpt-pill-emerald">Selesai</span>
+                    <% } else if (r.status === 'requested') { %>
+                      <span class="rpt-pill rpt-pill-amber">Diajukan</span>
+                    <% } else { %>
+                      <span class="rpt-pill rpt-pill-rose">Ditolak</span>
+                    <% } %>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% } %>
+</div>
+
+<script>
+  // Helper to format Date to YYYY-MM-DD
+  function formatDateISO(d) {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Quick Preset Handlers
+  function setPreset(type) {
+    const today = new Date();
+    const startInput = document.getElementById('startDateInput');
+    const endInput = document.getElementById('endDateInput');
+    const form = document.getElementById('reportDateForm');
+
+    let start = new Date();
+    let end = new Date();
+
+    if (type === 'today') {
+      start = today;
+      end = today;
+    } else if (type === '7days') {
+      start = new Date(today);
+      start.setDate(today.getDate() - 6);
+      end = today;
+    } else if (type === 'thisMonth') {
+      start = new Date(today.getFullYear(), today.getMonth(), 1);
+      end = today;
+    } else if (type === 'lastMonth') {
+      start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+      end = new Date(today.getFullYear(), today.getMonth(), 0);
+    } else if (type === 'thisYear') {
+      start = new Date(today.getFullYear(), 0, 1);
+      end = today;
+    }
+
+    startInput.value = formatDateISO(start);
+    endInput.value = formatDateISO(end);
+    form.submit();
+  }
+
+  // Instant Client-Side Search for Products Table
+  function filterProductTable() {
+    const input = document.getElementById('productSearchInput');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('productTable');
+    if (!table) return;
+
+    const tr = table.getElementsByTagName('tr');
+    for (let i = 1; i < tr.length; i++) {
+      const tdName = tr[i].getElementsByTagName('td')[1];
+      const tdSku = tr[i].getElementsByTagName('td')[2];
+      if (tdName || tdSku) {
+        const textName = tdName ? (tdName.textContent || tdName.innerText) : '';
+        const textSku = tdSku ? (tdSku.textContent || tdSku.innerText) : '';
+        if (textName.toLowerCase().indexOf(filter) > -1 || textSku.toLowerCase().indexOf(filter) > -1) {
+          tr[i].style.display = '';
+        } else {
+          tr[i].style.display = 'none';
+        }
+      }
+    }
+  }
+</script>

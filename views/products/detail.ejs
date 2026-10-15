@@ -1,0 +1,56 @@
+<div class="page-header">
+  <h1>📦 <%= product.name %></h1>
+  <div>
+    <a href="/products" class="btn btn-secondary">← Kembali</a>
+    <% if (currentUser.role === 'admin') { %>
+      <a href="/products/<%= product.id %>/edit" class="btn btn-primary">Edit</a>
+    <% } %>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <div class="card">
+    <div class="card-header"><h2>Informasi Produk</h2></div>
+    <div class="card-body">
+      <table class="detail-table">
+        <tr><th>SKU</th><td><code><%= product.sku %></code></td></tr>
+        <tr><th>Barcode</th><td><%= product.barcode || '-' %></td></tr>
+        <tr><th>Nama</th><td><strong><%= product.name %></strong></td></tr>
+        <tr><th>Kategori</th><td><%= product.category_name || '-' %></td></tr>
+        <tr><th>Satuan</th><td><%= product.unit %></td></tr>
+        <tr><th>Status</th><td><span class="badge <%= product.is_active ? 'badge-success' : 'badge-danger' %>"><%= product.is_active ? 'Aktif' : 'Nonaktif' %></span></td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header"><h2>Harga & Stok</h2></div>
+    <div class="card-body">
+      <table class="detail-table">
+        <tr><th>Harga Modal</th><td>Rp <%= new Intl.NumberFormat('id-ID').format(product.cost_price) %></td></tr>
+        <tr><th>Harga Jual</th><td><strong>Rp <%= new Intl.NumberFormat('id-ID').format(product.selling_price) %></strong></td></tr>
+        <tr><th>Margin</th><td>Rp <%= new Intl.NumberFormat('id-ID').format(product.selling_price - product.cost_price) %>
+          <% if (product.cost_price > 0) { %> (<%= ((product.selling_price - product.cost_price) / product.cost_price * 100).toFixed(1) %>%)<% } %>
+        </td></tr>
+        <tr><th>Stok</th><td>
+          <% if (product.stock <= product.min_stock) { %>
+            <span style="color:#dc2626;font-weight:bold"><%= product.stock %> <%= product.unit %></span> ⚠️ Stok menipis!
+          <% } else { %>
+            <%= product.stock %> <%= product.unit %>
+          <% } %>
+        </td></tr>
+        <tr><th>Stok Minimum</th><td><%= product.min_stock %> <%= product.unit %></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:1.5rem">
+  <div class="card-header"><h2>Informasi Lainnya</h2></div>
+  <div class="card-body">
+    <table class="detail-table">
+      <tr><th>Dibuat</th><td><%= product.created_at %></td></tr>
+      <tr><th>Terakhir Diubah</th><td><%= product.updated_at %></td></tr>
+    </table>
+  </div>
+</div>

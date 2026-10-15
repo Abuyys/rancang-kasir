@@ -1,0 +1,127 @@
+<div class="page-header">
+  <h1>➕ Buat Pembelian</h1>
+  <a href="/purchases" class="btn btn-secondary">← Kembali</a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <form action="/purchases" method="POST" id="purchaseForm" style="max-width:900px">
+      <div class="form-row">
+        <div class="form-group" style="flex:1">
+          <label for="supplier_id">Supplier <span style="color:red">*</span></label>
+          <select id="supplier_id" name="supplier_id" class="form-control" required>
+            <option value="">-- Pilih Supplier --</option>
+            <% suppliers.forEach(s => { %><option value="<%= s.id %>"><%= s.name %></option><% }); %>
+          </select>
+        </div>
+        <div class="form-group" style="flex:1">
+          <label for="supplier_invoice_number">No. Faktur Supplier</label>
+          <input type="text" id="supplier_invoice_number" name="supplier_invoice_number" class="form-control" placeholder="Opsional">
+        </div>
+      </div>
+
+      <h3 style="margin-top:1.5rem">Item Pembelian</h3>
+      <div class="table-responsive">
+        <table class="table" id="itemsTable">
+          <thead><tr><th>Produk</th><th style="width:120px">Jumlah</th><th style="width:160px">Harga Modal</th><th style="width:160px">Subtotal</th><th style="width:50px"></th></tr></thead>
+          <tbody id="itemsBody">
+            <tr class="item-row">
+              <td>
+                <select name="product_id" class="form-control product-select" required>
+                  <option value="">-- Pilih Produk --</option>
+                  <% products.forEach(p => { %><option value="<%= p.id %>" data-cost="<%= p.cost_price %>"><%= p.sku %> - <%= p.name %></option><% }); %>
+                </select>
+              </td>
+              <td><input type="number" name="quantity" class="form-control item-qty" min="0.001" step="any" value="1" required></td>
+              <td><input type="number" name="unit_cost" class="form-control item-cost" min="0" step="1" value="0" required></td>
+              <td class="item-subtotal" style="text-align:right;vertical-align:middle;font-weight:bold">0</td>
+              <td><button type="button" class="btn btn-sm btn-danger remove-item">✖</button></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr><td colspan="5"><button type="button" class="btn btn-secondary" id="addItemBtn">+ Tambah Item</button></td></tr>
+            <tr><td colspan="2"></td><td style="text-align:right;font-weight:bold">Subtotal:</td><td style="text-align:right;font-weight:bold" id="grandSubtotal">0</td><td></td></tr>
+            <tr><td colspan="2"></td><td style="text-align:right"><label for="discount">Diskon (Rp):</label></td><td><input type="number" name="discount" id="discount" class="form-control" min="0" step="1" value="0"></td><td></td></tr>
+            <tr><td colspan="2"></td><td style="text-align:right;font-weight:bold;font-size:1.1rem">Total:</td><td style="text-align:right;font-weight:bold;font-size:1.1rem" id="grandTotal">0</td><td></td></tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div class="form-group">
+        <label for="notes">Catatan</label>
+        <textarea id="notes" name="notes" class="form-control" rows="2"></textarea>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Simpan Pembelian (Draft)</button>
+        <a href="/purchases" class="btn btn-secondary">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const itemsBody = document.getElementById('itemsBody');
+  const addBtn = document.getElementById('addItemBtn');
+  const firstRow = document.querySelector('.item-row');
+
+  // Add item row
+  addBtn.addEventListener('click', () => {
+    const newRow = firstRow.cloneNode(true);
+    newRow.querySelector('.product-select').value = '';
+    newRow.querySelector('.item-qty').value = '1';
+    newRow.querySelector('.item-cost').value = '0';
+    newRow.querySelector('.item-subtotal').textContent = '0';
+    itemsBody.appendChild(newRow);
+    attachRowEvents(newRow);
+  });
+
+  function attachRowEvents(row) {
+    const productSelect = row.querySelector('.product-select');
+    const qtyInput = row.querySelector('.item-qty');
+    const costInput = row.querySelector('.item-cost');
+    const removeBtn = row.querySelector('.remove-item');
+
+    productSelect.addEventListener('change', () => {
+      const option = productSelect.options[productSelect.selectedIndex];
+      const cost = option.dataset.cost || 0;
+      costInput.value = Math.round(parseFloat(cost));
+      calcRow(row);
+    });
+
+    qtyInput.addEventListener('input', () => calcRow(row));
+    costInput.addEventListener('input', () => calcRow(row));
+    removeBtn.addEventListener('click', () => {
+      if (itemsBody.querySelectorAll('.item-row').length > 1) {
+        row.remove(); calcTotals();
+      }
+    });
+  }
+
+  function calcRow(row) {
+    const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+    const cost = parseFloat(row.querySelector('.item-cost').value) || 0;
+    const sub = qty * cost;
+    row.querySelector('.item-subtotal').textContent = new Intl.NumberFormat('id-ID').format(sub);
+    calcTotals();
+  }
+
+  function calcTotals() {
+    let subtotal = 0;
+    itemsBody.querySelectorAll('.item-row').forEach(row => {
+      const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+      const cost = parseFloat(row.querySelector('.item-cost').value) || 0;
+      subtotal += qty * cost;
+    });
+    document.getElementById('grandSubtotal').textContent = new Intl.NumberFormat('id-ID').format(subtotal);
+    const discount = parseFloat(document.getElementById('discount').value) || 0;
+    document.getElementById('grandTotal').textContent = new Intl.NumberFormat('id-ID').format(subtotal - discount);
+  }
+
+  document.getElementById('discount').addEventListener('input', calcTotals);
+
+  // Attach events to first row
+  attachRowEvents(firstRow);
+});
+</script>

@@ -1,0 +1,110 @@
+<div class="page-header">
+  <h1>📦 Produk</h1>
+  <% if (currentUser.role === 'admin') { %>
+    <a href="/products/create" class="btn btn-primary">+ Tambah Produk</a>
+  <% } %>
+</div>
+
+<div class="card" style="margin-bottom: 1.5rem;">
+  <div class="card-body">
+    <form action="/products" method="GET" class="filter-form">
+      <div class="filter-row">
+        <div class="form-group" style="flex: 1; margin-bottom: 0;">
+          <input type="text" name="search" placeholder="Cari nama, SKU, atau barcode..." 
+            value="<%= filters.search || '' %>" class="form-control">
+        </div>
+        <div class="form-group" style="width: 180px; margin-bottom: 0;">
+          <select name="category_id" class="form-control">
+            <option value="">Semua Kategori</option>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat.id %>" <%= filters.category_id == cat.id ? 'selected' : '' %>><%= cat.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group" style="width: 140px; margin-bottom: 0;">
+          <select name="status" class="form-control">
+            <option value="">Semua Status</option>
+            <option value="active" <%= filters.status === 'active' ? 'selected' : '' %>>Aktif</option>
+            <option value="inactive" <%= filters.status === 'inactive' ? 'selected' : '' %>>Nonaktif</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Cari</button>
+        <a href="/products" class="btn btn-secondary">Reset</a>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <% if (products.length > 0) { %>
+    <div class="table-responsive">
+      <table class="table">
+        <thead>
+          <tr>
+            <th style="width:50px">#</th>
+            <th>SKU</th>
+            <th>Nama Produk</th>
+            <th>Kategori</th>
+            <th style="text-align:right">Harga Jual</th>
+            <th style="text-align:right">Stok</th>
+            <th style="width:90px">Status</th>
+            <th style="width:200px">Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% products.forEach((prod, i) => { %>
+          <tr class="<%= (prod.stock <= prod.min_stock && prod.is_active) ? 'row-warning' : '' %>">
+            <td><%= (pagination.page - 1) * 20 + i + 1 %></td>
+            <td><code><%= prod.sku %></code></td>
+            <td>
+              <a href="/products/<%= prod.id %>"><strong><%= prod.name %></strong></a>
+              <% if (prod.barcode) { %><br><small class="text-muted">📏 <%= prod.barcode %></small><% } %>
+            </td>
+            <td><%= prod.category_name || '-' %></td>
+            <td style="text-align:right">Rp <%= new Intl.NumberFormat('id-ID').format(prod.selling_price) %></td>
+            <td style="text-align:right">
+              <% if (prod.stock <= prod.min_stock && prod.is_active) { %>
+                <span style="color:#dc2626;font-weight:bold"><%= prod.stock %></span> ⚠️
+              <% } else { %>
+                <%= prod.stock %>
+              <% } %>
+            </td>
+            <td><span class="badge <%= prod.is_active ? 'badge-success' : 'badge-danger' %>"><%= prod.is_active ? 'Aktif' : 'Nonaktif' %></span></td>
+            <td>
+              <a href="/products/<%= prod.id %>" class="btn btn-sm btn-secondary">Detail</a>
+              <% if (currentUser.role === 'admin') { %>
+                <a href="/products/<%= prod.id %>/edit" class="btn btn-sm btn-secondary">Edit</a>
+                <form action="/products/<%= prod.id %>/toggle-status" method="POST" style="display:inline">
+                  <button type="submit" class="btn btn-sm <%= prod.is_active ? 'btn-danger' : 'btn-success' %>"
+                    onclick="return confirm('<%= prod.is_active ? 'Nonaktifkan' : 'Aktifkan' %> produk ini?')">
+                    <%= prod.is_active ? 'Off' : 'On' %>
+                  </button>
+                </form>
+              <% } %>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+    <% if (pagination.totalPages > 1) { %>
+    <div class="pagination">
+      <% if (pagination.page > 1) { %>
+        <a href="/products?page=<%= pagination.page - 1 %>&search=<%= filters.search || '' %>&category_id=<%= filters.category_id || '' %>&status=<%= filters.status || '' %>" class="pagination-link">«</a>
+      <% } %>
+      <% for (let p = Math.max(1, pagination.page - 2); p <= Math.min(pagination.totalPages, pagination.page + 2); p++) { %>
+        <a href="/products?page=<%= p %>&search=<%= filters.search || '' %>&category_id=<%= filters.category_id || '' %>&status=<%= filters.status || '' %>" 
+           class="pagination-link <%= p === pagination.page ? 'active' : '' %>"><%= p %></a>
+      <% } %>
+      <% if (pagination.page < pagination.totalPages) { %>
+        <a href="/products?page=<%= pagination.page + 1 %>&search=<%= filters.search || '' %>&category_id=<%= filters.category_id || '' %>&status=<%= filters.status || '' %>" class="pagination-link">»</a>
+      <% } %>
+    </div>
+    <% } %>
+    <p class="text-muted">Menampilkan <%= products.length %> dari <%= pagination.total %> produk</p>
+    <% } else { %>
+    <p class="text-muted">Tidak ada produk ditemukan. <% if (currentUser.role === 'admin') { %><a href="/products/create">Tambah produk pertama</a><% } %></p>
+    <% } %>
+  </div>
+</div>
