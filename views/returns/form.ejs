@@ -11,8 +11,8 @@
     <h2>1. Pilih Transaksi yang Ingin Diretur</h2>
   </div>
   <div class="card-body">
-    <form action="/returns/new" method="GET" style="display:flex;gap:0.75rem;max-width:500px">
-      <input type="text" name="invoice" class="form-control" placeholder="Ketik No. Invoice (misal: INV-...)" value="<%= queryInvoice || '' %>" required autofocus>
+    <form action="/returns/new" method="GET" style="display:flex;gap:0.75rem;max-width:500px;flex-wrap:wrap">
+      <input type="text" name="invoice" class="form-control" placeholder="Ketik No. Invoice (misal: INV-...)" value="<%= queryInvoice || '' %>" required autofocus style="flex:1;min-width:200px">
       <button type="submit" class="btn btn-primary" style="white-space:nowrap">Cari Faktur</button>
     </form>
   </div>
@@ -24,7 +24,7 @@
   <input type="hidden" name="sale_id" value="<%= sale.id %>">
 
   <div class="card" style="margin-bottom:1.5rem">
-    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem">
       <h2>2. Pilih Item & Kuantitas Retur</h2>
       <span class="badge badge-success" style="font-size:0.9rem">Faktur: <%= sale.invoice_number %></span>
     </div>

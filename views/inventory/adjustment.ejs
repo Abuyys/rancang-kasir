@@ -3,17 +3,80 @@
   <a href="/inventory" class="btn btn-secondary">← Kembali</a>
 </div>
 
+<style>
+.product-search-wrapper {
+  position: relative;
+}
+.product-search-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: var(--card-bg, #fff);
+  color: var(--text-primary, #333);
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.product-search-input:focus {
+  outline: none;
+  border-color: var(--primary, #6c63ff);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+}
+.product-search-input.invalid {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 0 3px rgba(231,76,60,0.12) !important;
+}
+.product-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+  z-index: 9999;
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+}
+.product-dropdown.open { display: block; }
+.product-option {
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+  transition: background 0.13s;
+}
+.product-option:last-child { border-bottom: none; }
+.product-option:hover, .product-option.active {
+  background: var(--primary, #6c63ff);
+  color: #fff;
+}
+.product-option .opt-sku { font-size: 0.75rem; opacity: 0.7; }
+.product-option .opt-stock { font-size: 0.75rem; opacity: 0.7; }
+.product-dropdown .no-result {
+  padding: 0.75rem;
+  text-align: center;
+  color: var(--text-muted, #999);
+  font-size: 0.875rem;
+}
+</style>
+
 <div class="card">
   <div class="card-body">
-    <form action="/inventory/adjustments" method="POST" style="max-width:600px">
+    <form action="/inventory/adjustments" method="POST" style="max-width:600px" id="adjustForm">
       <div class="form-group">
-        <label for="product_id">Produk <span style="color:red">*</span></label>
-        <select id="product_id" name="product_id" class="form-control" required>
-          <option value="">-- Pilih Produk --</option>
-          <% products.forEach(p => { %>
-            <option value="<%= p.id %>"><%= p.sku %> - <%= p.name %> (Stok: <%= p.stock %> <%= p.unit %>)</option>
-          <% }); %>
-        </select>
+        <label for="product_search_adj">Produk <span style="color:red">*</span></label>
+        <div class="product-search-wrapper">
+          <input type="text" id="product_search_adj" class="product-search-input" placeholder="Cari nama / SKU produk..." autocomplete="off">
+          <div class="product-dropdown" id="adj_dropdown"></div>
+          <input type="hidden" name="product_id" id="adj_product_id">
+        </div>
       </div>
 
       <div class="form-row">
@@ -38,9 +101,100 @@
       </div>
 
       <div class="form-actions">
-        <button type="submit" class="btn btn-primary" onclick="return confirm('Yakin menyesuaikan stok?')">Simpan Penyesuaian</button>
+        <button type="submit" class="btn btn-primary">Simpan Penyesuaian</button>
         <a href="/inventory" class="btn btn-secondary">Batal</a>
       </div>
     </form>
   </div>
 </div>
+
+<script>
+const ALL_PRODUCTS_ADJ = [
+  <% products.forEach((p, i) => { %>{"id":<%= p.id %>,"sku":"<%- (p.sku||'').replace(/"/g,'&quot;') %>","name":"<%- (p.name||'').replace(/"/g,'&quot;') %>","stock":<%= p.stock || 0 %>,"unit":"<%- (p.unit||'').replace(/"/g,'&quot;') %>"}<%= i < products.length - 1 ? ',' : '' %>
+  <% }); %>
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  const searchInput = document.getElementById('product_search_adj');
+  const dropdown = document.getElementById('adj_dropdown');
+  const hiddenInput = document.getElementById('adj_product_id');
+  let activeIdx = -1;
+  let filtered = [];
+
+  function renderDropdown(list) {
+    filtered = list;
+    activeIdx = -1;
+    if (list.length === 0) {
+      dropdown.innerHTML = '<div class="no-result">Produk tidak ditemukan</div>';
+    } else {
+      dropdown.innerHTML = list.map((p, i) =>
+        `<div class="product-option" data-id="${p.id}" data-idx="${i}">
+          <span>${p.name}</span>
+          <span class="opt-sku">${p.sku} &bull; Stok: ${p.stock} ${p.unit}</span>
+        </div>`
+      ).join('');
+      dropdown.querySelectorAll('.product-option').forEach(el => {
+        el.addEventListener('mousedown', e => { e.preventDefault(); selectProduct(el); });
+      });
+    }
+    dropdown.classList.add('open');
+  }
+
+  function selectProduct(el) {
+    const name = el.querySelector('span:first-child').textContent;
+    const sku = el.querySelector('.opt-sku').textContent.split('•')[0].trim();
+    searchInput.value = `${sku} - ${name}`;
+    hiddenInput.value = el.dataset.id;
+    searchInput.classList.remove('invalid');
+    dropdown.classList.remove('open');
+  }
+
+  searchInput.addEventListener('input', () => {
+    hiddenInput.value = '';
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q) { dropdown.classList.remove('open'); return; }
+    renderDropdown(ALL_PRODUCTS_ADJ.filter(p =>
+      p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
+    ).slice(0, 40));
+  });
+
+  searchInput.addEventListener('keydown', e => {
+    const opts = dropdown.querySelectorAll('.product-option');
+    if (!dropdown.classList.contains('open') || !opts.length) return;
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, opts.length - 1);
+      opts.forEach((o, i) => o.classList.toggle('active', i === activeIdx));
+      opts[activeIdx]?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, 0);
+      opts.forEach((o, i) => o.classList.toggle('active', i === activeIdx));
+      opts[activeIdx]?.scrollIntoView({ block: 'nearest' });
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (activeIdx >= 0 && opts[activeIdx]) selectProduct(opts[activeIdx]);
+    } else if (e.key === 'Escape') {
+      dropdown.classList.remove('open');
+    }
+  });
+
+  searchInput.addEventListener('focus', () => {
+    if (searchInput.value.trim() && filtered.length) dropdown.classList.add('open');
+  });
+
+  document.addEventListener('click', e => {
+    if (!searchInput.closest('.product-search-wrapper').contains(e.target)) dropdown.classList.remove('open');
+  });
+
+  // Validate on submit
+  document.getElementById('adjustForm').addEventListener('submit', e => {
+    if (!hiddenInput.value) {
+      e.preventDefault();
+      searchInput.classList.add('invalid');
+      searchInput.focus();
+      alert('Harap pilih produk dari daftar pencarian.');
+    }
+  });
+});
+</script>

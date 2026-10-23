@@ -658,6 +658,46 @@
     border-color: #334155;
     color: #cbd5e1;
   }
+
+  /* Responsive for Expenses */
+  @media (max-width: 768px) {
+    .exp-header-bar {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.65rem;
+    }
+    .btn-exp-cta {
+      width: 100%;
+      justify-content: center;
+    }
+    .exp-bento-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+    .exp-metric-card {
+      padding: 0.65rem 0.75rem;
+    }
+    .exp-metric-val {
+      font-size: 1.05rem;
+    }
+    .exp-table th, .exp-table td {
+      padding: 0.45rem 0.6rem;
+      font-size: 0.8rem;
+    }
+    .exp-filter-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+    .exp-filter-row .form-group {
+      width: 100% !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .exp-bento-grid {
+      grid-template-columns: 1fr;
+    }
+  }
 </style>
 
 <div class="exp-page-container">

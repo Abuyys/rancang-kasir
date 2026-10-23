@@ -3,6 +3,69 @@
   <a href="/purchases" class="btn btn-secondary">← Kembali</a>
 </div>
 
+<style>
+.product-search-wrapper {
+  position: relative;
+}
+.product-search-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background: var(--card-bg, #fff);
+  color: var(--text-primary, #333);
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.product-search-input:focus {
+  outline: none;
+  border-color: var(--primary, #6c63ff);
+  box-shadow: 0 0 0 3px rgba(108,99,255,0.12);
+}
+.product-search-input.invalid {
+  border-color: #e74c3c !important;
+  box-shadow: 0 0 0 3px rgba(231,76,60,0.12) !important;
+}
+.product-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+  z-index: 9999;
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+}
+.product-dropdown.open { display: block; }
+.product-option {
+  padding: 0.55rem 0.85rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-bottom: 1px solid var(--border-color, #f0f0f0);
+  transition: background 0.13s;
+}
+.product-option:last-child { border-bottom: none; }
+.product-option:hover, .product-option.active {
+  background: var(--primary, #6c63ff);
+  color: #fff;
+}
+.product-option .opt-sku { font-size: 0.75rem; opacity: 0.7; }
+.product-dropdown .no-result {
+  padding: 0.75rem;
+  text-align: center;
+  color: var(--text-muted, #999);
+  font-size: 0.875rem;
+}
+</style>
+
 <div class="card">
   <div class="card-body">
     <form action="/purchases" method="POST" id="purchaseForm" style="max-width:900px">
@@ -27,10 +90,11 @@
           <tbody id="itemsBody">
             <tr class="item-row">
               <td>
-                <select name="product_id" class="form-control product-select" required>
-                  <option value="">-- Pilih Produk --</option>
-                  <% products.forEach(p => { %><option value="<%= p.id %>" data-cost="<%= p.cost_price %>"><%= p.sku %> - <%= p.name %></option><% }); %>
-                </select>
+                <div class="product-search-wrapper">
+                  <input type="text" class="product-search-input" placeholder="Cari nama / SKU produk..." autocomplete="off">
+                  <div class="product-dropdown"></div>
+                  <input type="hidden" name="product_id" class="product-id-hidden">
+                </div>
               </td>
               <td><input type="number" name="quantity" class="form-control item-qty" min="0.001" step="any" value="1" required></td>
               <td><input type="number" name="unit_cost" class="form-control item-cost" min="0" step="1" value="0" required></td>
@@ -61,67 +125,148 @@
 </div>
 
 <script>
+const ALL_PRODUCTS_PURCHASE = [
+  <% products.forEach((p, i) => { %>{"id":<%= p.id %>,"sku":"<%- (p.sku||'').replace(/"/g,'&quot;') %>","name":"<%- (p.name||'').replace(/"/g,'&quot;') %>","cost":<%= p.cost_price || 0 %>}<%= i < products.length - 1 ? ',' : '' %>
+  <% }); %>
+];
+
 document.addEventListener('DOMContentLoaded', () => {
   const itemsBody = document.getElementById('itemsBody');
   const addBtn = document.getElementById('addItemBtn');
   const firstRow = document.querySelector('.item-row');
 
-  // Add item row
+  function initProductSearch(row) {
+    const wrapper = row.querySelector('.product-search-wrapper');
+    const searchInput = wrapper.querySelector('.product-search-input');
+    const dropdown = wrapper.querySelector('.product-dropdown');
+    const hiddenInput = wrapper.querySelector('.product-id-hidden');
+    const costInput = row.querySelector('.item-cost');
+    let activeIdx = -1;
+    let filtered = [];
+
+    function renderDropdown(list) {
+      filtered = list;
+      activeIdx = -1;
+      if (list.length === 0) {
+        dropdown.innerHTML = '<div class="no-result">Produk tidak ditemukan</div>';
+      } else {
+        dropdown.innerHTML = list.map((p, i) =>
+          `<div class="product-option" data-id="${p.id}" data-cost="${p.cost}" data-idx="${i}">
+            <span>${p.name}</span>
+            <span class="opt-sku">${p.sku}</span>
+          </div>`
+        ).join('');
+        dropdown.querySelectorAll('.product-option').forEach(el => {
+          el.addEventListener('mousedown', e => { e.preventDefault(); selectProduct(el); });
+        });
+      }
+      dropdown.classList.add('open');
+    }
+
+    function selectProduct(el) {
+      const name = el.querySelector('span:first-child').textContent;
+      const sku = el.querySelector('.opt-sku').textContent;
+      searchInput.value = `${sku} - ${name}`;
+      hiddenInput.value = el.dataset.id;
+      costInput.value = Math.round(parseFloat(el.dataset.cost));
+      searchInput.classList.remove('invalid');
+      dropdown.classList.remove('open');
+      calcRow(row);
+    }
+
+    searchInput.addEventListener('input', () => {
+      hiddenInput.value = '';
+      const q = searchInput.value.trim().toLowerCase();
+      if (!q) { dropdown.classList.remove('open'); return; }
+      renderDropdown(ALL_PRODUCTS_PURCHASE.filter(p =>
+        p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q)
+      ).slice(0, 40));
+    });
+
+    searchInput.addEventListener('keydown', e => {
+      const opts = dropdown.querySelectorAll('.product-option');
+      if (!dropdown.classList.contains('open') || !opts.length) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        activeIdx = Math.min(activeIdx + 1, opts.length - 1);
+        opts.forEach((o, i) => o.classList.toggle('active', i === activeIdx));
+        opts[activeIdx]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        activeIdx = Math.max(activeIdx - 1, 0);
+        opts.forEach((o, i) => o.classList.toggle('active', i === activeIdx));
+        opts[activeIdx]?.scrollIntoView({ block: 'nearest' });
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (activeIdx >= 0 && opts[activeIdx]) selectProduct(opts[activeIdx]);
+      } else if (e.key === 'Escape') {
+        dropdown.classList.remove('open');
+      }
+    });
+
+    searchInput.addEventListener('focus', () => {
+      if (searchInput.value.trim() && filtered.length) dropdown.classList.add('open');
+    });
+
+    document.addEventListener('click', e => {
+      if (!wrapper.contains(e.target)) dropdown.classList.remove('open');
+    });
+  }
+
   addBtn.addEventListener('click', () => {
     const newRow = firstRow.cloneNode(true);
-    newRow.querySelector('.product-select').value = '';
+    newRow.querySelector('.product-search-input').value = '';
+    newRow.querySelector('.product-id-hidden').value = '';
+    newRow.querySelector('.product-dropdown').innerHTML = '';
+    newRow.querySelector('.product-dropdown').classList.remove('open');
     newRow.querySelector('.item-qty').value = '1';
     newRow.querySelector('.item-cost').value = '0';
     newRow.querySelector('.item-subtotal').textContent = '0';
     itemsBody.appendChild(newRow);
     attachRowEvents(newRow);
+    initProductSearch(newRow);
+    newRow.querySelector('.product-search-input').focus();
   });
 
   function attachRowEvents(row) {
-    const productSelect = row.querySelector('.product-select');
-    const qtyInput = row.querySelector('.item-qty');
-    const costInput = row.querySelector('.item-cost');
-    const removeBtn = row.querySelector('.remove-item');
-
-    productSelect.addEventListener('change', () => {
-      const option = productSelect.options[productSelect.selectedIndex];
-      const cost = option.dataset.cost || 0;
-      costInput.value = Math.round(parseFloat(cost));
-      calcRow(row);
-    });
-
-    qtyInput.addEventListener('input', () => calcRow(row));
-    costInput.addEventListener('input', () => calcRow(row));
-    removeBtn.addEventListener('click', () => {
-      if (itemsBody.querySelectorAll('.item-row').length > 1) {
-        row.remove(); calcTotals();
-      }
+    row.querySelector('.item-qty').addEventListener('input', () => calcRow(row));
+    row.querySelector('.item-cost').addEventListener('input', () => calcRow(row));
+    row.querySelector('.remove-item').addEventListener('click', () => {
+      if (itemsBody.querySelectorAll('.item-row').length > 1) { row.remove(); calcTotals(); }
     });
   }
 
   function calcRow(row) {
     const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
     const cost = parseFloat(row.querySelector('.item-cost').value) || 0;
-    const sub = qty * cost;
-    row.querySelector('.item-subtotal').textContent = new Intl.NumberFormat('id-ID').format(sub);
+    row.querySelector('.item-subtotal').textContent = new Intl.NumberFormat('id-ID').format(qty * cost);
     calcTotals();
   }
 
   function calcTotals() {
     let subtotal = 0;
-    itemsBody.querySelectorAll('.item-row').forEach(row => {
-      const qty = parseFloat(row.querySelector('.item-qty').value) || 0;
-      const cost = parseFloat(row.querySelector('.item-cost').value) || 0;
-      subtotal += qty * cost;
+    itemsBody.querySelectorAll('.item-row').forEach(r => {
+      subtotal += (parseFloat(r.querySelector('.item-qty').value) || 0) * (parseFloat(r.querySelector('.item-cost').value) || 0);
     });
     document.getElementById('grandSubtotal').textContent = new Intl.NumberFormat('id-ID').format(subtotal);
-    const discount = parseFloat(document.getElementById('discount').value) || 0;
-    document.getElementById('grandTotal').textContent = new Intl.NumberFormat('id-ID').format(subtotal - discount);
+    const disc = parseFloat(document.getElementById('discount').value) || 0;
+    document.getElementById('grandTotal').textContent = new Intl.NumberFormat('id-ID').format(subtotal - disc);
   }
 
   document.getElementById('discount').addEventListener('input', calcTotals);
 
-  // Attach events to first row
+  // Form submit validation
+  document.getElementById('purchaseForm').addEventListener('submit', e => {
+    let ok = true;
+    document.querySelectorAll('.product-id-hidden').forEach(h => {
+      const inp = h.closest('.product-search-wrapper').querySelector('.product-search-input');
+      if (!h.value) { inp.classList.add('invalid'); ok = false; }
+      else inp.classList.remove('invalid');
+    });
+    if (!ok) { e.preventDefault(); alert('Harap pilih produk dari daftar untuk setiap item.'); }
+  });
+
   attachRowEvents(firstRow);
+  initProductSearch(firstRow);
 });
 </script>

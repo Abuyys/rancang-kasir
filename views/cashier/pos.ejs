@@ -624,15 +624,162 @@
     background: #fee2e2;
   }
 
-  /* Responsive adjustments */
+  /* Responsive adjustments for Tablets & Mobile */
+  .pos-mobile-nav {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    background: #ffffff;
+    padding: 0.45rem;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    margin-bottom: 0.65rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .pos-m-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 8px;
+    border: 1px solid transparent;
+    background: transparent;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .pos-m-tab.active {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+  }
+
+  .m-cart-badge {
+    background: rgba(255, 255, 255, 0.25);
+    padding: 0.1rem 0.45rem;
+    border-radius: 9999px;
+    font-size: 0.725rem;
+  }
+
+  .pos-floating-checkout {
+    position: fixed;
+    bottom: 1rem;
+    left: 1rem;
+    right: 1rem;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+    color: #ffffff;
+    padding: 0.75rem 1rem;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 999;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  .btn-floating-view {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    padding: 0.45rem 0.85rem;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.825rem;
+    cursor: pointer;
+  }
+
   @media (max-width: 960px) {
+    .pos-mobile-nav {
+      display: grid;
+    }
+
     .pos-container {
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
       height: auto;
+      min-height: calc(100vh - 80px);
+      gap: 0.75rem;
     }
-    .pos-cart {
-      max-height: 600px;
+
+    /* Toggle visibility in mobile mode */
+    .pos-container[data-mobile-view="products"] .pos-cart {
+      display: none !important;
     }
+
+    .pos-container[data-mobile-view="products"] .pos-products {
+      display: flex !important;
+    }
+
+    .pos-container[data-mobile-view="cart"] .pos-products {
+      display: none !important;
+    }
+
+    .pos-container[data-mobile-view="cart"] .pos-cart {
+      display: flex !important;
+      max-height: none;
+      height: auto;
+      min-height: 520px;
+    }
+
+    .pos-container[data-mobile-view="cart"] .pos-floating-checkout {
+      display: none !important;
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 0.65rem;
+    }
+
+    .product-card {
+      padding: 0.75rem;
+    }
+
+    .product-card .p-name {
+      font-size: 0.85rem;
+    }
+
+    .product-card .p-price {
+      font-size: 0.95rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .product-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .pos-search-card {
+      padding: 0.55rem 0.75rem;
+    }
+
+    .pos-search-input {
+      font-size: 0.95rem;
+    }
+
+    .quick-cash-grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+
+  /* Dark mode for mobile pos */
+  html[data-theme="dark"] .pos-mobile-nav {
+    background: #151e32;
+    border-color: #243049;
+  }
+  html[data-theme="dark"] .pos-m-tab {
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .pos-m-tab.active {
+    background: #2563eb;
+    color: #ffffff;
   }
 
   /* --- POS Dark Mode Specific Overrides --- */
@@ -775,7 +922,19 @@
   }
 </style>
 
-<div class="pos-container">
+<div class="pos-container" id="posContainer" data-mobile-view="products">
+  
+  <!-- Mobile Mode Tabs (Visible on screens <= 960px) -->
+  <div class="pos-mobile-nav" id="posMobileNav">
+    <button type="button" class="pos-m-tab active" id="tabBtnProducts">
+      <span>📦 Katalog Produk</span>
+    </button>
+    <button type="button" class="pos-m-tab" id="tabBtnCart">
+      <span>🛒 Keranjang</span>
+      <span class="m-cart-badge" id="mCartBadge">0</span>
+      <span class="m-cart-sum" id="mCartSum" style="font-size:0.775rem;margin-left:0.25rem;font-weight:800">Rp 0</span>
+    </button>
+  </div>
   
   <!-- LEFT PANEL: Search Bar & Product Cards -->
   <div class="pos-products">
@@ -798,6 +957,15 @@
         <span style="font-size:0.85rem">Item akan otomatis masuk ke keranjang saat barcode terdeteksi.</span>
       </div>
     </div>
+
+    <!-- Floating Checkout Bar on Mobile when items exist in cart and viewing products -->
+    <div class="pos-floating-checkout" id="posFloatingCheckout" style="display:none">
+      <div style="display:flex;align-items:center;gap:0.5rem">
+        <span id="floatingItemCount" style="background:rgba(255,255,255,0.2);padding:0.15rem 0.5rem;border-radius:999px;font-size:0.75rem;font-weight:700">0 Item</span>
+        <span style="font-weight:800;font-size:0.95rem;color:#60a5fa" id="floatingTotal">Rp 0</span>
+      </div>
+      <button type="button" class="btn-floating-view" id="btnFloatingView">Bayar Sekarang →</button>
+    </div>
   </div>
 
   <!-- RIGHT PANEL: Shopping Cart & Checkout -->
@@ -805,6 +973,7 @@
     
     <!-- Cart Header -->
     <div class="cart-header">
+      <button type="button" id="btnBackToProducts" style="display:none;background:rgba(255,255,255,0.15);border:none;color:#ffffff;border-radius:6px;padding:0.25rem 0.55rem;font-size:0.775rem;font-weight:700;cursor:pointer;margin-right:0.5rem">← Produk</button>
       <div class="cart-header-title">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
@@ -987,6 +1156,66 @@ document.addEventListener('DOMContentLoaded', () => {
   const clearCartBtn = document.getElementById('clearCartBtn');
   const posCartPanel = document.getElementById('posCartPanel');
 
+  // Mobile navigation references
+  const posContainer = document.getElementById('posContainer');
+  const tabBtnProducts = document.getElementById('tabBtnProducts');
+  const tabBtnCart = document.getElementById('tabBtnCart');
+  const mCartBadge = document.getElementById('mCartBadge');
+  const mCartSum = document.getElementById('mCartSum');
+  const posFloatingCheckout = document.getElementById('posFloatingCheckout');
+  const floatingItemCount = document.getElementById('floatingItemCount');
+  const floatingTotal = document.getElementById('floatingTotal');
+  const btnFloatingView = document.getElementById('btnFloatingView');
+  const btnBackToProducts = document.getElementById('btnBackToProducts');
+
+  function setMobileView(view) {
+    if (!posContainer) return;
+    posContainer.setAttribute('data-mobile-view', view);
+    if (tabBtnProducts && tabBtnCart) {
+      if (view === 'products') {
+        tabBtnProducts.classList.add('active');
+        tabBtnCart.classList.remove('active');
+        if (btnBackToProducts) btnBackToProducts.style.display = 'none';
+        updateFloatingBar();
+      } else {
+        tabBtnProducts.classList.remove('active');
+        tabBtnCart.classList.add('active');
+        if (btnBackToProducts) btnBackToProducts.style.display = 'inline-block';
+        if (posFloatingCheckout) posFloatingCheckout.style.display = 'none';
+      }
+    }
+  }
+
+  function updateFloatingBar() {
+    if (!posFloatingCheckout) return;
+    const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
+    const isMobile = window.innerWidth <= 960;
+    const currentView = posContainer ? posContainer.getAttribute('data-mobile-view') : 'products';
+    
+    if (isMobile && totalItems > 0 && currentView === 'products') {
+      posFloatingCheckout.style.display = 'flex';
+    } else {
+      posFloatingCheckout.style.display = 'none';
+    }
+  }
+
+  if (tabBtnProducts) {
+    tabBtnProducts.addEventListener('click', () => setMobileView('products'));
+  }
+  if (tabBtnCart) {
+    tabBtnCart.addEventListener('click', () => setMobileView('cart'));
+  }
+  if (btnFloatingView) {
+    btnFloatingView.addEventListener('click', () => setMobileView('cart'));
+  }
+  if (btnBackToProducts) {
+    btnBackToProducts.addEventListener('click', () => setMobileView('products'));
+  }
+
+  window.addEventListener('resize', () => {
+    updateFloatingBar();
+  });
+
   // === Product Search & Barcode Detection ===
   searchInput.addEventListener('input', () => {
     clearTimeout(searchTimeout);
@@ -1118,7 +1347,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
     cartCount.textContent = `${totalItems} item`;
+    if (mCartBadge) mCartBadge.textContent = totalItems;
+    if (floatingItemCount) floatingItemCount.textContent = `${totalItems} Item`;
     calcTotals();
+    updateFloatingBar();
   }
 
   window.stepQty = function(idx, delta) {
@@ -1161,8 +1393,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function calcTotals() {
+    const totalFormatted = `Rp ${fmt(getTotal())}`;
     cartSubtotal.textContent = `Rp ${fmt(getSubtotal())}`;
-    cartTotal.textContent = `Rp ${fmt(getTotal())}`;
+    cartTotal.textContent = totalFormatted;
+    if (mCartSum) mCartSum.textContent = totalFormatted;
+    if (floatingTotal) floatingTotal.textContent = totalFormatted;
     calcChange();
   }
 

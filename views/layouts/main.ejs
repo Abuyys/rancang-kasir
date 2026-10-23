@@ -2,8 +2,8 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><%= typeof title !== 'undefined' ? title + ' | ' : '' %>Minimarket POS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+  <title><%= typeof title !== 'undefined' ? title + ' | ' : '' %>BarikLana</title>
   <script>
     (function() {
       try {
@@ -23,6 +23,7 @@
   <% if (typeof currentUser !== 'undefined' && currentUser) { %>
   <div class="app-layout">
     <%- include('../partials/sidebar') %>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" aria-hidden="true"></div>
     <div class="main-content">
       <%- include('../partials/header') %>
       <main class="content-area">

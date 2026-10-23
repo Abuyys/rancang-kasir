@@ -575,11 +575,40 @@
   }
 
   @media (max-width: 768px) {
+    .rpt-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.65rem;
+    }
+    .rpt-actions {
+      width: 100%;
+    }
+    .rpt-actions .btn-rpt {
+      flex: 1;
+      justify-content: center;
+    }
     .rpt-grid-split {
       grid-template-columns: 1fr;
     }
     .rpt-bento-grid {
       grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+    .rpt-kpi-card {
+      padding: 0.65rem 0.75rem;
+    }
+    .rpt-kpi-val {
+      font-size: 1.05rem;
+    }
+    .rpt-table th, .rpt-table td {
+      padding: 0.45rem 0.6rem;
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .rpt-bento-grid {
+      grid-template-columns: 1fr;
     }
   }
 

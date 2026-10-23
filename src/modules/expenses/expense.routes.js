@@ -9,6 +9,7 @@ const { requireRole } = require('../../middlewares/role.middleware');
 // All expense routes require admin role
 router.get('/expenses', requireAuth, requireRole('admin'), ctrl.index.bind(ctrl));
 router.get('/expenses/new', requireAuth, requireRole('admin'), ctrl.createForm.bind(ctrl));
+router.get('/expenses/create', requireAuth, requireRole('admin'), ctrl.createForm.bind(ctrl));
 router.post('/expenses', requireAuth, requireRole('admin'), expenseValidation, handleValidation, ctrl.create.bind(ctrl));
 router.get('/expenses/:id/edit', requireAuth, requireRole('admin'), ctrl.editForm.bind(ctrl));
 router.post('/expenses/:id', requireAuth, requireRole('admin'), expenseValidation, handleValidation, ctrl.update.bind(ctrl));
