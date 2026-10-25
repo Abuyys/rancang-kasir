@@ -4,16 +4,23 @@ const categoryService = require('../categories/category.service');
 class ProductController {
   async index(req, res, next) {
     try {
-      const { search, category_id, status, page } = req.query;
+      const { search, category_id, status, barcode_status, page } = req.query;
       const isActive = status === 'active' ? true : status === 'inactive' ? false : null;
       const result = await productService.getAll({
-        search, categoryId: category_id || null, isActive, page: parseInt(page) || 1, limit: 20,
+        search,
+        categoryId: category_id || null,
+        isActive,
+        barcodeStatus: barcode_status || null,
+        page: parseInt(page) || 1,
+        limit: 20,
       });
       const categories = await categoryService.getAllActive();
       res.render('products/index', {
-        title: 'Produk', products: result.data, categories,
+        title: 'Produk',
+        products: result.data,
+        categories,
         pagination: { page: result.page, totalPages: result.totalPages, total: result.total },
-        filters: { search, category_id, status },
+        filters: { search, category_id, status, barcode_status },
       });
     } catch (err) { next(err); }
   }
@@ -27,7 +34,7 @@ class ProductController {
 
   async create(req, res, next) {
     try {
-      await productService.create(req.body);
+      await productService.create(req.body, req.session?.user?.id, req.ip);
       req.session.success_msg = 'Produk berhasil ditambahkan.';
       return res.redirect('/products');
     } catch (err) {
@@ -56,7 +63,7 @@ class ProductController {
 
   async update(req, res, next) {
     try {
-      await productService.update(req.params.id, req.body);
+      await productService.update(req.params.id, req.body, req.session?.user?.id, req.ip);
       req.session.success_msg = 'Produk berhasil diperbarui.';
       return res.redirect('/products');
     } catch (err) {

@@ -17,7 +17,7 @@ router.post('/products/:id/toggle-status', requireAuth, requireRole('admin'), ct
 
 // API
 router.get('/api/products', requireAuth, ctrl.apiIndex.bind(ctrl));
-router.get('/api/products/barcode/:code', requireAuth, ctrl.apiSearchBarcode.bind(ctrl));
+// NOTE: /api/products/barcode/:code is handled by barcode.routes.js (active-only POS search)
 router.get('/api/products/:id', requireAuth, ctrl.apiDetail.bind(ctrl));
 router.post('/api/products', requireAuth, requireRole('admin'), createProductValidation, handleValidation, ctrl.apiCreate.bind(ctrl));
 router.put('/api/products/:id', requireAuth, requireRole('admin'), updateProductValidation, handleValidation, ctrl.apiUpdate.bind(ctrl));

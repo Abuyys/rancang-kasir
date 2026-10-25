@@ -71,6 +71,70 @@
     user-select: none;
   }
 
+  .btn-pos-cam {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .btn-pos-cam:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+  }
+
+  /* Scan Feedback Toast */
+  .scan-feedback-toast {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: #1e293b;
+    color: #ffffff;
+    padding: 0.65rem 1.25rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    z-index: 100000;
+    box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .scan-feedback-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  .scan-feedback-toast.toast-success {
+    background: #15803d;
+  }
+
+  .scan-feedback-toast.toast-error {
+    background: #dc2626;
+  }
+
+  @media (max-width: 480px) {
+    .btn-pos-cam-label {
+      display: none;
+    }
+  }
+
   .product-grid {
     flex: 1;
     display: grid;
@@ -795,6 +859,16 @@
     border-color: #243049;
     color: #94a3b8;
   }
+  html[data-theme="dark"] .btn-pos-cam {
+    background: #0b1120;
+    border-color: #243049;
+    color: #94a3b8;
+  }
+  html[data-theme="dark"] .btn-pos-cam:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+  }
   html[data-theme="dark"] .product-card {
     background: #151e32;
     border-color: #243049;
@@ -920,6 +994,16 @@
     border-color: #243049 !important;
     color: #f8fafc !important;
   }
+  html[data-theme="dark"] #posCameraModal > div {
+    background: #151e32 !important;
+    border: 1px solid #334155 !important;
+    color: #f8fafc !important;
+  }
+  html[data-theme="dark"] #btnClosePosCam {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: #cbd5e1 !important;
+  }
 </style>
 
 <div class="pos-container" id="posContainer" data-mobile-view="products">
@@ -946,6 +1030,13 @@
         </svg>
       </div>
       <input type="text" id="searchInput" class="pos-search-input" placeholder="Scan barcode produk atau ketik nama SKU..." autofocus autocomplete="off">
+      <button type="button" class="btn-pos-cam" id="btnPosCam" title="Buka Kamera Scanner (HP/Laptop)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+          <circle cx="12" cy="13" r="4"/>
+        </svg>
+        <span class="btn-pos-cam-label">Scan Kamera</span>
+      </button>
       <span class="search-shortcut-hint" title="Tekan F2 atau klik untuk fokus ke scanner">F2</span>
     </div>
 
@@ -1128,6 +1219,46 @@
   </div>
 </div>
 
+<!-- Toast Feedback Hasil Scan Barcode -->
+<div id="scanFeedbackToast" class="scan-feedback-toast"></div>
+
+<!-- Modal Scanner Kamera POS -->
+<div id="posCameraModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(15,23,42,0.7);backdrop-filter:blur(3px);z-index:99999;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#ffffff;border-radius:18px;max-width:440px;width:100%;padding:1.25rem;box-shadow:0 25px 50px -12px rgba(0,0,0,0.3);position:relative">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem">
+      <div style="display:flex;align-items:center;gap:0.4rem;font-weight:800;font-size:1.05rem;color:#0f172a">
+        <span>📷</span>
+        <span>Pemindai Kamera POS</span>
+      </div>
+      <button type="button" id="btnClosePosCam" title="Tutup Pemindai (Esc)" style="width:34px;height:34px;border-radius:50%;background:#f1f5f9;border:1px solid #cbd5e1;display:inline-flex;align-items:center;justify-content:center;font-size:1.35rem;color:#334155;cursor:pointer;line-height:1;transition:all 0.15s">&times;</button>
+    </div>
+
+    <!-- Pilihan Kamera jika tersedia lebih dari 1 -->
+    <div id="posCamSelectWrap" style="display:none;margin-bottom:0.65rem">
+      <label for="posCamSelect" style="font-size:0.75rem;font-weight:700;color:#64748b;margin-bottom:0.25rem;display:block">Pilih Kamera:</label>
+      <select id="posCamSelect" class="form-control" style="font-size:0.85rem;padding:0.35rem 0.6rem;width:100%;border:1px solid #cbd5e1;border-radius:8px"></select>
+    </div>
+
+    <!-- Camera Viewfinder -->
+    <div id="posCamReader" style="width:100%;min-height:260px;background:#0f172a;border-radius:12px;overflow:hidden;position:relative"></div>
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:0.65rem">
+      <button type="button" id="btnPosCamTorch" class="btn btn-sm btn-secondary" style="font-size:0.75rem;display:none">
+        🔦 Senter
+      </button>
+      <span style="font-size:0.775rem;color:#64748b;margin-left:auto">Arahkan barcode produk ke kotak bidik</span>
+    </div>
+
+    <div id="posCamStatus" style="margin-top:0.65rem;font-size:0.825rem;text-align:center;font-weight:600;line-height:1.4"></div>
+
+    <div style="display:flex;gap:0.5rem;margin-top:0.85rem;justify-content:center">
+      <button type="button" id="btnRetryCam" class="btn btn-sm btn-secondary" style="display:none;font-weight:700">🔄 Coba Lagi</button>
+      <button type="button" id="btnBottomClosePosCam" class="btn btn-sm btn-secondary" style="font-weight:700;padding:0.4rem 1rem">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<script src="/js/html5-qrcode.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   let cart = [];
@@ -1216,20 +1347,68 @@ document.addEventListener('DOMContentLoaded', () => {
     updateFloatingBar();
   });
 
+  // Web Audio Synth feedback
+  const audioCtx = window.AudioContext || window.webkitAudioContext ? new (window.AudioContext || window.webkitAudioContext)() : null;
+  function playSuccessBeep() {
+    if (!audioCtx) return;
+    try {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1400, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.08);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.08);
+    } catch (e) {}
+  }
+
+  function playErrorBuzz() {
+    if (!audioCtx) return;
+    try {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(250, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.25);
+    } catch (e) {}
+  }
+
+  function showToast(msg, type = 'success') {
+    const toast = document.getElementById('scanFeedbackToast');
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.className = `scan-feedback-toast toast-${type} show`;
+    clearTimeout(toast._timeout);
+    toast._timeout = setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2200);
+  }
+
   // === Product Search & Barcode Detection ===
   searchInput.addEventListener('input', () => {
     clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => searchProducts(searchInput.value.trim()), 250);
+    searchTimeout = setTimeout(() => searchProducts(searchInput.value.trim(), false), 250);
   });
 
   searchInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      searchProducts(searchInput.value.trim());
+      searchProducts(searchInput.value.trim(), true);
     }
   });
 
-  async function searchProducts(query) {
+  let isScanningBarcode = false;
+  async function searchProducts(query, isScanner = false) {
     if (!query) {
       productGrid.innerHTML = `
         <div class="dash-empty-state" style="grid-column:1/-1;padding:3rem 1rem;text-align:center;color:#64748b">
@@ -1240,17 +1419,41 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Try exact barcode first
-    try {
-      let res = await fetch(`/api/products/barcode/${encodeURIComponent(query)}`);
-      let data = await res.json();
-      if (data.success && data.data) {
-        addToCart(data.data);
-        searchInput.value = '';
-        searchInput.focus();
-        return;
+    if (isScanningBarcode) return;
+
+    // Check if query looks like barcode or was explicitly submitted via Enter
+    const looksLikeBarcode = /^\d{6,14}$/.test(query);
+
+    if (isScanner || looksLikeBarcode) {
+      isScanningBarcode = true;
+      try {
+        const res = await fetch(`/api/products/barcode/${encodeURIComponent(query)}`);
+        const data = await res.json();
+        if (res.ok && data.success && data.data) {
+          addToCart(data.data);
+          playSuccessBeep();
+          if (navigator.vibrate) navigator.vibrate([70]);
+          showToast(`✅ ${data.data.name} (+1)`, 'success');
+          searchInput.value = '';
+          searchInput.focus();
+          isScanningBarcode = false;
+          return;
+        } else if (isScanner || looksLikeBarcode) {
+          playErrorBuzz();
+          showToast(`⚠️ ${data.message || 'Barcode tidak ditemukan atau produk nonaktif'}`, 'error');
+          if (isScanner) {
+            searchInput.select();
+          }
+        }
+      } catch (e) {
+        if (isScanner) {
+          playErrorBuzz();
+          showToast('⚠️ Gagal memindai barcode', 'error');
+        }
+      } finally {
+        isScanningBarcode = false;
       }
-    } catch (e) {}
+    }
 
     // Fallback search by name or SKU
     try {
@@ -1263,6 +1466,249 @@ document.addEventListener('DOMContentLoaded', () => {
       productGrid.innerHTML = '<p style="color:#dc2626;grid-column:1/-1;text-align:center;padding:2rem">Gagal memuat produk.</p>';
     }
   }
+
+  // === Camera Scanner for POS ===
+  const btnPosCam = document.getElementById('btnPosCam');
+  const posCameraModal = document.getElementById('posCameraModal');
+  const btnClosePosCam = document.getElementById('btnClosePosCam');
+  const btnBottomClosePosCam = document.getElementById('btnBottomClosePosCam');
+  const btnPosCamTorch = document.getElementById('btnPosCamTorch');
+  const btnRetryCam = document.getElementById('btnRetryCam');
+  const posCamStatus = document.getElementById('posCamStatus');
+  const posCamSelectWrap = document.getElementById('posCamSelectWrap');
+  const posCamSelect = document.getElementById('posCamSelect');
+  let posHtml5QrCode = null;
+  let posTorchOn = false;
+  let lastScannedCode = null;
+  let lastScannedTime = 0;
+  let availableCameras = [];
+
+  function closePosCamera() {
+    // 1. Immediately hide UI first so user is never stuck
+    if (posCameraModal) posCameraModal.style.display = 'none';
+    if (btnPosCamTorch) btnPosCamTorch.style.display = 'none';
+    if (btnRetryCam) btnRetryCam.style.display = 'none';
+    if (posCamStatus) posCamStatus.textContent = '';
+    posTorchOn = false;
+
+    // 2. Safely stop and cleanup camera in background
+    if (posHtml5QrCode) {
+      const qr = posHtml5QrCode;
+      posHtml5QrCode = null;
+      try {
+        if (typeof qr.isScanning === 'boolean' ? qr.isScanning : true) {
+          qr.stop().catch(() => {}).finally(() => {
+            try { qr.clear(); } catch (e) {}
+          });
+        } else {
+          try { qr.clear(); } catch (e) {}
+        }
+      } catch (err) {}
+    }
+
+    if (searchInput) searchInput.focus();
+  }
+
+  if (btnPosCam) btnPosCam.addEventListener('click', openPosCamera);
+  if (btnClosePosCam) btnClosePosCam.addEventListener('click', closePosCamera);
+  if (btnBottomClosePosCam) btnBottomClosePosCam.addEventListener('click', closePosCamera);
+  if (btnRetryCam) btnRetryCam.addEventListener('click', () => startCameraWithDetection());
+
+  if (posCameraModal) {
+    posCameraModal.addEventListener('click', (e) => {
+      if (e.target === posCameraModal) closePosCamera();
+    });
+  }
+
+  // Allow Esc key to close camera modal
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && posCameraModal && posCameraModal.style.display === 'flex') {
+      closePosCamera();
+    }
+  });
+
+  async function openPosCamera() {
+    posCameraModal.style.display = 'flex';
+    posCamStatus.style.color = '#64748b';
+    posCamStatus.textContent = 'Memeriksa perangkat kamera...';
+    btnRetryCam.style.display = 'none';
+    lastScannedCode = null;
+    lastScannedTime = 0;
+    await startCameraWithDetection();
+  }
+
+  async function startCameraWithDetection(preferredDeviceId = null) {
+    if (!window.Html5Qrcode) {
+      posCamStatus.style.color = '#dc2626';
+      posCamStatus.textContent = 'Pustaka pemindai barcode belum siap.';
+      btnRetryCam.style.display = 'inline-block';
+      return;
+    }
+
+    // Stop existing camera if running
+    if (posHtml5QrCode) {
+      try {
+        await posHtml5QrCode.stop().catch(() => {});
+        posHtml5QrCode.clear();
+      } catch (e) {}
+      posHtml5QrCode = null;
+    }
+
+    // Check secure context
+    const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    const isHttps = window.location.protocol === 'https:';
+    if (!isLocalhost && !isHttps) {
+      posCamStatus.style.color = '#dc2626';
+      posCamStatus.innerHTML = '⚠️ <b>Kamera browser membutuhkan HTTPS atau localhost.</b><br>' +
+        'Jika membuka dari HP melalui IP (' + window.location.host + '), browser memblokir kamera untuk privasi.<br>' +
+        '<small style="color:#64748b">Solusi: Buka via <b>localhost:3000</b> di komputer ini, gunakan HTTPS, atau gunakan Scanner Barcode USB.</small>';
+      btnRetryCam.style.display = 'none';
+      return;
+    }
+
+    try {
+      // Query available cameras
+      try {
+        availableCameras = await Html5Qrcode.getCameras();
+      } catch (e) {
+        availableCameras = [];
+      }
+
+      if (availableCameras && availableCameras.length > 0) {
+        if (availableCameras.length > 1 && posCamSelectWrap) {
+          posCamSelectWrap.style.display = 'block';
+          posCamSelect.innerHTML = availableCameras.map((c, i) =>
+            `<option value="${c.id}">${c.label || ('Kamera ' + (i + 1))}</option>`
+          ).join('');
+        } else if (posCamSelectWrap) {
+          posCamSelectWrap.style.display = 'none';
+        }
+
+        let targetId = preferredDeviceId;
+        if (!targetId) {
+          const back = availableCameras.find(c => {
+            const l = (c.label || '').toLowerCase();
+            return l.includes('back') || l.includes('rear') || l.includes('belakang') || l.includes('environment');
+          });
+          targetId = back ? back.id : availableCameras[0].id;
+        }
+
+        if (posCamSelect) posCamSelect.value = targetId;
+        await launchPosScanner(targetId);
+      } else {
+        // Fallback: try environment then user
+        try {
+          await launchPosScanner({ facingMode: "environment" });
+        } catch (fErr) {
+          await launchPosScanner({ facingMode: "user" });
+        }
+      }
+    } catch (err) {
+      console.warn('Camera error:', err);
+      posCamStatus.style.color = '#dc2626';
+      const msg = err.message || '';
+      if (err.name === 'NotAllowedError' || msg.includes('Permission denied') || msg.includes('denied')) {
+        posCamStatus.innerHTML = '🚫 <b>Izin kamera diblokir di browser.</b><br>' +
+          'Klik ikon gembok/kamera di sebelah kiri URL browser, ubah Kamera menjadi <b>Allow</b> / Izinkan, lalu klik tombol <b>Coba Lagi</b> di bawah.';
+      } else if (err.name === 'NotFoundError' || msg.includes('Requested device not found') || msg.includes('not found')) {
+        posCamStatus.innerHTML = '📷 <b>Tidak ada kamera/webcam di komputer ini.</b><br>' +
+          'Komputer desktop kasir dapat langsung menggunakan <b>Scanner Barcode USB</b> (colok & scan ke kolom pencarian).';
+      } else {
+        posCamStatus.innerHTML = '⚠️ <b>Akses kamera gagal:</b> ' + (msg || 'Kamera tidak tersedia atau sedang dipakai aplikasi lain.') + '<br>' +
+          '<small style="color:#64748b">Silakan gunakan scanner barcode USB atau ketik nama/SKU produk.</small>';
+      }
+      btnRetryCam.style.display = 'inline-block';
+    }
+  }
+
+  async function launchPosScanner(cameraSource) {
+    posHtml5QrCode = new Html5Qrcode("posCamReader");
+    const scanConfig = {
+      fps: 15,
+      qrbox: { width: 260, height: 160 },
+      aspectRatio: 1.0,
+      experimentalFeatures: {
+        useBarCodeDetectorIfSupported: true
+      }
+    };
+
+    await posHtml5QrCode.start(
+      cameraSource,
+      scanConfig,
+      async (decodedText) => {
+        const code = decodedText.trim();
+        const now = Date.now();
+        // 1.5s Anti-duplicate debounce
+        if (code === lastScannedCode && (now - lastScannedTime) < 1500) {
+          return;
+        }
+        lastScannedCode = code;
+        lastScannedTime = now;
+
+        // Fetch product
+        try {
+          const res = await fetch(`/api/products/barcode/${encodeURIComponent(code)}`);
+          const data = await res.json();
+          if (res.ok && data.success && data.data) {
+            addToCart(data.data);
+            playSuccessBeep();
+            if (navigator.vibrate) navigator.vibrate([80]);
+            posCamStatus.style.color = '#16a34a';
+            posCamStatus.textContent = `✅ +1 ${data.data.name}`;
+            showToast(`✅ ${data.data.name} (+1)`, 'success');
+          } else {
+            playErrorBuzz();
+            posCamStatus.style.color = '#dc2626';
+            posCamStatus.textContent = `⚠️ Barcode "${code}" tidak ditemukan`;
+            showToast(`⚠️ Barcode ${code} tidak ditemukan`, 'error');
+          }
+        } catch (e) {
+          playErrorBuzz();
+          posCamStatus.style.color = '#dc2626';
+          posCamStatus.textContent = 'Gagal memeriksa barcode';
+        }
+      },
+      () => {}
+    );
+
+    posCamStatus.style.color = '#15803d';
+    posCamStatus.textContent = 'Kamera aktif. Arahkan barcode ke kotak.';
+    btnRetryCam.style.display = 'none';
+
+    try {
+      const capabilities = posHtml5QrCode.getRunningTrackCapabilities();
+      if (capabilities && capabilities.torch) {
+        btnPosCamTorch.style.display = 'inline-block';
+      }
+    } catch (e) {}
+  }
+
+  if (posCamSelect) {
+    posCamSelect.addEventListener('change', () => {
+      startCameraWithDetection(posCamSelect.value);
+    });
+  }
+
+  if (btnPosCamTorch) {
+    btnPosCamTorch.addEventListener('click', () => {
+      if (posHtml5QrCode) {
+        posTorchOn = !posTorchOn;
+        posHtml5QrCode.applyVideoConstraints({
+          advanced: [{ torch: posTorchOn }]
+        }).catch(() => {});
+      }
+    });
+  }
+
+  // Keep autofocus on searchInput unless user is interacting with inputs/buttons
+  document.addEventListener('click', (e) => {
+    const tag = e.target.tagName.toLowerCase();
+    const isInteractive = ['input', 'button', 'select', 'textarea', 'a'].includes(tag);
+    const inModal = e.target.closest('#receiptModal') || e.target.closest('#posCameraModal');
+    if (!isInteractive && !inModal && paymentSection && !paymentSection.classList.contains('active')) {
+      searchInput.focus();
+    }
+  });
 
   function renderProducts(products) {
     if (!products || products.length === 0) {

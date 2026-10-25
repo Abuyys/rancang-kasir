@@ -18,11 +18,13 @@ const reportRoutes = require('../modules/reports/report.routes');
 const expenseRoutes = require('../modules/expenses/expense.routes');
 const userRoutes = require('../modules/users/user.routes');
 const settingRoutes = require('../modules/settings/setting.routes');
+const barcodeRoutes = require('../modules/barcode/barcode.routes');
 
 router.use('/', authRoutes);
 router.use('/', dashboardRoutes);
 router.use('/', categoryRoutes);
 router.use('/', productRoutes);
+router.use('/', barcodeRoutes);
 router.use('/', supplierRoutes);
 router.use('/', purchaseRoutes);
 router.use('/', inventoryRoutes);

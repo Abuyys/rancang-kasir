@@ -1,20 +1,26 @@
 <div class="page-header">
-  <h1>📦 <%= product.name %></h1>
   <div>
+    <h1>📦 <%= product.name %></h1>
+    <p class="text-muted" style="margin: 0.25rem 0 0 0; font-size: 0.875rem;">Detail produk, riwayat harga, stok, dan label barcode</p>
+  </div>
+  <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
     <a href="/products" class="btn btn-secondary">← Kembali</a>
+    <% if (product.barcode) { %>
+      <a href="/labels/print?ids=<%= product.id %>" class="btn btn-secondary" target="_blank" title="Cetak label barcode untuk produk ini">🖨️ Cetak Label</a>
+    <% } %>
     <% if (currentUser.role === 'admin') { %>
-      <a href="/products/<%= product.id %>/edit" class="btn btn-primary">Edit</a>
+      <a href="/products/<%= product.id %>/edit" class="btn btn-primary">Edit Produk</a>
     <% } %>
   </div>
 </div>
 
 <div class="detail-grid">
+  <!-- Informasi Dasar Produk -->
   <div class="card">
     <div class="card-header"><h2>Informasi Produk</h2></div>
     <div class="card-body">
       <table class="detail-table">
         <tr><th>SKU</th><td><code><%= product.sku %></code></td></tr>
-        <tr><th>Barcode</th><td><%= product.barcode || '-' %></td></tr>
         <tr><th>Nama</th><td><strong><%= product.name %></strong></td></tr>
         <tr><th>Kategori</th><td><%= product.category_name || '-' %></td></tr>
         <tr><th>Satuan</th><td><%= product.unit %></td></tr>
@@ -23,6 +29,73 @@
     </div>
   </div>
 
+  <!-- Barcode Section -->
+  <div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+      <h2>Barcode Produk</h2>
+      <% if (product.barcode) { %>
+        <span class="badge" style="background:#e0e7ff;color:#3730a3;text-transform:uppercase;font-size:0.75rem">
+          <%= product.barcode_type || 'Barcode' %>
+        </span>
+      <% } %>
+    </div>
+    <div class="card-body">
+      <% if (product.barcode) { %>
+        <div style="background:#ffffff;border:1px dashed #cbd5e1;border-radius:10px;padding:1rem;text-align:center;margin-bottom:1rem;display:flex;flex-direction:column;align-items:center;justify-content:center">
+          <img src="/api/products/<%= product.id %>/barcode/image?format=svg&scale=2&height=14&includetext=true" alt="<%= product.barcode %>" style="max-width:100%;height:auto;display:block">
+        </div>
+        
+        <table class="detail-table" style="margin-bottom:1rem">
+          <tr>
+            <th>Nomor Barcode</th>
+            <td><code style="font-size:1rem;font-weight:700"><%= product.barcode %></code></td>
+          </tr>
+          <tr>
+            <th>Tipe Barcode</th>
+            <td style="text-transform:uppercase"><%= product.barcode_type || 'EAN-13' %></td>
+          </tr>
+          <tr>
+            <th>Asal Barcode</th>
+            <td>
+              <span class="badge <%= product.barcode_source === 'internal' ? 'badge-info' : 'badge-secondary' %>">
+                <%= product.barcode_source === 'internal' ? 'Internal Toko (Prefix 200)' : 'Pabrik / Produsen' %>
+              </span>
+            </td>
+          </tr>
+          <% if (product.barcode_generated_at) { %>
+            <tr>
+              <th>Dibuat Pada</th>
+              <td><%= new Date(product.barcode_generated_at).toLocaleString('id-ID') %></td>
+            </tr>
+          <% } %>
+        </table>
+
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+          <a href="/api/products/<%= product.id %>/barcode/image?format=svg&download=1" class="btn btn-sm btn-secondary">
+            ⬇ Unduh SVG
+          </a>
+          <a href="/api/products/<%= product.id %>/barcode/image?format=png&download=1" class="btn btn-sm btn-secondary">
+            ⬇ Unduh PNG
+          </a>
+          <a href="/labels/print?ids=<%= product.id %>" target="_blank" class="btn btn-sm btn-secondary">
+            🖨️ Cetak Stiker Label
+          </a>
+        </div>
+      <% } else { %>
+        <div style="text-align:center;padding:1.75rem 1rem;color:#64748b">
+          <div style="font-size:2rem;margin-bottom:0.25rem">🏷️</div>
+          <p style="margin:0 0 0.75rem 0;font-weight:600">Produk ini belum memiliki barcode</p>
+          <% if (currentUser.role === 'admin') { %>
+            <button type="button" class="btn btn-primary" id="btnGenerateNow">
+              ⚡ Generate Barcode Internal EAN-13
+            </button>
+          <% } %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Harga & Margin -->
   <div class="card">
     <div class="card-header"><h2>Harga & Stok</h2></div>
     <div class="card-body">
@@ -43,14 +116,46 @@
       </table>
     </div>
   </div>
-</div>
 
-<div class="card" style="margin-top:1.5rem">
-  <div class="card-header"><h2>Informasi Lainnya</h2></div>
-  <div class="card-body">
-    <table class="detail-table">
-      <tr><th>Dibuat</th><td><%= product.created_at %></td></tr>
-      <tr><th>Terakhir Diubah</th><td><%= product.updated_at %></td></tr>
-    </table>
+  <!-- Riwayat Waktu -->
+  <div class="card">
+    <div class="card-header"><h2>Informasi Waktu</h2></div>
+    <div class="card-body">
+      <table class="detail-table">
+        <tr><th>Dibuat</th><td><%= new Date(product.created_at).toLocaleString('id-ID') %></td></tr>
+        <tr><th>Terakhir Diubah</th><td><%= new Date(product.updated_at).toLocaleString('id-ID') %></td></tr>
+      </table>
+    </div>
   </div>
 </div>
+
+<% if (!product.barcode && currentUser.role === 'admin') { %>
+<script>
+document.getElementById('btnGenerateNow')?.addEventListener('click', async () => {
+  if (!confirm('Generate barcode internal EAN-13 untuk produk "<%= product.name.replace(/'/g, "\\'") %>"?')) {
+    return;
+  }
+  const btn = document.getElementById('btnGenerateNow');
+  btn.disabled = true;
+  btn.textContent = 'Memproses...';
+  try {
+    const res = await fetch('/api/products/<%= product.id %>/barcode/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    if (data.success) {
+      alert(`Barcode berhasil dibuat: ${data.data.barcode}`);
+      window.location.reload();
+    } else {
+      alert(`Gagal: ${data.message}`);
+    }
+  } catch (e) {
+    alert('Terjadi kesalahan: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '⚡ Generate Barcode Internal EAN-13';
+  }
+});
+</script>
+<% } %>

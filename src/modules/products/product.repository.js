@@ -1,7 +1,7 @@
 const pool = require('../../config/database');
 
 class ProductRepository {
-  async findAll({ search = '', categoryId = null, isActive = null, page = 1, limit = 20 } = {}) {
+  async findAll({ search = '', categoryId = null, isActive = null, barcodeStatus = null, page = 1, limit = 20 } = {}) {
     let where = 'WHERE 1=1';
     const params = [];
 
@@ -16,6 +16,11 @@ class ProductRepository {
     if (isActive !== null) {
       where += ' AND p.is_active = ?';
       params.push(isActive);
+    }
+    if (barcodeStatus === 'with_barcode') {
+      where += " AND (p.barcode IS NOT NULL AND TRIM(p.barcode) != '')";
+    } else if (barcodeStatus === 'without_barcode') {
+      where += " AND (p.barcode IS NULL OR TRIM(p.barcode) = '')";
     }
 
     const [countResult] = await pool.execute(
@@ -64,12 +69,24 @@ class ProductRepository {
 
   async create(data) {
     const [result] = await pool.execute(
-      `INSERT INTO products (category_id, sku, barcode, name, unit, cost_price, selling_price, stock, min_stock, is_active) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO products (
+        category_id, sku, barcode, barcode_type, barcode_source, barcode_generated_at,
+        name, unit, cost_price, selling_price, stock, min_stock, is_active
+      ) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
-        data.category_id, data.sku, data.barcode || null, data.name,
-        data.unit || 'pcs', data.cost_price || 0, data.selling_price,
-        data.stock || 0, data.min_stock || 0,
+        data.category_id,
+        data.sku,
+        data.barcode || null,
+        data.barcode_type || null,
+        data.barcode_source || null,
+        data.barcode_generated_at || null,
+        data.name,
+        data.unit || 'pcs',
+        data.cost_price || 0,
+        data.selling_price,
+        data.stock || 0,
+        data.min_stock || 0,
         data.is_active !== undefined ? data.is_active : true,
       ]
     );
@@ -79,13 +96,23 @@ class ProductRepository {
   async update(id, data) {
     await pool.execute(
       `UPDATE products SET 
-        category_id = ?, sku = ?, barcode = ?, name = ?, unit = ?, 
-        cost_price = ?, selling_price = ?, min_stock = ?, is_active = ? 
+        category_id = ?, sku = ?, barcode = ?, barcode_type = ?, barcode_source = ?, barcode_generated_at = ?,
+        name = ?, unit = ?, cost_price = ?, selling_price = ?, min_stock = ?, is_active = ? 
        WHERE id = ?`,
       [
-        data.category_id, data.sku, data.barcode || null, data.name,
-        data.unit || 'pcs', data.cost_price || 0, data.selling_price,
-        data.min_stock || 0, data.is_active !== undefined ? data.is_active : true, id,
+        data.category_id,
+        data.sku,
+        data.barcode || null,
+        data.barcode_type || null,
+        data.barcode_source || null,
+        data.barcode_generated_at || null,
+        data.name,
+        data.unit || 'pcs',
+        data.cost_price || 0,
+        data.selling_price,
+        data.min_stock || 0,
+        data.is_active !== undefined ? data.is_active : true,
+        id,
       ]
     );
   }

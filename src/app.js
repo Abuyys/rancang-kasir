@@ -53,10 +53,12 @@ app.set('layout', 'layouts/main');
 // Session
 // =========================
 const sessionStore = new MySQLStore({
-  clearExpired: true,
-  checkExpirationInterval: 900000, // 15 min
+  clearExpired: env.nodeEnv !== 'test',
+  checkExpirationInterval: env.nodeEnv === 'test' ? 0 : 900000, // 15 min (disabled during tests)
   expiration: env.session.maxAge,
 }, pool);
+
+app.sessionStore = sessionStore;
 
 app.use(session({
   key: 'minimarket_pos_sid',

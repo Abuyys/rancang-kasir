@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/label-print.css">
+  <style id="dynamicPageStyle">
+    /* Dynamic @page based on size */
+    <% if (size === '38x25') { %>
+      @page { size: 38mm 25mm; margin: 0; }
+    <% } else if (size === '50x30') { %>
+      @page { size: 50mm 30mm; margin: 0; }
+    <% } else { %>
+      @page { size: A4 portrait; margin: 6mm 4mm; }
+    <% } %>
+  </style>
+</head>
+<body id="printBody" class="size-<%= size %> print-size-<%= size %>">
+
+  <!-- Screen Only Toolbar -->
+  <div class="label-toolbar no-print">
+    <div class="label-toolbar-title">
+      <span style="font-size:1.35rem">🏷️</span>
+      <span>Cetak Label Barcode</span>
+      <span id="prodCountBadge" class="toolbar-badge accent">
+        <%= products.length %> Produk
+      </span>
+      <span id="labelCountBadge" class="toolbar-badge">
+        <%= products.length * copies %> Label
+      </span>
+    </div>
+
+    <div class="label-toolbar-controls">
+      <!-- Product Picker Modal Button -->
+      <button type="button" class="btn-picker-action" onclick="openProductPicker()" title="Pilih produk dari katalog">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+        </svg>
+        <span>Pilih Produk (<span id="btnPickerCount"><%= products.length %></span>)</span>
+      </button>
+
+      <!-- Quick Add Autocomplete -->
+      <div class="quick-add-wrap">
+        <input type="text" id="quickAddInput" class="quick-add-input" placeholder="🔍 Tambah / scan barcode..." autocomplete="off">
+        <div id="quickAddDropdown" class="quick-add-dropdown" style="display:none"></div>
+      </div>
+
+      <!-- Size Option -->
+      <div class="control-item">
+        <label for="sizeSelect">Ukuran:</label>
+        <select id="sizeSelect" onchange="changeSize(this.value)">
+          <option value="38x25" <%= size === '38x25' ? 'selected' : '' %>>38 x 25 mm (Thermal Roll)</option>
+          <option value="50x30" <%= size === '50x30' ? 'selected' : '' %>>50 x 30 mm (Thermal Medium)</option>
+          <option value="a4_3x8" <%= size === 'a4_3x8' ? 'selected' : '' %>>A4 Sheet (Grid 3 x 8)</option>
+        </select>
+      </div>
+
+      <!-- Copies Option -->
+      <div class="control-item">
+        <label for="copiesInput">Salinan:</label>
+        <input type="number" id="copiesInput" value="<%= copies %>" min="1" max="100" style="width:60px" onchange="changeGlobalCopies(this.value)">
+      </div>
+
+      <!-- Show Price Checkbox -->
+      <div class="control-item">
+        <label style="cursor:pointer;display:flex;align-items:center;gap:0.35rem">
+          <input type="checkbox" id="showPriceCheck" <%= showPrice ? 'checked' : '' %> onchange="togglePrice(this.checked)">
+          <span>Tampilkan Harga</span>
+        </label>
+      </div>
+
+      <!-- Show Store Name Checkbox -->
+      <div class="control-item">
+        <label style="cursor:pointer;display:flex;align-items:center;gap:0.35rem">
+          <input type="checkbox" id="showStoreCheck" <%= showStoreName ? 'checked' : '' %> onchange="toggleStore(this.checked)">
+          <span>Nama Toko</span>
+        </label>
+      </div>
+
+      <!-- Action Buttons -->
+      <button type="button" class="btn-print-action" onclick="handlePrintNow()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 6 2 18 2 18 9"/>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+          <rect x="6" y="14" width="12" height="8"/>
+        </svg>
+        <span>Cetak Sekarang</span>
+      </button>
+
+      <a href="/products" class="btn-back-action" onclick="handleBack(event)">
+        ← Kembali
+      </a>
+    </div>
+  </div>
+
+  <!-- Preview & Print Area -->
+  <div class="label-preview-viewport" id="previewViewport">
+    <!-- Populated by renderLabels() -->
+    <div class="labels-container" id="labelsContainer"></div>
+  </div>
+
+  <!-- Product Picker Modal (Screen Only) -->
+  <div id="pickerModalBackdrop" class="picker-modal-backdrop no-print" onclick="handleBackdropClick(event)">
+    <div class="picker-modal" onclick="event.stopPropagation()">
+      <div class="picker-modal-header">
+        <div class="picker-modal-title">
+          <span>📋</span>
+          <span>Pilih Produk untuk Cetak Label Barcode</span>
+        </div>
+        <button type="button" class="picker-modal-close" onclick="closeProductPicker()" aria-label="Tutup">✕</button>
+      </div>
+
+      <div class="picker-modal-toolbar">
+        <input type="text" id="modalSearchInput" class="picker-search-input" placeholder="🔍 Cari nama produk, SKU, atau barcode..." oninput="filterModalProducts()">
+        
+        <select id="modalCategoryFilter" class="picker-filter-select" onchange="filterModalProducts()">
+          <option value="">Semua Kategori</option>
+          <% categories.forEach(cat => { %>
+            <option value="<%= cat.id %>"><%= cat.name %></option>
+          <% }); %>
+        </select>
+
+        <select id="modalBarcodeFilter" class="picker-filter-select" onchange="filterModalProducts()">
+          <option value="with_barcode">Hanya Berbarcode</option>
+          <option value="all">Semua Produk</option>
+          <option value="no_barcode">Belum Ada Barcode</option>
+        </select>
+
+        <div style="display:flex;gap:0.4rem;margin-left:auto">
+          <button type="button" class="btn-secondary-action" onclick="modalSelectAll(true)" style="padding:0.4rem 0.65rem;font-size:0.8rem">
+            ✓ Pilih Semua
+          </button>
+          <button type="button" class="btn-secondary-action" onclick="modalSelectAll(false)" style="padding:0.4rem 0.65rem;font-size:0.8rem">
+            ✕ Kosongkan
+          </button>
+        </div>
+      </div>
+
+      <div class="picker-modal-body">
+        <table class="picker-product-table">
+          <thead>
+            <tr>
+              <th style="width:40px;text-align:center">
+                <input type="checkbox" id="modalHeaderCheckbox" class="picker-checkbox" onchange="modalToggleHeader(this.checked)">
+              </th>
+              <th>Produk</th>
+              <th>Kategori</th>
+              <th>Barcode</th>
+              <th style="text-align:right">Harga Jual</th>
+              <th style="text-align:center">Stok</th>
+            </tr>
+          </thead>
+          <tbody id="modalProductList">
+            <!-- Rendered by JS -->
+          </tbody>
+        </table>
+      </div>
+
+      <div class="picker-modal-footer">
+        <div style="font-weight:700;font-size:0.9rem;color:#334155" id="modalSelectedSummary">
+          0 produk dipilih
+        </div>
+        <div style="display:flex;gap:0.6rem">
+          <button type="button" class="btn-secondary-action" onclick="closeProductPicker()">
+            Batal
+          </button>
+          <button type="button" class="btn-picker-action" onclick="applyModalSelection()">
+            Terapkan ke Antrean Cetak
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="printToast" class="print-toast no-print"></div>
+
+  <script>
+    // --- Initial State from Backend ---
+    const allStoreProducts = <%- JSON.stringify(allStoreProducts || []) %>;
+    const storeSettings = <%- JSON.stringify(settings || {}) %>;
+    const initialProducts = <%- JSON.stringify(products || []) %>;
+    const totalStoreProductsWithBarcode = <%= totalStoreProductsWithBarcode || 0 %>;
+
+    const state = {
+      size: '<%= size %>',
+      globalCopies: <%= copies %>,
+      showPrice: <%= showPrice ? 'true' : 'false' %>,
+      showStoreName: <%= showStoreName ? 'true' : 'false' %>,
+      // Map of productId -> { product, copies }
+      items: new Map()
+    };
+
+    // Populate initial items
+    initialProducts.forEach(p => {
+      state.items.set(p.id, {
+        product: p,
+        copies: state.globalCopies
+      });
+    });
+
+    // --- Render Labels ---
+    function renderLabels() {
+      const container = document.getElementById('labelsContainer');
+      const prodCountBadge = document.getElementById('prodCountBadge');
+      const labelCountBadge = document.getElementById('labelCountBadge');
+      const btnPickerCount = document.getElementById('btnPickerCount');
+
+      const itemsList = Array.from(state.items.values());
+      const totalProducts = itemsList.length;
+      let totalLabels = 0;
+      itemsList.forEach(it => { totalLabels += it.copies; });
+
+      // Update Toolbar Badges
+      prodCountBadge.textContent = `${totalProducts} Produk`;
+      labelCountBadge.textContent = `${totalLabels} Label`;
+      btnPickerCount.textContent = totalProducts;
+
+      // Update URL query string silently without reloading
+      const url = new URL(window.location.href);
+      if (itemsList.length > 0) {
+        url.searchParams.set('ids', itemsList.map(it => it.product.id).join(','));
+      } else {
+        url.searchParams.set('ids', '');
+      }
+      url.searchParams.set('size', state.size);
+      url.searchParams.set('copies', state.globalCopies);
+      url.searchParams.set('showPrice', state.showPrice);
+      url.searchParams.set('showStoreName', state.showStoreName);
+      window.history.replaceState({}, '', url.toString());
+
+      // Empty State
+      if (totalProducts === 0) {
+        if (totalStoreProductsWithBarcode > 0) {
+          container.innerHTML = `
+            <div class="empty-state-card no-print">
+              <div class="empty-state-icon">📋</div>
+              <h3 class="empty-state-title">Tidak Ada Produk untuk Dicetak</h3>
+              <p class="empty-state-desc">
+                Pilih satu atau beberapa produk dari daftar katalog untuk mulai mencetak label barcode.
+              </p>
+              <div class="empty-state-actions">
+                <button type="button" class="btn-picker-action" onclick="openProductPicker()" style="font-size:0.95rem;padding:0.65rem 1.25rem">
+                  ➕ Pilih Produk dari Katalog
+                </button>
+                <button type="button" class="btn-secondary-action" onclick="loadAllProductsWithBarcode()" style="font-size:0.9rem;padding:0.55rem 1.1rem">
+                  🏷️ Cetak Semua Produk (${totalStoreProductsWithBarcode} Produk Berbarcode)
+                </button>
+                <a href="/products" class="btn-back-action" style="font-size:0.85rem">
+                  Buka Katalog Produk
+                </a>
+              </div>
+            </div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div class="empty-state-card no-print">
+              <div class="empty-state-icon">⚠️</div>
+              <h3 class="empty-state-title">Belum Ada Produk dengan Barcode</h3>
+              <p class="empty-state-desc">
+                Semua produk di sistem Anda belum memiliki barcode. Anda dapat membuat barcode EAN-13 otomatis secara instan untuk semua produk sekaligus.
+              </p>
+              <div class="empty-state-actions">
+                <button type="button" class="btn-print-action" onclick="generateBulkBarcodes()" style="font-size:0.95rem;padding:0.65rem 1.25rem">
+                  ⚡ Generate Barcode Otomatis (EAN-13)
+                </button>
+                <a href="/products" class="btn-back-action" style="font-size:0.85rem">
+                  Buka Katalog Produk
+                </a>
+              </div>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      // Render Active Labels
+      const storeName = storeSettings.store_name || 'MINIMARKET';
+      let html = '';
+
+      itemsList.forEach(({ product, copies }) => {
+        html += `<div class="label-item-group" id="labelGroup-${product.id}">`;
+        
+        // Floating Controls per product (Screen only)
+        html += `
+          <div class="label-group-controls no-print" title="${product.name}">
+            <span style="font-size:0.75rem;font-weight:800;color:#0f172a;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${product.name}</span>
+            <div style="display:inline-flex;align-items:center;border:1px solid #cbd5e1;border-radius:4px;overflow:hidden;background:#fff;margin:0 4px">
+              <button type="button" class="btn-group-action" onclick="changeItemCopies(${product.id}, -1)" title="Kurangi label">-</button>
+              <span style="font-size:0.75rem;font-weight:700;padding:0 5px;min-width:20px;text-align:center">${copies}</span>
+              <button type="button" class="btn-group-action" onclick="changeItemCopies(${product.id}, 1)" title="Tambah label">+</button>
+            </div>
+            <button type="button" class="btn-group-action btn-group-remove" onclick="removeProductFromQueue(${product.id})" title="Hapus dari antrean">✕</button>
+          </div>
+        `;
+
+        // Render copies
+        for (let c = 0; c < copies; c++) {
+          html += `
+            <div class="label-item">
+              <div class="label-store-name" style="${state.showStoreName ? '' : 'display:none;'}">
+                ${escapeHtml(storeName)}
+              </div>
+              <div class="label-prod-name" title="${escapeHtml(product.name)}">
+                ${escapeHtml(product.name)}
+              </div>
+              <div class="label-barcode-svg-wrap">
+                <img src="/api/products/${product.id}/barcode/image?format=svg&scale=2&height=12&includetext=true" alt="${escapeHtml(product.barcode)}" loading="lazy">
+              </div>
+              <div class="label-price-tag" style="${state.showPrice ? '' : 'display:none;'}">
+                Rp ${new Intl.NumberFormat('id-ID').format(product.selling_price)}
+              </div>
+            </div>
+          `;
+        }
+
+        html += `</div>`;
+      });
+
+      container.innerHTML = html;
+    }
+
+    // --- Queue Management ---
+    function removeProductFromQueue(productId) {
+      if (state.items.has(productId)) {
+        const prod = state.items.get(productId).product;
+        state.items.delete(productId);
+        renderLabels();
+        showToast(`"${prod.name}" dihapus dari antrean cetak`);
+      }
+    }
+
+    function changeItemCopies(productId, delta) {
+      if (state.items.has(productId)) {
+        const item = state.items.get(productId);
+        const newCopies = Math.max(1, item.copies + delta);
+        item.copies = newCopies;
+        renderLabels();
+      }
+    }
+
+    function changeGlobalCopies(val) {
+      const copies = Math.max(1, parseInt(val, 10) || 1);
+      state.globalCopies = copies;
+      state.items.forEach(item => {
+        item.copies = copies;
+      });
+      renderLabels();
+    }
+
+    function changeSize(newSize) {
+      state.size = newSize;
+      const body = document.getElementById('printBody');
+      body.className = `size-${newSize} print-size-${newSize}`;
+
+      // Update dynamic @page CSS
+      const styleEl = document.getElementById('dynamicPageStyle');
+      if (newSize === '38x25') {
+        styleEl.innerHTML = '@page { size: 38mm 25mm; margin: 0; }';
+      } else if (newSize === '50x30') {
+        styleEl.innerHTML = '@page { size: 50mm 30mm; margin: 0; }';
+      } else {
+        styleEl.innerHTML = '@page { size: A4 portrait; margin: 6mm 4mm; }';
+      }
+
+      renderLabels();
+    }
+
+    function togglePrice(show) {
+      state.showPrice = show;
+      document.querySelectorAll('.label-price-tag').forEach(el => {
+        el.style.display = show ? 'block' : 'none';
+      });
+      renderLabels();
+    }
+
+    function toggleStore(show) {
+      state.showStoreName = show;
+      document.querySelectorAll('.label-store-name').forEach(el => {
+        el.style.display = show ? 'block' : 'none';
+      });
+      renderLabels();
+    }
+
+    function loadAllProductsWithBarcode() {
+      allStoreProducts.forEach(p => {
+        if (p.barcode && p.barcode.trim() !== '') {
+          if (!state.items.has(p.id)) {
+            state.items.set(p.id, {
+              product: p,
+              copies: state.globalCopies
+            });
+          }
+        }
+      });
+      renderLabels();
+      showToast(`Semua produk berbarcode dimuat (${state.items.size} produk)`);
+    }
+
+    // --- Quick Add Autocomplete ---
+    const quickAddInput = document.getElementById('quickAddInput');
+    const quickAddDropdown = document.getElementById('quickAddDropdown');
+
+    quickAddInput.addEventListener('input', (e) => {
+      const query = e.target.value.trim().toLowerCase();
+      if (!query) {
+        quickAddDropdown.style.display = 'none';
+        return;
+      }
+
+      const matches = allStoreProducts.filter(p => {
+        const nameMatch = (p.name || '').toLowerCase().includes(query);
+        const skuMatch = (p.sku || '').toLowerCase().includes(query);
+        const barcodeMatch = (p.barcode || '').toLowerCase().includes(query);
+        return nameMatch || skuMatch || barcodeMatch;
+      }).slice(0, 8);
+
+      if (matches.length === 0) {
+        quickAddDropdown.innerHTML = '<div style="padding:0.75rem;font-size:0.8rem;color:#64748b;text-align:center">Produk tidak ditemukan</div>';
+        quickAddDropdown.style.display = 'block';
+        return;
+      }
+
+      let html = '';
+      matches.forEach(p => {
+        const hasBarcode = Boolean(p.barcode && p.barcode.trim());
+        html += `
+          <div class="quick-add-item" onclick="quickSelectProduct(${p.id})">
+            <div>
+              <div class="quick-add-item-name">${escapeHtml(p.name)}</div>
+              <div class="quick-add-item-sku">SKU: ${escapeHtml(p.sku)} • ${hasBarcode ? '🏷️ ' + escapeHtml(p.barcode) : '<span style="color:#ef4444">⚠️ Belum ada barcode</span>'}</div>
+            </div>
+            <div class="quick-add-item-price">
+              Rp ${new Intl.NumberFormat('id-ID').format(p.selling_price)}
+            </div>
+          </div>
+        `;
+      });
+
+      quickAddDropdown.innerHTML = html;
+      quickAddDropdown.style.display = 'block';
+    });
+
+    quickAddInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const query = quickAddInput.value.trim().toLowerCase();
+        if (!query) return;
+        // Exact barcode match first
+        const exactBarcode = allStoreProducts.find(p => (p.barcode || '').toLowerCase() === query);
+        if (exactBarcode) {
+          quickSelectProduct(exactBarcode.id);
+          return;
+        }
+        // First match
+        const firstMatch = allStoreProducts.find(p => 
+          (p.name || '').toLowerCase().includes(query) || 
+          (p.sku || '').toLowerCase().includes(query)
+        );
+        if (firstMatch) {
+          quickSelectProduct(firstMatch.id);
+        }
+      } else if (e.key === 'Escape') {
+        quickAddDropdown.style.display = 'none';
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!quickAddInput.contains(e.target) && !quickAddDropdown.contains(e.target)) {
+        quickAddDropdown.style.display = 'none';
+      }
+    });
+
+    function quickSelectProduct(productId) {
+      const prod = allStoreProducts.find(p => p.id === productId);
+      if (!prod) return;
+
+      if (!prod.barcode || !prod.barcode.trim()) {
+        showToast(`⚠️ "${prod.name}" belum memiliki barcode. Silakan buat barcode terlebih dahulu.`, 3500);
+        return;
+      }
+
+      if (state.items.has(prod.id)) {
+        state.items.get(prod.id).copies += 1;
+        showToast(`+1 salinan label "${prod.name}" ditambahkan`);
+      } else {
+        state.items.set(prod.id, {
+          product: prod,
+          copies: state.globalCopies
+        });
+        showToast(`"${prod.name}" ditambahkan ke antrean cetak`);
+      }
+
+      quickAddInput.value = '';
+      quickAddDropdown.style.display = 'none';
+      renderLabels();
+    }
+
+    // --- Product Picker Modal ---
+    const modalBackdrop = document.getElementById('pickerModalBackdrop');
+    const modalSearchInput = document.getElementById('modalSearchInput');
+    const modalCategoryFilter = document.getElementById('modalCategoryFilter');
+    const modalBarcodeFilter = document.getElementById('modalBarcodeFilter');
+    const modalProductList = document.getElementById('modalProductList');
+    const modalSelectedSummary = document.getElementById('modalSelectedSummary');
+
+    let modalCheckedIds = new Set();
+
+    function openProductPicker() {
+      // Pre-check items already in state
+      modalCheckedIds = new Set(Array.from(state.items.keys()));
+      modalSearchInput.value = '';
+      modalCategoryFilter.value = '';
+      modalBarcodeFilter.value = 'with_barcode';
+      renderModalTable();
+      modalBackdrop.classList.add('open');
+      modalSearchInput.focus();
+    }
+
+    function closeProductPicker() {
+      modalBackdrop.classList.remove('open');
+    }
+
+    function handleBackdropClick(e) {
+      if (e.target === modalBackdrop) {
+        closeProductPicker();
+      }
+    }
+
+    function filterModalProducts() {
+      renderModalTable();
+    }
+
+    function renderModalTable() {
+      const query = modalSearchInput.value.trim().toLowerCase();
+      const catId = modalCategoryFilter.value ? parseInt(modalCategoryFilter.value, 10) : null;
+      const barcodeFilter = modalBarcodeFilter.value;
+
+      const filtered = allStoreProducts.filter(p => {
+        if (catId && p.category_id !== catId) return false;
+        
+        const hasBarcode = Boolean(p.barcode && p.barcode.trim());
+        if (barcodeFilter === 'with_barcode' && !hasBarcode) return false;
+        if (barcodeFilter === 'no_barcode' && hasBarcode) return false;
+
+        if (query) {
+          const nameMatch = (p.name || '').toLowerCase().includes(query);
+          const skuMatch = (p.sku || '').toLowerCase().includes(query);
+          const barcodeMatch = (p.barcode || '').toLowerCase().includes(query);
+          if (!nameMatch && !skuMatch && !barcodeMatch) return false;
+        }
+
+        return true;
+      });
+
+      if (filtered.length === 0) {
+        modalProductList.innerHTML = `
+          <tr>
+            <td colspan="6" style="text-align:center;padding:2.5rem;color:#64748b;font-size:0.9rem">
+              Tidak ada produk yang cocok dengan filter pencarian.
+            </td>
+          </tr>
+        `;
+        updateModalSummary();
+        return;
+      }
+
+      let html = '';
+      filtered.forEach(p => {
+        const isChecked = modalCheckedIds.has(p.id);
+        const hasBarcode = Boolean(p.barcode && p.barcode.trim());
+        html += `
+          <tr class="picker-product-row ${isChecked ? 'selected' : ''}" onclick="toggleModalProduct(${p.id}, event)">
+            <td style="text-align:center" onclick="event.stopPropagation()">
+              <input type="checkbox" class="picker-checkbox modal-row-check" data-id="${p.id}" ${isChecked ? 'checked' : ''} onchange="handleModalCheckboxChange(${p.id}, this.checked)">
+            </td>
+            <td>
+              <div style="font-weight:700;color:#0f172a">${escapeHtml(p.name)}</div>
+              <div style="font-size:0.75rem;color:#64748b">SKU: ${escapeHtml(p.sku)}</div>
+            </td>
+            <td>${escapeHtml(p.category_name || '-')}</td>
+            <td>
+              ${hasBarcode 
+                ? `<span class="picker-badge-barcode">🏷️ ${escapeHtml(p.barcode)}</span>` 
+                : `<span class="picker-badge-nobarcode">⚠️ Belum Ada</span>`}
+            </td>
+            <td style="text-align:right;font-weight:700;color:#0f172a">
+              Rp ${new Intl.NumberFormat('id-ID').format(p.selling_price)}
+            </td>
+            <td style="text-align:center">
+              <span style="font-weight:700;color:${p.stock <= 5 ? '#dc2626' : '#334155'}">${p.stock}</span>
+            </td>
+          </tr>
+        `;
+      });
+
+      modalProductList.innerHTML = html;
+      updateModalSummary();
+    }
+
+    function toggleModalProduct(productId, event) {
+      if (modalCheckedIds.has(productId)) {
+        modalCheckedIds.delete(productId);
+      } else {
+        modalCheckedIds.add(productId);
+      }
+      renderModalTable();
+    }
+
+    function handleModalCheckboxChange(productId, checked) {
+      if (checked) {
+        modalCheckedIds.add(productId);
+      } else {
+        modalCheckedIds.delete(productId);
+      }
+      renderModalTable();
+    }
+
+    function modalSelectAll(selectAll) {
+      const query = modalSearchInput.value.trim().toLowerCase();
+      const catId = modalCategoryFilter.value ? parseInt(modalCategoryFilter.value, 10) : null;
+      const barcodeFilter = modalBarcodeFilter.value;
+
+      allStoreProducts.forEach(p => {
+        if (catId && p.category_id !== catId) return;
+        const hasBarcode = Boolean(p.barcode && p.barcode.trim());
+        if (barcodeFilter === 'with_barcode' && !hasBarcode) return;
+        if (barcodeFilter === 'no_barcode' && hasBarcode) return;
+
+        if (query) {
+          const nameMatch = (p.name || '').toLowerCase().includes(query);
+          const skuMatch = (p.sku || '').toLowerCase().includes(query);
+          const barcodeMatch = (p.barcode || '').toLowerCase().includes(query);
+          if (!nameMatch && !skuMatch && !barcodeMatch) return;
+        }
+
+        if (selectAll) {
+          if (hasBarcode) {
+            modalCheckedIds.add(p.id);
+          }
+        } else {
+          modalCheckedIds.delete(p.id);
+        }
+      });
+
+      renderModalTable();
+    }
+
+    function modalToggleHeader(checked) {
+      modalSelectAll(checked);
+    }
+
+    function updateModalSummary() {
+      modalSelectedSummary.textContent = `${modalCheckedIds.size} produk dipilih`;
+    }
+
+    function applyModalSelection() {
+      // Rebuild state.items
+      const newItems = new Map();
+      modalCheckedIds.forEach(id => {
+        const prod = allStoreProducts.find(p => p.id === id);
+        if (prod && prod.barcode && prod.barcode.trim()) {
+          const existingCopies = state.items.has(id) ? state.items.get(id).copies : state.globalCopies;
+          newItems.set(id, {
+            product: prod,
+            copies: existingCopies
+          });
+        }
+      });
+
+      state.items = newItems;
+      closeProductPicker();
+      renderLabels();
+      showToast(`Antrean cetak diperbarui (${state.items.size} produk)`);
+    }
+
+    // --- Bulk Barcode Generation ---
+    async function generateBulkBarcodes() {
+      if (!confirm('Generate barcode internal EAN-13 otomatis untuk semua produk yang belum memiliki barcode?')) {
+        return;
+      }
+      showToast('Membuat barcode untuk produk...');
+      try {
+        const res = await fetch('/api/products/barcode/generate-bulk', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(`Sukses: ${data.message}`);
+          setTimeout(() => {
+            window.location.reload();
+          }, 800);
+        } else {
+          showToast(`Gagal: ${data.message || 'Terjadi kesalahan'}`);
+        }
+      } catch (err) {
+        showToast('Gagal menghubungi server untuk generate barcode');
+      }
+    }
+
+    // --- Print & Navigation Handlers ---
+    function handlePrintNow() {
+      if (state.items.size === 0) {
+        showToast('⚠️ Pilih minimal 1 produk untuk dicetak.');
+        openProductPicker();
+        return;
+      }
+      window.print();
+    }
+
+    function handleBack(e) {
+      if (window.opener || window.history.length > 1) {
+        e.preventDefault();
+        window.history.back();
+      }
+    }
+
+    // --- Helpers ---
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    let toastTimer = null;
+    function showToast(msg, duration = 2500) {
+      const toast = document.getElementById('printToast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, duration);
+    }
+
+    // Initialize View
+    renderLabels();
+  </script>
+</body>
+</html>

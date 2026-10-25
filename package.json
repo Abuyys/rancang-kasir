@@ -8,13 +8,18 @@
     "dev": "nodemon src/server.js",
     "migrate": "node database/run-migration.js",
     "seed": "node database/seeds/001_seed_admin.js",
-    "test": "jest --detectOpenHandles"
+    "test": "jest --detectOpenHandles --forceExit"
   },
-  "keywords": ["pos", "kasir", "minimarket"],
+  "keywords": [
+    "pos",
+    "kasir",
+    "minimarket"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.1.1",
+    "bwip-js": "^4.11.4",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",
     "express": "^4.21.2",
@@ -24,6 +29,7 @@
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
     "helmet": "^8.0.0",
+    "html5-qrcode": "^2.3.8",
     "morgan": "^1.10.0",
     "mysql2": "^3.12.0"
   },
