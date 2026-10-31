@@ -15,6 +15,12 @@ const routes = require('./routes');
 const app = express();
 
 // =========================
+// Reverse Proxy Support
+// =========================
+// Trust first proxy (Nginx on DOM Cloud/Passenger) so req.secure and client IP work
+app.set('trust proxy', 1);
+
+// =========================
 // Security
 // =========================
 app.use(helmet({
