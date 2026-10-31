@@ -81,17 +81,17 @@ app.use(session({
 }));
 
 // =========================
-// Rate limiting (login)
+// Rate limiting (login submissions only)
 // =========================
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 menit
-  max: 10,
-  message: 'Terlalu banyak percobaan login. Coba lagi dalam 15 menit.',
+  max: 30, // 30 percobaan gagal
+  message: 'Terlalu banyak percobaan login. Coba lagi dalam beberapa menit.',
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use('/api/auth/login', loginLimiter);
-app.use('/auth/login', loginLimiter);
+app.post('/api/auth/login', loginLimiter);
+app.post('/auth/login', loginLimiter);
 
 // =========================
 // Global template variables
