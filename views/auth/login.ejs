@@ -8,6 +8,7 @@
       <p>Aplikasi Kasir Minimarket</p>
     </div>
 
+    <div id="js-alert" class="alert alert-error" style="display: none;"></div>
     <% if (typeof error_msg !== 'undefined' && error_msg) { %>
       <div class="alert alert-error"><%= error_msg %></div>
     <% } %>
@@ -15,7 +16,7 @@
       <div class="alert alert-success"><%= success_msg %></div>
     <% } %>
 
-    <form action="/auth/login" method="POST" class="auth-form">
+    <form id="loginForm" action="/auth/login" method="POST" class="auth-form">
       <div class="form-group">
         <label for="username">Username</label>
         <input type="text" id="username" name="username" placeholder="Masukkan username" required autofocus>
@@ -24,7 +25,52 @@
         <label for="password">Password</label>
         <input type="password" id="password" name="password" placeholder="Masukkan password" required>
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Login</button>
+      <button type="submit" id="submitBtn" class="btn btn-primary btn-block">Login</button>
     </form>
   </div>
 </div>
+
+<script>
+  (function() {
+    const form = document.getElementById('loginForm');
+    const alertBox = document.getElementById('js-alert');
+    const submitBtn = document.getElementById('submitBtn');
+
+    if (!form) return;
+
+    form.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      alertBox.style.display = 'none';
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Memproses...';
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          window.location.href = '/dashboard';
+        } else {
+          alertBox.textContent = data.message || 'Login gagal. Periksa username dan password.';
+          alertBox.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Login';
+        }
+      } catch (err) {
+        // Fallback ke submit standar jika terjadi gangguan jaringan
+        form.submit();
+      }
+    });
+  })();
+</script>

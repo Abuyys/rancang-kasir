@@ -25,6 +25,7 @@ app.set('trust proxy', 1);
 // =========================
 app.use(helmet({
   contentSecurityPolicy: false, // Relaxed for dev, tighten in production
+  referrerPolicy: { policy: 'same-origin' }, // Pastikan Referer dikirim ke domain sendiri (diperlukan reverse proxy DOM Cloud)
 }));
 
 // =========================
@@ -84,9 +85,9 @@ app.use(session({
 // Rate limiting (login submissions only)
 // =========================
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 menit
+  windowMs: 5 * 60 * 1000, // 5 menit
   max: 30, // 30 percobaan gagal
-  message: 'Terlalu banyak percobaan login. Coba lagi dalam beberapa menit.',
+  message: 'Terlalu banyak percobaan login. Coba lagi dalam 5 menit.',
   standardHeaders: true,
   legacyHeaders: false,
 });
