@@ -294,6 +294,29 @@ body.no-scroll {
 
 .mobile-brand-title {
   display: none;
+  align-items: center;
+  gap: 0.45rem;
+  text-decoration: none;
+}
+
+.mobile-brand-logo {
+  height: 24px;
+  width: auto;
+  max-width: 44px;
+  object-fit: contain;
+  flex-shrink: 0;
+  border-radius: 4px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.mobile-brand-text {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--text-main);
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 .sidebar-toggle {
@@ -900,26 +923,38 @@ table tbody tr:nth-child(even) {
   .header-left {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
+    min-width: 0;
   }
 
   .mobile-brand-title {
     display: inline-flex;
-    font-weight: 800;
-    font-size: 1.05rem;
-    color: var(--text-main);
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     text-decoration: none;
-    letter-spacing: -0.02em;
+    min-width: 0;
+    flex-shrink: 1;
   }
 
   .mobile-brand-logo {
-    width: 28px;
-    height: 28px;
+    height: 24px;
+    width: auto;
+    max-width: 44px;
     object-fit: contain;
-    border-radius: 6px;
+    border-radius: 4px;
     flex-shrink: 0;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .mobile-brand-text {
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--text-main);
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    line-height: 1;
+  }
   }
 
   .header-right {
