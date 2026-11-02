@@ -192,11 +192,27 @@ body.no-scroll {
   overflow: hidden !important;
 }
 
+.sidebar-brand-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+}
+
+.sidebar-brand-logo {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
 .sidebar-brand h2 {
   font-size: 1.25rem;
   font-weight: 700;
   color: var(--text-light);
   letter-spacing: -0.025em;
+  margin: 0;
 }
 
 .sidebar-nav {
@@ -893,6 +909,17 @@ table tbody tr:nth-child(even) {
     font-size: 1.05rem;
     color: var(--text-main);
     align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+
+  .mobile-brand-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 6px;
+    flex-shrink: 0;
   }
 
   .header-right {
@@ -1113,7 +1140,14 @@ table tbody tr:nth-child(even) {
   }
 }
 
-/* --- 3. Very Small Phones (<= 400px) --- */
+/* --- 3. Very Small Phones (<= 480px) --- */
+@media (max-width: 480px) {
+  .user-info {
+    display: none !important;
+  }
+}
+
+/* --- 4. Extra Small Phones (<= 400px) --- */
 @media (max-width: 400px) {
   .top-header {
     padding: 0 0.55rem;
