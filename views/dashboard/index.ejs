@@ -46,6 +46,8 @@
     gap: 1.5rem;
     color: var(--dash-text-main);
     font-family: inherit;
+    max-width: 100%;
+    overflow-x: hidden;
   }
 
   /* --- Hero Executive Banner --- */
@@ -461,8 +463,9 @@
 
     /* Quick Actions Bar Mobile: 4 Kolom Rapi ala Native App */
     .quick-bar {
-      grid-template-columns: repeat(4, 1fr) !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
       gap: 0.45rem;
+      max-width: 100%;
     }
 
     .quick-card {
@@ -501,8 +504,9 @@
 
     /* KPI Metrics Mobile: 2 Kolom Kompak, tidak memanjang ke bawah */
     .kpi-row {
-      grid-template-columns: repeat(2, 1fr) !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
       gap: 0.55rem;
+      max-width: 100%;
     }
 
     .metric-card {
@@ -605,11 +609,11 @@
 
   @media (max-width: 480px) {
     .kpi-row {
-      grid-template-columns: repeat(2, 1fr) !important;
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
     }
 
     .quick-bar {
-      grid-template-columns: repeat(4, 1fr) !important;
+      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
     }
   }
 
