@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-  <title><%= typeof title !== 'undefined' ? title + ' | ' : '' %>BarikLana</title>
+  <meta name="description" content="Sistem Kasir & Manajemen Minimarket BarikLana">
+  <title><%= typeof title !== 'undefined' ? title + ' | ' : '' %>BarikLana POS</title>
   <script>
     (function() {
       try {
@@ -17,7 +18,10 @@
       } catch (e) {}
     })();
   </script>
-  <link rel="stylesheet" href="/css/style.css?v=1.0.6">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+  <link rel="stylesheet" href="/css/style.css?v=2.0.0">
 </head>
 <body>
   <% if (typeof currentUser !== 'undefined' && currentUser) { %>

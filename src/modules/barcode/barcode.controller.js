@@ -132,6 +132,7 @@ class BarcodeController {
       const scale = parseInt(req.query.scale, 10) || 2;
       const height = parseInt(req.query.height, 10) || 10;
       const includetext = req.query.includetext !== 'false';
+      const textyoffset = req.query.textyoffset !== undefined ? parseInt(req.query.textyoffset, 10) : -5;
 
       const product = await barcodeRepo.findById(id);
       if (!product) {
@@ -149,6 +150,7 @@ class BarcodeController {
         scale,
         height,
         includetext,
+        textyoffset,
       });
 
       res.setHeader('Content-Type', rendered.contentType);
@@ -181,6 +183,7 @@ class BarcodeController {
       const scale = parseInt(req.query.scale, 10) || 2;
       const height = parseInt(req.query.height, 10) || 10;
       const includetext = req.query.includetext !== 'false';
+      const textyoffset = req.query.textyoffset !== undefined ? parseInt(req.query.textyoffset, 10) : -5;
 
       const rendered = await barcodeService.renderBarcode({
         text,
@@ -189,6 +192,7 @@ class BarcodeController {
         scale,
         height,
         includetext,
+        textyoffset,
       });
 
       res.setHeader('Content-Type', rendered.contentType);

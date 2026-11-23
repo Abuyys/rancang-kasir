@@ -211,7 +211,7 @@ class BarcodeService {
   /**
    * Render barcode as SVG string or PNG Buffer using bwip-js
    */
-  async renderBarcode({ text, type = null, format = 'svg', scale = 2, height = 10, includetext = true }) {
+  async renderBarcode({ text, type = null, format = 'svg', scale = 2, height = 10, includetext = true, textyoffset = -5 }) {
     if (!text || typeof text !== 'string') {
       throw Object.assign(new Error('Teks barcode wajib diisi.'), { statusCode: 400 });
     }
@@ -240,6 +240,9 @@ class BarcodeService {
         break;
     }
 
+    const parsedOffset = parseInt(textyoffset, 10);
+    const finalOffset = isNaN(parsedOffset) ? -5 : parsedOffset;
+
     const options = {
       bcid,
       text: cleanedText,
@@ -248,6 +251,10 @@ class BarcodeService {
       includetext: Boolean(includetext),
       textxalign: 'center',
     };
+
+    if (options.includetext) {
+      options.textyoffset = finalOffset;
+    }
 
     if (format === 'png') {
       const buffer = await bwipjs.toBuffer(options);

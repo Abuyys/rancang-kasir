@@ -1,4 +1,85 @@
 // =========================
+// Toast Notification System
+// =========================
+window.Toast = (function () {
+  let container = null;
+
+  function getContainer() {
+    if (!container) {
+      container = document.createElement('div');
+      container.className = 'toast-container';
+      document.body.appendChild(container);
+    }
+    return container;
+  }
+
+  const icons = {
+    success: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    error:   '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    warning: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+    info:    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>',
+  };
+
+  const titles = { success: 'Berhasil', error: 'Gagal', warning: 'Perhatian', info: 'Info' };
+
+  function show(type, message, options = {}) {
+    const duration = options.duration ?? 4500;
+    const title    = options.title ?? titles[type] ?? '';
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.setAttribute('role', 'alert');
+    toast.innerHTML = `
+      <div class="toast-icon">${icons[type] || icons.info}</div>
+      <div class="toast-content">
+        ${title ? `<div class="toast-title">${title}</div>` : ''}
+        <div class="toast-msg">${message}</div>
+      </div>
+      <button class="toast-close" aria-label="Tutup">✕</button>
+      <div class="toast-progress" style="animation-duration:${duration}ms"></div>
+    `;
+
+    function dismiss() {
+      toast.classList.add('toast-hiding');
+      toast.addEventListener('animationend', () => toast.remove(), { once: true });
+    }
+
+    toast.querySelector('.toast-close').addEventListener('click', dismiss);
+    setTimeout(dismiss, duration);
+
+    getContainer().appendChild(toast);
+    return { dismiss };
+  }
+
+  return {
+    success: (msg, opts) => show('success', msg, opts),
+    error:   (msg, opts) => show('error', msg, opts),
+    warning: (msg, opts) => show('warning', msg, opts),
+    info:    (msg, opts) => show('info', msg, opts),
+  };
+})();
+
+// =========================
+// Button Loading State
+// =========================
+function setButtonLoading(btn, loading) {
+  if (!btn) return;
+  if (loading) {
+    btn.dataset.originalText = btn.innerHTML;
+    btn.classList.add('btn-loading');
+    btn.disabled = true;
+    btn.innerHTML = `<span class="btn-text">${btn.innerHTML}</span>`;
+  } else {
+    btn.classList.remove('btn-loading');
+    btn.disabled = false;
+    if (btn.dataset.originalText) {
+      btn.innerHTML = btn.dataset.originalText;
+      delete btn.dataset.originalText;
+    }
+  }
+}
+
+// =========================
 // Sidebar Toggle
 // =========================
 document.addEventListener('DOMContentLoaded', () => {
@@ -83,14 +164,48 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Auto-dismiss alerts after 5 seconds
+  // =========================
+  // Form Submit — Button Loading State
+  // =========================
+  document.querySelectorAll('form').forEach(form => {
+    // Skip forms that are just logout or delete confirm (no loading needed)
+    if (form.classList.contains('no-loading')) return;
+
+    form.addEventListener('submit', function (e) {
+      const submitBtn = form.querySelector('[type="submit"]');
+      if (submitBtn && !submitBtn.classList.contains('no-loading')) {
+        // Small delay so validation can still cancel submission
+        setTimeout(() => {
+          if (!e.defaultPrevented) {
+            setButtonLoading(submitBtn, true);
+          }
+        }, 0);
+      }
+    });
+  });
+
+  // Convert server-side alerts into toasts & auto-dismiss
   const alerts = document.querySelectorAll('.alert');
   alerts.forEach(alert => {
-    setTimeout(() => {
-      alert.style.transition = 'opacity 0.5s';
-      alert.style.opacity = '0';
-      setTimeout(() => alert.remove(), 500);
-    }, 5000);
+    const isSuccess = alert.classList.contains('alert-success');
+    const isError   = alert.classList.contains('alert-error');
+    const isWarning = alert.classList.contains('alert-warning');
+    const msg = alert.textContent.trim();
+
+    if (msg) {
+      if (isSuccess) Toast.success(msg);
+      else if (isError) Toast.error(msg, { duration: 6000 });
+      else if (isWarning) Toast.warning(msg);
+      else Toast.info(msg);
+    }
+
+    // Hide the original alert element gracefully
+    alert.style.transition = 'opacity 0.3s, max-height 0.3s';
+    alert.style.opacity = '0';
+    alert.style.maxHeight = '0';
+    alert.style.overflow = 'hidden';
+    alert.style.marginBottom = '0';
+    setTimeout(() => alert.remove(), 350);
   });
 
   // =========================

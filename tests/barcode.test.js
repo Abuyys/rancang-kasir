@@ -81,5 +81,15 @@ describe('EAN-13 & Barcode Utility Tests', () => {
     expect(pngResult.contentType).toBe('image/png');
     expect(Buffer.isBuffer(pngResult.data)).toBe(true);
     expect(pngResult.data.length).toBeGreaterThan(100);
+
+    // Text offset test (prevents collision between bars and numbers)
+    const offsetResult = await barcodeService.renderBarcode({
+      text: '2000000000015',
+      type: 'code128',
+      format: 'svg',
+      textyoffset: -5,
+    });
+    expect(offsetResult.contentType).toBe('image/svg+xml');
+    expect(offsetResult.data).toContain('<svg');
   });
 });
