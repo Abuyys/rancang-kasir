@@ -307,7 +307,7 @@
                 ${escapeHtml(product.name)}
               </div>
               <div class="label-barcode-svg-wrap">
-                <img src="/api/products/${product.id}/barcode/image?format=svg&scale=2&height=12&includetext=true" alt="${escapeHtml(product.barcode)}" loading="lazy">
+                <img src="/api/products/${product.id}/barcode/image?format=svg&scale=2&height=12&includetext=true&textyoffset=-6" alt="${escapeHtml(product.barcode)}" loading="lazy">
               </div>
               <div class="label-price-tag" style="${state.showPrice ? '' : 'display:none;'}">
                 Rp ${new Intl.NumberFormat('id-ID').format(product.selling_price)}

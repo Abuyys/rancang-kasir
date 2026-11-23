@@ -87,7 +87,7 @@ describe('EAN-13 & Barcode Utility Tests', () => {
       text: '2000000000015',
       type: 'code128',
       format: 'svg',
-      textyoffset: -5,
+      textyoffset: -6,
     });
     expect(offsetResult.contentType).toBe('image/svg+xml');
     expect(offsetResult.data).toContain('<svg');
